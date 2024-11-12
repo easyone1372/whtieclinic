@@ -15,17 +15,15 @@ import { Document } from '@/constants/Document';
 
 import { Payment } from '@/constants/Payment';
 import { Percentage } from '@/constants/Percentage';
-import { productCategories } from '@/constants/productCategory';
-import { MonthsPlan } from '@/constants/MonthsPlan';
+
+
 
 type AllowedObjects =
   | (typeof Days)[number]
   | (typeof Document)[number]
-  | (typeof MonthsPlan)[number]
   | (typeof Payment)[number]
   | (typeof Percentage)[number]
-  | (typeof productCategories.airConditioner.categories)[number]['category']
-  | (typeof productCategories.washingMachine.categories)[number]['category'];
+
 
 type widthOptions = 'small' | 'medium' | 'large';
 
