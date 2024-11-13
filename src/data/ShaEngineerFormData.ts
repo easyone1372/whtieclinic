@@ -1,6 +1,5 @@
 import { Days } from '../constants/Days';
 import { Percentage } from '../constants/Percentage';
-import { ShaTitledFormControlProps } from '@/components/molecules/Form/ShaTitledFormControl';
 import { ShaFormFieldType } from '@/components/molecules/Form/ShaFormField';
 import { ShaInputProps } from '@/components/atom/Input/ShaInput';
 import { ShaLabelCheckBoxProps } from '@/components/molecules/Engineer/ShaLabelCheckBox';
@@ -8,23 +7,22 @@ import { ShaDropdownProps } from '@/components/atom/DropdownBox/ShaDropDown';
 import { ShaHolidayRegistrationProps } from '@/components/molecules/Engineer/ShaHolidayRegistration';
 import { ShaHolidayProps } from '@/components/molecules/Engineer/ShaHoliday';
 import { ShaTextareaProps } from '@/components/atom/Input/ShaTextArea';
-import { DayNameEnum, RateEnum } from '../constants/types/LHH/EngineerRegisterType';
+import { ShaTitledFormControlProps } from '@/components/molecules/Form/ShaTitledFormControl';
 
 export type EngineerFormValues = {
   engineerId?: number;
-  name: string; // 기존: name
-  phoneNumber: string; // 기존: phoneNumber
-  location: string; // 기존: residenceArea
-  skills: string[]; // 기존: Items
-  skillRemark: string; // 기존: ItemsSpecialNotes
-  remark: string; // 기존: specialNotes
-  commissionRate: RateEnum; // 기존: allowanceRate
-  paymentDay: DayNameEnum; // 기존: paymentDay
-  specialHolidays: Date[]; // 기존: holidayRegistration
-  regularHolidays: DayNameEnum[]; // 기존: regularHoliday
+  engineerName: string; // name -> engineerName
+  engineerPhone: string; // phoneNumber -> engineerPhone
+  engineerAddr: string; // location -> engineerAddr
+  skills: string[]; // 그대로 유지 (Many-to-Many 관계를 위한 필드)
+  engineerRemark?: string; // remark -> engineerRemark
+  engineerCommission: number; // commissionRate -> engineerCommission
+  engineerPayday?: string; // paymentDay -> engineerPayday
+  engineerHoliday?: string; // regularHolidays -> engineerHoliday
+  engineerDayoff?: string; // specialHolidays -> engineerDayoff
 };
 
-export const EngineerFormData = (
+export const ShaEngineerFormData = (
   formValues: EngineerFormValues,
   handleFieldChange: (fieldName: keyof EngineerFormValues, value: any) => void,
   isSubmitAttempted: boolean
@@ -41,8 +39,8 @@ export const EngineerFormData = (
             placeholder: '기사성함',
             required: true,
             error: '기사성함을 입력해주세요',
-            value: formValues.name,
-            onChange: (value: string) => handleFieldChange('name', value),
+            value: formValues.engineerName,
+            onChange: (value: string) => handleFieldChange('engineerName', value),
             showError: isSubmitAttempted,
           } as ShaInputProps,
         },
@@ -62,8 +60,8 @@ export const EngineerFormData = (
             type: 'tel',
             required: true,
             error: '연락처를 입력해주세요',
-            value: formValues.phoneNumber,
-            onChange: (value: string) => handleFieldChange('phoneNumber', value),
+            value: formValues.engineerPhone,
+            onChange: (value: string) => handleFieldChange('engineerPhone', value),
             showError: isSubmitAttempted,
           } as ShaInputProps,
         },
@@ -82,8 +80,8 @@ export const EngineerFormData = (
             placeholder: '거주지역',
             required: true,
             error: '거주지역을 입력해주세요',
-            value: formValues.location, // residenceArea → location
-            onChange: (value: string) => handleFieldChange('location', value),
+            value: formValues.engineerAddr,
+            onChange: (value: string) => handleFieldChange('engineerAddr', value),
             showError: isSubmitAttempted,
           } as ShaInputProps,
         },
@@ -99,19 +97,9 @@ export const EngineerFormData = (
         {
           formfieldtype: 'ShaLabelCheckBox' as ShaFormFieldType,
           prevprops: {
-            selectedItems: formValues.skills, // Items → skills
+            selectedItems: formValues.skills,
             onItemsChange: (newItems: string[]) => handleFieldChange('skills', newItems),
           } as ShaLabelCheckBoxProps,
-        },
-        {
-          formfieldtype: 'ShaTextarea' as ShaFormFieldType,
-          prevprops: {
-            placeholder: '특이사항을 입력해주세요',
-            size: 'large',
-            rows: 1,
-            value: formValues.skillRemark, // ItemsSpecialNotes → skillRemark
-            onChange: (value: string) => handleFieldChange('skillRemark', value),
-          } as ShaTextareaProps,
         },
       ],
     },
@@ -128,8 +116,8 @@ export const EngineerFormData = (
             placeholder: '특이사항을 입력해주세요',
             size: 'large',
             rows: 1,
-            value: formValues.remark, // specialNotes → remark
-            onChange: (value: string) => handleFieldChange('remark', value),
+            value: formValues.engineerRemark,
+            onChange: (value: string) => handleFieldChange('engineerRemark', value),
           } as ShaTextareaProps,
         },
       ],
@@ -150,10 +138,10 @@ export const EngineerFormData = (
               value: payment,
               text: payment,
             })),
-            value: formValues.commissionRate, // allowanceRate → commissionRate
+            value: formValues.engineerCommission.toString(),
             required: true,
             error: '수당률을 선택해주세요',
-            onChange: (value: string) => handleFieldChange('commissionRate', value),
+            onChange: (value: string) => handleFieldChange('engineerCommission', Number(value)),
             showError: isSubmitAttempted,
           } as ShaDropdownProps,
         },
@@ -175,10 +163,10 @@ export const EngineerFormData = (
               value: days,
               text: days,
             })),
-            value: formValues.paymentDay,
+            value: formValues.engineerPayday,
             required: true,
             error: '급여요일을 선택해주세요',
-            onChange: (value: string) => handleFieldChange('paymentDay', value),
+            onChange: (value: string) => handleFieldChange('engineerPayday', value),
             showError: isSubmitAttempted,
           } as ShaDropdownProps,
         },
@@ -194,8 +182,10 @@ export const EngineerFormData = (
         {
           formfieldtype: 'ShaHolidayRegistration' as ShaFormFieldType,
           prevprops: {
-            registeredHolidays: formValues.specialHolidays, // holidayRegistration → specialHolidays
-            onHolidaysChange: (newDays: Date[]) => handleFieldChange('specialHolidays', newDays),
+            registeredHolidays: formValues.engineerDayoff || '',
+            onHolidaysChange: (dates: string) => {
+              handleFieldChange('engineerDayoff', dates);
+            },
           } as ShaHolidayRegistrationProps,
         },
       ],
@@ -210,8 +200,10 @@ export const EngineerFormData = (
         {
           formfieldtype: 'ShaHoliday' as ShaFormFieldType,
           prevprops: {
-            selectedDays: formValues.regularHolidays, // regularHoliday → regularHolidays
-            onDaysChange: (newDays: string[]) => handleFieldChange('regularHolidays', newDays),
+            selectedDays: formValues.engineerHoliday ? [formValues.engineerHoliday] : [],
+            onDaysChange: (newDays: string[]) => {
+              handleFieldChange('engineerHoliday', newDays[0] || null);
+            },
           } as ShaHolidayProps,
         },
       ],
