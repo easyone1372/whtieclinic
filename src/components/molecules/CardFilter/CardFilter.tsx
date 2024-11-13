@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import ShaInput from '@/components/atom/Input/ShaInput';
 import ACard from '@/components/molecules/Card/Cards';
+import ShaFilter from '../Filter/ShaFilter';
 
 // 카드필터 타입정의 (제너릭화 시켜서 추상화시킴 )
 export type CardFilterProps<T> = {
@@ -36,11 +36,10 @@ const CardFilter = <T extends { [key: string]: any }>({
     <div className="flex flex-col min-h-0 flex-1">
       {/* 필터 입력 필드 */}
       <div className="p-4 flex-shrink-0">
-        <ShaInput
+        <ShaFilter
           placeholder="이름, 주소 또는 전화번호로 검색"
           value={filter}
           onChange={(value) => onFilterChange(value)}
-          size="medium"
         />
       </div>
 

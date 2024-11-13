@@ -42,7 +42,8 @@ const ShaDrawer = <T extends { [key: string]: any }>({
   return (
     // Drawer 컴포넌트 - open과 onOpenChange 속성으로 열림 상태를 제어
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
-      <DrawerTrigger asChild>
+      <DrawerTrigger asChild>  
+        {/* drawer 작동 버튼  */}
         <ShaButton variant="outline" text="">
           <AlignJustify />
         </ShaButton>

@@ -1,16 +1,11 @@
-import DataDisplay from '@/components/molecules/FooterDisplay/dataDisplay';
-import PaymentDetails from '@/components/molecules/FooterDisplay/PaymentDetailes';
-
 import React from 'react';
 
-type AFooterProps<T> = {
+import PaymentDetails, { PaymentProps } from '@/components/molecules/FooterDisplay/PaymentDetailes';
+import DataDisplay from '@/components/molecules/FooterDisplay/DataDisplay';
+
+// 
+type AFooterProps<T> = PaymentProps & {
   data: T;
-  totalAmount: number;
-  finalPayment: number;
-  isEditing: boolean;
-  isChecked: string;
-  onFinalPaymentChange: (value: number) => void;
-  onCheckboxChange: (key: string) => void;
   labelMap?: Partial<Record<keyof T, string>>;
 };
 

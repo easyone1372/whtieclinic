@@ -3,7 +3,7 @@ import ATableBody from '@/components/atom/TableBody/ATableBody';
 import ATableHeader from '@/components/atom/TableHeader/ATableHeader';
 
 // 타입 정의
-type ATableProps<T> = {
+export type ATableProps<T> = {
   headers: { [key: string]: string }; // 헤더 텍스트
   data: T[]; // 테이블에 표시할 데이터
   columns: (keyof T)[]; // 열의 데이터 키 배열
