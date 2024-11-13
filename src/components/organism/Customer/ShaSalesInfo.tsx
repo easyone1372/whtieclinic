@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { productCategories } from '@/constants/productCategory';
 import ShaInfoForm from '@/components/molecules/Form/ShaInfoForm';
-import { ShaSalesInfoFormData } from '@/constants/ShaSalesInfoFormData';
+import { ShaSalesInfoFormData } from '@/data/ShaSalesInfoFormData';
 import ShaTwoButton from '@/components/molecules/Button/ShaTwoButton';
 
 type ProductCategoryKey = keyof typeof productCategories;

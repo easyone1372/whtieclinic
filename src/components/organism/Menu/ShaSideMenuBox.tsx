@@ -4,7 +4,7 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { sideBarMenuData } from '@/constants/ShaSideBarMenuData';
+import { sideBarMenuData } from '@/data/ShaSideBarMenuData';
 
 type ShaSideMenuBoxProps = {
   isCollapsed: boolean;

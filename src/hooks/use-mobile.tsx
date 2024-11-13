@@ -1,5 +1,7 @@
 import * as React from "react"
 
+
+// 반응형 훅 
 const MOBILE_BREAKPOINT = 768
 
 export function useIsMobile() {

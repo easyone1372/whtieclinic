@@ -4,9 +4,10 @@ import * as React from 'react';
 import { User, Phone, Home } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { colors } from '@/styles/colors';
-import ACardContent from '@/components/atom/ACardContent/ACardContent';
+import ACardContent from '@/components/atom/CardContent/ShaCardContent';
+import ShaCardContent from '@/components/atom/CardContent/ShaCardContent';
 
-type ACardProps = {
+type CardProps = {
   name: string;
   tel: string;
   address: string;
@@ -15,7 +16,7 @@ type ACardProps = {
   onClick: () => void;
 };
 
-const ACards: React.FC<ACardProps> = ({ name, tel, address, onClick }) => {
+const Cards = ({ name, tel, address, onClick }: CardProps) => {
   return (
     <Card
       onClick={onClick}
@@ -28,12 +29,12 @@ const ACards: React.FC<ACardProps> = ({ name, tel, address, onClick }) => {
       }
     >
       <CardContent className="p-4 flex flex-col gap-1">
-        <ACardContent Icon={User} label="이름" value={name} />
-        <ACardContent Icon={Phone} label="번호" value={tel} />
-        <ACardContent Icon={Home} label="주소" value={address} />
+        <ShaCardContent Icon={User} label="이름: " value={name} />
+        <ShaCardContent Icon={Phone} label="번호: " value={tel} />
+        <ShaCardContent Icon={Home} label="주소: " value={address} />
       </CardContent>
     </Card>
   );
 };
 
-export default ACards;
+export default Cards;

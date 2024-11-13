@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import ShaInfoForm from '@/components/molecules/Form/ShaInfoForm';
-import { ShaCustomerInfoFormData } from '@/constants/ShaCustomerInfoFormData';
+import { ShaCustomerInfoFormData } from '@/data/ShaCustomerInfoFormData';
 import ShaTwoButton from '@/components/molecules/Button/ShaTwoButton';
 import { Loader2 } from 'lucide-react';
 

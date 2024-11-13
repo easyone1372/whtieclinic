@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import ShaInfoForm from '../Form/ShaInfoForm';
-import { EngineerFormData, EngineerFormValues } from '@/constants/ShaEngineerForm';
+import { EngineerFormData, EngineerFormValues } from '@/data/ShaEngineerForm';
 import ShaTwoButton from '../Button/ShaTwoButton';
 import axios from 'axios';
 import { DayNameEnum, RateEnum } from '@/constants/types/LHH/EngineerRegisterType';

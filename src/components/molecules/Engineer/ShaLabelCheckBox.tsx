@@ -3,7 +3,7 @@
 import React from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { EngineerWashingMachineCategory } from '@/constants/Engineer';
+import { EngineerWashingMachineCategory } from '@/constants/EngineerSkill';
 
 export type ShaLabelCheckBoxProps = {
   selectedItems: string[];

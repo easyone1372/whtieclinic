@@ -3,7 +3,7 @@
 import ShaTwoButton from '@/components/molecules/Button/ShaTwoButton';
 import ShaInfoForm from '@/components/molecules/Form/ShaInfoForm';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { ShaCustomerInfoFormData } from '@/constants/ShaCustomerInfoFormData';
+import { ShaCustomerInfoFormData } from '@/data/ShaCustomerInfoFormData';
 import React, { useState } from 'react';
 
 export type CustomerInfoValues = {

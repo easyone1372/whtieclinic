@@ -1,5 +1,5 @@
-import { Days } from './Days';
-import { Percentage } from './Percentage';
+import { Days } from '../constants/Days';
+import { Percentage } from '../constants/Percentage';
 import { ShaTitledFormControlProps } from '@/components/molecules/Form/ShaTitledFormControl';
 import { ShaFormFieldType } from '@/components/molecules/Form/ShaFormField';
 import { ShaInputProps } from '@/components/atom/Input/ShaInput';
@@ -8,7 +8,7 @@ import { ShaDropdownProps } from '@/components/atom/DropdownBox/ShaDropDown';
 import { ShaHolidayRegistrationProps } from '@/components/molecules/Engineer/ShaHolidayRegistration';
 import { ShaHolidayProps } from '@/components/molecules/Engineer/ShaHoliday';
 import { ShaTextareaProps } from '@/components/atom/Input/ShaTextArea';
-import { DayNameEnum, RateEnum } from './types/LHH/EngineerRegisterType';
+import { DayNameEnum, RateEnum } from '../constants/types/LHH/EngineerRegisterType';
 
 export type EngineerFormValues = {
   engineerId?: number;

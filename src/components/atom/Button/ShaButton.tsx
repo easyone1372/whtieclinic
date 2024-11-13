@@ -18,8 +18,10 @@ export type ShaButtonProps = {
     | '검색'
     | '수정 완료'
     | '저장'
-    | '전달';
-    
+    | '전달'
+    | '기사님 등록'
+    | '';
+
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   size?: 'default' | 'sm' | 'lg' | 'icon' | 'full';
   disabled?: boolean;
