@@ -14,13 +14,15 @@ const ATable = <T extends { [key: string]: any }>({
   headers,
   data,
   columns,
-  title = '데이터 리스트',
+  title = '',
 }: ATableProps<T>) => {
   return (
     <>
-      <div className="text-center">
-        <h1>{title}</h1>
-      </div>
+      {title && (
+        <div className="text-center">
+          <h1>{title}</h1>
+        </div>
+      )}
       <Table>
         <ATableHeader {...headers} /> {/* 헤더 정보 전달 */}
         <ATableBody data={data} columns={columns} /> {/* 데이터와 열 배열 전달 */}

@@ -8,11 +8,11 @@ const SchEngList = ({ engineerList, onClick }: SchEngListType) => {
         <ul>
           {engineerList.map((eng) => (
             <li
-              key={eng.engineer_id}
-              onClick={() => onClick(eng.engineer_id)}
+              key={eng.engineerId}
+              onClick={() => onClick(eng.engineerId)}
               className="cursor-pointer hover:bg-gray-100"
             >
-              {eng.engineer_name}
+              {eng.engineerName}
             </li>
           ))}
         </ul>

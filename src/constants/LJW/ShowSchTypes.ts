@@ -1,31 +1,34 @@
+//ShowSchTypes.ts
+
 //기사리스트 맵핑을 위한 타입지정
 export type schEngType = {
-  engineer_id: number;
-  engineer_name: string;
+  engineerId: number;
+  engineerName: string;
 };
 
 //기사리스트 컴포넌트를 위한 타입지정
 export type SchEngListType = {
   engineerList: schEngType[];
-  onClick: (engineer_id: number) => void;
+  onClick: (engineerId: number) => void;
 };
 
 //스케쥴에 보여지는 데이터들을 위한 타입
 export type SchShowDisplay = {
-  order_id: number;
-  engineer_id: number;
-  customer_id: number;
-  booking_date: Date; //예약날짜
-  engineer_name: string;
-  customer_name: string;
-  customer_addr: string;
-  customer_phone: string;
-  order_product_type: string; //에어컨|세탁기
-  order_product_detail: string; //드럼, 원웨이 등
-  order_count: number; //주문대수
-  total_price: number; //최종가격
-  order_remarks?: string; //주문 특이사항
-  customer_remarks?: string; //고객 특이사항
+  orderId: number;
+  engineerId: number;
+  customerId: number;
+  orderDate: Date; //예약날짜
+  orderTimeslot: string; //예약 시간. 고민.
+  engineerName: string;
+  customerName: string;
+  customerAddr: string;
+  customerPhone: string;
+  orderProduct: string; //에어컨|세탁기
+  orderProductDetail: string; //드럼, 원웨이 등
+  orderCount: number; //주문대수
+  orderTotalAmount: number; //최종가격
+  orderRemarks?: string; //주문 특이사항
+  customerRemarks?: string; //고객 특이사항
 };
 
 export type SchTimeLineProps = {
