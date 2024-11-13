@@ -1,14 +1,14 @@
 import ShaText from '@/components/atom/Text/ShaText';
 import ShaInput from '@/components/atom/Input/ShaInput';
-import OneCheckbox from '@/components/molecules/checkbox/ShaOneCheckBox';
+import ShaCheckbox from '@/components/atom/CheckBox/ShaCheckBox';
 
 type PaymentDetailsProps = {
   totalAmount: number;
   finalPayment: number;
   isEditing: boolean;
-  isChecked: string;
+  isChecked: boolean; // isChecked를 boolean으로 변경
   onFinalPaymentChange: (value: number) => void;
-  onCheckboxChange: (key: string) => void;
+  onCheckboxChange: (checked: boolean) => void; // 체크 상태를 boolean으로 변경
 };
 
 // PaymentDetails 컴포넌트 정의
@@ -46,14 +46,10 @@ const PaymentDetails = ({
     {/* 지급 여부 체크박스 */}
     <div className="flex items-center gap-2">
       <ShaText text="지급여부:" isBold size="small" />
-      <OneCheckbox
-        checkboxes={{
-          paid: {
-            textprops: { text: '지급 완료' },
-          },
-        }}
+      <ShaCheckbox
+        isChecked={isChecked}
         onChange={onCheckboxChange}
-        value={isChecked}
+        textprops={{ text: '지급 완료' }}
       />
     </div>
   </>
