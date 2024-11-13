@@ -1,3 +1,4 @@
+import { CalendarEventType } from '@/components/atom/Calendar/ACalendar';
 import { Engineer } from '@/constants/types/type';
 import api from '@/utils/axios';
 
