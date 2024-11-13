@@ -3,14 +3,13 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-// sizes와 colors 타입을 Tailwind 클래스에 맞게 정의
 const textSizes = {
-  tiny: 'text-xs', // 12px
-  small: 'text-sm', // 14px
-  medium: 'text-base', // 16px
-  large: 'text-lg', // 18px
-  xlarge: 'text-xl', // 20px
-  huge: 'text-2xl', // 24px
+  tiny: 'text-xs',
+  small: 'text-sm',
+  medium: 'text-base',
+  large: 'text-lg',
+  xlarge: 'text-xl',
+  huge: 'text-2xl',
 } as const;
 
 const textColors = {
@@ -26,10 +25,21 @@ export type ShaTextProps = {
   size?: keyof typeof textSizes;
   color?: keyof typeof textColors;
   className?: string;
+  isBold?: boolean; // 굵은 텍스트를 위한 prop 추가
 };
 
-const ShaText = ({ text, size = 'medium', color = 'default', className }: ShaTextProps) => {
-  return <p className={cn(textSizes[size], textColors[color], className)}>{text}</p>;
+const ShaText = ({
+  text,
+  size = 'medium',
+  color = 'default',
+  className,
+  isBold = false,
+}: ShaTextProps) => {
+  return (
+    <p className={cn(textSizes[size], textColors[color], isBold && 'font-bold', className)}>
+      {text}
+    </p>
+  );
 };
 
 export default ShaText;
