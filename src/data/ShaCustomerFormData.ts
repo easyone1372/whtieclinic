@@ -7,25 +7,37 @@ import { Document } from '@/constants/Document';
 import { ShaDateTimePickerProps } from '@/components/molecules/ADateTimePicker/ShaDateTimePicker';
 import { ShaTextareaProps } from '@/components/atom/Input/ShaTextArea';
 import { ShaDropdownProps } from '@/components/atom/DropdownBox/ShaDropDown';
-import { ShaOneCheckboxProps } from '@/components/molecules/checkbox/ShaOneCheckBox';
 
 import { ShaDiscountCheckboxProps } from '@/components/molecules/Customer/ShaDiscountCheckBox';
+import { CheckboxProps } from '@/components/atom/CheckBox/ShaCheckBox';
+import { format } from 'date-fns';
 
-export type CustomerInfoValues = {
-  reservationDateTime: Date | null;
-  name: string;
-  phoneNumber: string;
-  address: string;
-  uniqueDetails: string;
-  payment: string;
-  document: string;
-  published: string;
-  isDepositPaid: boolean;
-  depositAmount: number;
+// Customer와 Order 테이블의 정보를 모두 포함하는 폼 값 타입
+export type CustomerFormValues = {
+  // Customer 테이블 관련 필드
+  customerName: string;
+  customerPhone: string;
+  customerAddr: string;
+  customerRemark: string;
+
+  // Order 테이블 관련 필드
+  orderDate: string;
+  orderCategory: string;
+  orderProduct: string;
+  orderTotalAmount: number;
+  orderCount: number;
+  orderIsDiscount: boolean;
+  orderDiscountRatio: number;
+  orderRemark?: string;
+  orderDeposit: number;
+  depositPayed: boolean;
+  orderPayment: string;
+  orderRecieptDocs: string;
+  recieptDocsIssued: boolean;
 };
-export const ShaCustomerInfoFormData = (
-  formValues: CustomerInfoValues,
-  handleFieldChange: (fieldName: keyof CustomerInfoValues, value: any) => void,
+export const ShaCustomerFormData = (
+  formValues: CustomerFormValues,
+  handleFieldChange: (fieldName: keyof CustomerFormValues, value: any) => void,
   isSubmitAttempted: boolean
 ): ShaTitledFormControlProps[] => [
   {
@@ -39,8 +51,16 @@ export const ShaCustomerInfoFormData = (
           prevprops: {
             dateLabel: '예약 날짜',
             timeLabel: '예약 시간',
-            value: formValues.reservationDateTime,
-            onChange: (newValue: Date | null) => handleFieldChange('reservationDateTime', newValue),
+            value: formValues.orderDate ? new Date(formValues.orderDate) : null,
+            onChange: (newValue: Date | null) => {
+              if (newValue) {
+                // Date 객체를 문자열로 변환 (예: "2024-11-13 14:30:00")
+                const formattedDate = format(newValue, 'yyyy-MM-dd HH:mm:ss');
+                handleFieldChange('orderDate', formattedDate);
+              } else {
+                handleFieldChange('orderDate', '');
+              }
+            },
           } as ShaDateTimePickerProps,
         },
       ],
@@ -58,8 +78,8 @@ export const ShaCustomerInfoFormData = (
             placeholder: '고객성함',
             required: true,
             error: '고객성함을 입력해주세요',
-            value: formValues.name,
-            onChange: (value: string) => handleFieldChange('name', value),
+            value: formValues.customerName,
+            onChange: (value: string) => handleFieldChange('customerName', value),
             showError: isSubmitAttempted,
           } as ShaInputProps,
         },
@@ -79,8 +99,8 @@ export const ShaCustomerInfoFormData = (
             type: 'tel',
             required: true,
             error: '연락처를 입력해주세요',
-            value: formValues.phoneNumber,
-            onChange: (value: string) => handleFieldChange('phoneNumber', value),
+            value: formValues.customerPhone,
+            onChange: (value: string) => handleFieldChange('customerPhone', value),
             showError: isSubmitAttempted,
           } as ShaInputProps,
         },
@@ -99,8 +119,8 @@ export const ShaCustomerInfoFormData = (
             placeholder: '방문주소',
             required: true,
             error: '방문주소를 입력해주세요',
-            value: formValues.address,
-            onChange: (value: string) => handleFieldChange('address', value),
+            value: formValues.customerAddr,
+            onChange: (value: string) => handleFieldChange('customerAddr', value),
             showError: isSubmitAttempted,
           } as ShaInputProps,
         },
@@ -119,8 +139,8 @@ export const ShaCustomerInfoFormData = (
             placeholder: '특이사항을 입력해주세요',
             size: 'large',
             rows: 4,
-            value: formValues.uniqueDetails,
-            onChange: (value: string) => handleFieldChange('uniqueDetails', value),
+            value: formValues.customerRemark,
+            onChange: (value: string) => handleFieldChange('customerRemark', value),
           } as ShaTextareaProps,
         },
       ],
@@ -134,13 +154,13 @@ export const ShaCustomerInfoFormData = (
           formfieldtype: 'ShaDiscountCheckbox' as ShaFormFieldType,
           prevprops: {
             checkboxProps: {
-              checked: formValues.isDepositPaid,
-              onCheckedChange: (checked: boolean) => handleFieldChange('isDepositPaid', checked),
+              checked: formValues.depositPayed,
+              onCheckedChange: (checked: boolean) => handleFieldChange('depositPayed', checked),
               label: '계약금 입금완료',
             },
             numericInputProps: {
-              value: formValues.depositAmount.toString(),
-              onChange: (value: string) => handleFieldChange('depositAmount', Number(value)),
+              value: formValues.orderDeposit.toString(),
+              onChange: (value: string) => handleFieldChange('orderDeposit', Number(value)),
               max: 1000000,
               size: 'medium',
               placeholder: '계약금 입금액',
@@ -166,10 +186,10 @@ export const ShaCustomerInfoFormData = (
               value: payment,
               text: payment,
             })),
-            value: formValues.payment,
+            value: formValues.orderPayment,
             required: true,
             error: '결제방식을 선택해주세요',
-            onChange: (value: string) => handleFieldChange('payment', value),
+            onChange: (value: string) => handleFieldChange('orderPayment', value),
             showError: isSubmitAttempted,
           } as ShaDropdownProps,
         },
@@ -191,18 +211,20 @@ export const ShaCustomerInfoFormData = (
               value: doc,
               text: doc,
             })),
-            value: formValues.document,
-            onChange: (value: string) => handleFieldChange('document', value),
+            value: formValues.orderRecieptDocs,
+            onChange: (value: string) => handleFieldChange('orderRecieptDocs', value),
           } as ShaDropdownProps,
         },
         {
-          formfieldtype: 'ShaOneCheckbox' as ShaFormFieldType,
+          formfieldtype: 'ShaCheckbox' as ShaFormFieldType,
           prevprops: {
-            checkboxes: publishedCheckboxData,
-            value: formValues.published,
-            onChange: (value: string) => handleFieldChange('published', value),
-            className: 'start',
-          } as ShaOneCheckboxProps,
+            isChecked: formValues.recieptDocsIssued,
+            onChange: (checked: boolean) => handleFieldChange('recieptDocsIssued', checked),
+            textprops: {
+              text: '발행완료',
+              className: 'start',
+            },
+          } as CheckboxProps,
         },
       ],
     },

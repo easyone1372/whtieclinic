@@ -1,66 +1,72 @@
 'use client';
 
-import React, { useState } from 'react';
-import { format, isSameDay } from 'date-fns';
+import React from 'react';
+import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import ShadcnDatePicker from '@/components/atom/Calendar/ShaDatePicker';
 
 export type ShaHolidayRegistrationProps = {
-  registeredHolidays: Date[];
-  onHolidaysChange: (newHolidays: Date[]) => void;
+  registeredHolidays: string; // 쉼표로 구분된 날짜 문자열
+  onHolidaysChange: (dates: string) => void; // 쉼표로 구분된 날짜 문자열로 반환
 };
 
 const ShaHolidayRegistration: React.FC<ShaHolidayRegistrationProps> = ({
   registeredHolidays,
   onHolidaysChange,
 }) => {
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedDate, setSelectedDate] = React.useState<Date | undefined>();
+
+  // 문자열을 Date 배열로 변환
+  const dates = registeredHolidays ? registeredHolidays.split(',').filter(Boolean) : [];
 
   const handleDateChange = (newValue: Date | undefined) => {
-    setSelectedDate(newValue || null);
+    setSelectedDate(newValue);
   };
 
   const handleRegister = () => {
     if (selectedDate) {
-      const isDuplicate = registeredHolidays.some((date) => isSameDay(date, selectedDate));
-      if (isDuplicate) {
-        alert('이미 등록된 날짜입니다.');
-        return;
+      const newDate = format(selectedDate, 'yyyy-MM-dd');
+      if (!dates.includes(newDate)) {
+        const newDates = [...dates, newDate];
+        onHolidaysChange(newDates.join(','));
       }
-
-      const newHolidays = [...registeredHolidays, selectedDate];
-      newHolidays.sort((a, b) => a.getTime() - b.getTime());
-      onHolidaysChange(newHolidays);
-      setSelectedDate(null);
+      setSelectedDate(undefined);
     }
   };
 
+  const handleRemoveDate = (dateToRemove: string) => {
+    const newDates = dates.filter((date) => date !== dateToRemove);
+    onHolidaysChange(newDates.join(','));
+  };
+
   return (
-    <div className="flex">
-      <div className="flex items-center">
+    <div>
+      <div className="flex items-center mb-2">
         <ShadcnDatePicker
-          value={selectedDate || undefined}
+          value={selectedDate}
           onChange={handleDateChange}
           dateFormat="yyyy년 MM월 dd일"
         />
-        <div className="mx-2">
-          <Button onClick={handleRegister} size="sm">
-            등록
-          </Button>
-        </div>
+        <Button onClick={handleRegister} size="sm" className="ml-2" disabled={!selectedDate}>
+          등록
+        </Button>
       </div>
-
-      <ScrollArea className="max-h-20 w-52 rounded-md border ">
-        <div className="p-4">
-          {registeredHolidays.map((holiday, index) => (
-            <div key={index} className="text-sm">
-              {format(holiday, 'yyyy년 MM월 dd일', { locale: ko })}
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
+      <div className="space-y-1">
+        {dates.map((date, index) => (
+          <div key={index} className="flex items-center text-sm">
+            <span>{format(new Date(date), 'yyyy년 MM월 dd일', { locale: ko })}</span>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="ml-2 h-6 px-2"
+              onClick={() => handleRemoveDate(date)}
+            >
+              ×
+            </Button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
