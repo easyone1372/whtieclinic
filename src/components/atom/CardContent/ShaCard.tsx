@@ -1,4 +1,3 @@
-// components/molecules/Card/ShaFormCard.tsx
 'use client';
 
 import React, { ReactNode } from 'react';

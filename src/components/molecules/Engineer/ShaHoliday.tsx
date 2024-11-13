@@ -7,12 +7,12 @@ import { Days } from '@/constants/Days';
 import ShadcnDropdown from '@/components/atom/DropdownBox/ShaDropDown';
 
 export type ShaHolidayProps = {
-  selectedDays: string[];
-  onDaysChange: (newDays: string[]) => void;
+  selectedDays: string; // 하나의 요일 문자열
+  onDaysChange: (newDay: string) => void; // 요일 변경 함수
 };
 
 const ShaHoliday: React.FC<ShaHolidayProps> = ({ selectedDays, onDaysChange }) => {
-  const [selectedDay, setSelectedDay] = useState<string>('');
+  const [selectedDay, setSelectedDay] = useState<string>(''); // 선택된 요일
 
   const DayOptions = Days.map((day) => ({ text: day, value: day }));
 
@@ -22,27 +22,27 @@ const ShaHoliday: React.FC<ShaHolidayProps> = ({ selectedDays, onDaysChange }) =
 
   const handleRegister = () => {
     if (selectedDay) {
-      const isDuplicate = selectedDays.includes(selectedDay);
-      if (isDuplicate) {
+      // 이미 등록된 요일인지 확인
+      if (selectedDays === selectedDay) {
         alert('이미 등록된 요일입니다.');
         return;
       }
 
-      const newDays = [...selectedDays, selectedDay];
-      // Days 배열의 순서대로 정렬
-      newDays.sort((a, b) => Days.indexOf(a) - Days.indexOf(b));
-      onDaysChange(newDays);
+      // 요일 등록
+      onDaysChange(selectedDay);
       setSelectedDay('');
     }
   };
-  const handleRemoveDay = (dayToRemove: string) => {
-    const newDays = selectedDays.filter((day) => day !== dayToRemove);
-    onDaysChange(newDays);
+
+  const handleRemoveDay = () => {
+    // 요일 삭제
+    onDaysChange('');
   };
 
   return (
-    <div className="flex">
+    <div className="flex space-x-4">
       <div className="flex items-center">
+        {/* 요일 선택 드롭다운 */}
         <ShadcnDropdown
           label="요일"
           value={selectedDay}
@@ -56,23 +56,16 @@ const ShaHoliday: React.FC<ShaHolidayProps> = ({ selectedDays, onDaysChange }) =
         </div>
       </div>
 
-      <ScrollArea className="max-h-20 w-30 rounded-md border ">
+      <ScrollArea className="max-h-20 w-50 rounded-md border">
         <div className="p-4">
-          {selectedDays.map((day, index) => (
-            <div key={index} className="flex items-center text-sm">
-              <div key={index} className="text-sm">
-                {day}
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="ml-2 h-6 px-2"
-                onClick={() => handleRemoveDay(day)}
-              >
+          {selectedDays && (
+            <div className="flex items-center text-sm ">
+              <span>{selectedDays}</span>
+              <Button variant="ghost" size="sm" className="ml-2 h-6 px-2" onClick={handleRemoveDay}>
                 ×
               </Button>
             </div>
-          ))}
+          )}
         </div>
       </ScrollArea>
     </div>

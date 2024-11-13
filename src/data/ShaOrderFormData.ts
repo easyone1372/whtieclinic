@@ -7,6 +7,7 @@ import { ShaTextareaProps } from '@/components/atom/Input/ShaTextArea';
 import { ShaNumericInputProps } from '@/components/molecules/input/ShaNumericInput';
 import { ShaDiscountCheckboxProps } from '@/components/molecules/Customer/ShaDiscountCheckBox';
 import { productCategories } from './ProductCategory';
+import { isHangulOnly, isNumberOnly } from '@/constants/validation';
 
 export type OrderFormValues = {
   orderCategory: string; // 세척품목 카테고리
@@ -33,17 +34,14 @@ export const ShaOrderFormData = (
             onecheckboxprops: {
               checkboxes: {
                 airConditioner: {
-                  textprops: {
-                    text: productCategories.airConditioner.product,
-                  },
+                  textprops: { text: productCategories.airConditioner.product },
                 },
                 washingMachine: {
-                  textprops: {
-                    text: productCategories.washingMachine.product,
-                  },
+                  textprops: { text: productCategories.washingMachine.product },
                 },
               },
               value: formValues.orderCategory?.split(':')[0],
+              required: true, // 필수 입력 필드
               onChange: (value: string) => {
                 handleFieldChange('orderCategory', value);
                 handleFieldChange('orderProduct', '');
@@ -57,10 +55,7 @@ export const ShaOrderFormData = (
                     formValues.orderCategory.split(':')[0] === '에어컨'
                       ? 'airConditioner'
                       : 'washingMachine'
-                  ].categories.map((item) => ({
-                    value: item.category,
-                    text: item.category,
-                  }))
+                  ].categories.map((item) => ({ value: item.category, text: item.category }))
                 : [],
               value: formValues.orderCategory?.split(':')[1],
               onChange: (value: string) => {
@@ -85,6 +80,8 @@ export const ShaOrderFormData = (
             onChange: (value: string) => handleFieldChange('orderTotalAmount', Number(value)),
             size: 'medium',
             placeholder: '세척금액을 입력하세요',
+            required: true, // 필수 입력 필드
+            validate: isNumberOnly, // 숫자만 허용
           } as ShaNumericInputProps,
         },
       ],
@@ -106,6 +103,8 @@ export const ShaOrderFormData = (
             min: 0,
             max: 999,
             step: 1,
+            required: true, // 필수 입력 필드
+            validate: isNumberOnly, // 숫자만 허용
           } as ShaNumericInputProps,
         },
       ],
@@ -129,6 +128,7 @@ export const ShaOrderFormData = (
               max: 1000000,
               size: 'medium',
               placeholder: '할인금액',
+              validate: isNumberOnly, // 숫자만 허용
             },
           } as ShaDiscountCheckboxProps,
         },
@@ -147,6 +147,7 @@ export const ShaOrderFormData = (
             onChange: (value: string) => handleFieldChange('orderRemark', value),
             size: 'large',
             rows: 4,
+            validate: isHangulOnly, // 한글만 허용
           } as ShaTextareaProps,
         },
       ],

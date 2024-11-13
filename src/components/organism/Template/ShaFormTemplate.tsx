@@ -1,10 +1,10 @@
-// components/templates/ShaFormTemplate.tsx
 'use client';
 
 import React from 'react';
 import { useFormSubmit } from '@/service/FormSubmit/FormSubmit';
 import ShaCard from '@/components/atom/CardContent/ShaCard';
 import ShaInfoForm from '@/components/molecules/Form/ShaInfoForm';
+import { ShaTitledFormControlProps } from '@/components/molecules/Form/ShaTitledFormControl';
 
 /**
  * 폼 템플릿 Props 타입 정의
@@ -24,15 +24,17 @@ type FormTemplateProps<T> = {
     formValues: T,
     handleFieldChange: (fieldName: keyof T, value: any) => void,
     isSubmitAttempted: boolean
-  ) => any;
+  ) => ShaTitledFormControlProps[];
+  validationRules?: ((formValues: T) => boolean)[];
 };
 
-const ShaFormTemplate = <T extends object>({
+const EnhancedFormTemplate = <T extends object>({
   title,
   initialValues,
   onSubmit,
   onSuccess,
   formDataGenerator,
+  validationRules = [],
 }: FormTemplateProps<T>) => {
   const {
     formValues,
@@ -46,14 +48,17 @@ const ShaFormTemplate = <T extends object>({
     initialValues,
     onSubmit,
     onSuccess,
+    validateForm: (formValues) => validationRules.every((rule) => rule(formValues)),
   });
+
+  const isValid = validationRules.every((rule) => rule(formValues));
 
   return (
     <ShaCard
       title={title}
       onSubmit={handleSubmit}
       onReset={resetFormValues}
-      isValid={!isSubmitAttempted || !error}
+      isValid={isValid}
       isLoading={isLoading}
     >
       <ShaInfoForm
@@ -68,7 +73,7 @@ const ShaFormTemplate = <T extends object>({
   );
 };
 
-export default ShaFormTemplate;
+export default EnhancedFormTemplate;
 
 /**
  * 사용 예시

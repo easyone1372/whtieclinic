@@ -1,7 +1,7 @@
+'use client';
+
 import ShaFormTemplate from '@/components/organism/Template/ShaFormTemplate';
-import { CustomerFormValues, ShaCustomerFormData } from '@/data/ShaCustomerFormData';
 import { OrderFormValues, ShaOrderFormData } from '@/data/ShaOrderFormData';
-import { customerApi } from '@/service/Customer/Customer';
 import { orderApi } from '@/service/Order/Order';
 
 const Page = () => {
@@ -20,6 +20,7 @@ const Page = () => {
         }}
         onSubmit={orderApi.register}
         formDataGenerator={ShaOrderFormData}
+        
       />
     </div>
   );

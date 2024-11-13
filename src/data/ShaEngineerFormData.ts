@@ -18,7 +18,7 @@ export type EngineerFormValues = {
   engineerRemark?: string; // remark -> engineerRemark
   engineerCommission: number; // commissionRate -> engineerCommission
   engineerPayday?: string; // paymentDay -> engineerPayday
-  engineerHoliday?: string; // regularHolidays -> engineerHoliday
+  engineerHoliday?: string[]; // regularHolidays -> engineerHoliday
   engineerDayoff?: string; // specialHolidays -> engineerDayoff
 };
 
@@ -38,10 +38,8 @@ export const ShaEngineerFormData = (
           prevprops: {
             placeholder: '기사성함',
             required: true,
-            error: '기사성함을 입력해주세요',
             value: formValues.engineerName,
             onChange: (value: string) => handleFieldChange('engineerName', value),
-            showError: isSubmitAttempted,
           } as ShaInputProps,
         },
       ],
@@ -59,10 +57,8 @@ export const ShaEngineerFormData = (
             placeholder: '연락처',
             type: 'tel',
             required: true,
-            error: '연락처를 입력해주세요',
             value: formValues.engineerPhone,
             onChange: (value: string) => handleFieldChange('engineerPhone', value),
-            showError: isSubmitAttempted,
           } as ShaInputProps,
         },
       ],
@@ -79,10 +75,8 @@ export const ShaEngineerFormData = (
           prevprops: {
             placeholder: '거주지역',
             required: true,
-            error: '거주지역을 입력해주세요',
             value: formValues.engineerAddr,
             onChange: (value: string) => handleFieldChange('engineerAddr', value),
-            showError: isSubmitAttempted,
           } as ShaInputProps,
         },
       ],
@@ -98,6 +92,7 @@ export const ShaEngineerFormData = (
           formfieldtype: 'ShaLabelCheckBox' as ShaFormFieldType,
           prevprops: {
             selectedItems: formValues.skills,
+
             onItemsChange: (newItems: string[]) => handleFieldChange('skills', newItems),
           } as ShaLabelCheckBoxProps,
         },
@@ -136,13 +131,10 @@ export const ShaEngineerFormData = (
             width: 'medium',
             options: Percentage.map((payment) => ({
               value: payment,
-              text: payment,
+              text: `${payment}%`,
             })),
             value: formValues.engineerCommission.toString(),
-            required: true,
-            error: '수당률을 선택해주세요',
             onChange: (value: string) => handleFieldChange('engineerCommission', Number(value)),
-            showError: isSubmitAttempted,
           } as ShaDropdownProps,
         },
       ],
@@ -165,9 +157,7 @@ export const ShaEngineerFormData = (
             })),
             value: formValues.engineerPayday,
             required: true,
-            error: '급여요일을 선택해주세요',
             onChange: (value: string) => handleFieldChange('engineerPayday', value),
-            showError: isSubmitAttempted,
           } as ShaDropdownProps,
         },
       ],
@@ -182,9 +172,9 @@ export const ShaEngineerFormData = (
         {
           formfieldtype: 'ShaHolidayRegistration' as ShaFormFieldType,
           prevprops: {
-            registeredHolidays: formValues.engineerHoliday,
-            onHolidaysChange: (dates: string) => {
-              handleFieldChange('engineerHoliday', dates);
+            registeredHolidays: formValues.engineerHoliday, // formValues에서 engineerHoliday가 string[] 형태로 넘어온다
+            onHolidaysChange: (dates: string[]) => {
+              handleFieldChange('engineerHoliday', dates); // 새로운 날짜 배열을 업데이트
             },
           } as ShaHolidayRegistrationProps,
         },
@@ -200,10 +190,8 @@ export const ShaEngineerFormData = (
         {
           formfieldtype: 'ShaHoliday' as ShaFormFieldType,
           prevprops: {
-            selectedDays: formValues.engineerHoliday ? [formValues.engineerHoliday] : [],
-            onDaysChange: (newDays: string[]) => {
-              handleFieldChange('engineerDayoff', newDays[0] || null);
-            },
+            selectedDays: formValues.engineerDayoff,
+            onDaysChange: (newDays: string) => handleFieldChange('engineerDayoff', newDays),
           } as ShaHolidayProps,
         },
       ],

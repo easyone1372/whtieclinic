@@ -1,4 +1,5 @@
-// service/FormSubmit/FormSubmit.ts
+'use client';
+
 import { useState } from 'react';
 
 type UseFormSubmitProps<T> = {

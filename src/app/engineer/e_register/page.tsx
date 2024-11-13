@@ -17,11 +17,20 @@ const Page = () => {
         engineerRemark: '',
         engineerCommission: 50,
         engineerPayday: '',
-        engineerHoliday: '',
+        engineerHoliday: [],
         engineerDayoff: '',
       }}
       onSubmit={engineerApi.register}
       formDataGenerator={ShaEngineerFormData}
+      validationRules={[
+        (formValues) => formValues.engineerName.trim() !== '',
+        (formValues) => formValues.engineerPhone.trim() !== '',
+        (formValues) => formValues.engineerAddr.trim() !== '',
+        (formValues) =>
+          typeof formValues.engineerCommission === 'number' &&
+          formValues.engineerCommission >= 0 &&
+          formValues.engineerCommission <= 100,
+      ]}
     />
   );
 };

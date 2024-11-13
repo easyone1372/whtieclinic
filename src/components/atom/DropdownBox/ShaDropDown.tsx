@@ -16,14 +16,11 @@ import { Document } from '@/constants/Document';
 import { Payment } from '@/constants/Payment';
 import { Percentage } from '@/constants/Percentage';
 
-
-
 type AllowedObjects =
   | (typeof Days)[number]
   | (typeof Document)[number]
   | (typeof Payment)[number]
-  | (typeof Percentage)[number]
-
+  | (typeof Percentage)[number];
 
 type widthOptions = 'small' | 'medium' | 'large';
 
