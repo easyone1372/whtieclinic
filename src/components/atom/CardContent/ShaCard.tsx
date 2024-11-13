@@ -24,7 +24,7 @@ const ShaCard = ({
 }: FormCardProps) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen py-12 px-4">
-      <Card className="w-full max-w-5xl shadow-sm">
+      <Card className="w-fit max-w-5xl shadow-sm">
         <CardHeader className="border-b">
           <CardTitle className="text-2xl font-semibold">{title}</CardTitle>
         </CardHeader>

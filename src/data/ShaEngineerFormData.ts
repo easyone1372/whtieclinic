@@ -182,9 +182,9 @@ export const ShaEngineerFormData = (
         {
           formfieldtype: 'ShaHolidayRegistration' as ShaFormFieldType,
           prevprops: {
-            registeredHolidays: formValues.engineerDayoff || '',
+            registeredHolidays: formValues.engineerHoliday,
             onHolidaysChange: (dates: string) => {
-              handleFieldChange('engineerDayoff', dates);
+              handleFieldChange('engineerHoliday', dates);
             },
           } as ShaHolidayRegistrationProps,
         },
@@ -202,7 +202,7 @@ export const ShaEngineerFormData = (
           prevprops: {
             selectedDays: formValues.engineerHoliday ? [formValues.engineerHoliday] : [],
             onDaysChange: (newDays: string[]) => {
-              handleFieldChange('engineerHoliday', newDays[0] || null);
+              handleFieldChange('engineerDayoff', newDays[0] || null);
             },
           } as ShaHolidayProps,
         },

@@ -35,6 +35,10 @@ const ShaHoliday: React.FC<ShaHolidayProps> = ({ selectedDays, onDaysChange }) =
       setSelectedDay('');
     }
   };
+  const handleRemoveDay = (dayToRemove: string) => {
+    const newDays = selectedDays.filter((day) => day !== dayToRemove);
+    onDaysChange(newDays);
+  };
 
   return (
     <div className="flex">
@@ -52,11 +56,21 @@ const ShaHoliday: React.FC<ShaHolidayProps> = ({ selectedDays, onDaysChange }) =
         </div>
       </div>
 
-      <ScrollArea className="max-h-20 w-20 rounded-md border ">
+      <ScrollArea className="max-h-20 w-30 rounded-md border ">
         <div className="p-4">
           {selectedDays.map((day, index) => (
-            <div key={index} className="text-sm">
-              {day}
+            <div key={index} className="flex items-center text-sm">
+              <div key={index} className="text-sm">
+                {day}
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="ml-2 h-6 px-2"
+                onClick={() => handleRemoveDay(day)}
+              >
+                ×
+              </Button>
             </div>
           ))}
         </div>

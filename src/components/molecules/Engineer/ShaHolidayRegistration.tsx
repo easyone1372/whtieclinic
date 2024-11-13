@@ -5,6 +5,7 @@ import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import ShadcnDatePicker from '@/components/atom/Calendar/ShaDatePicker';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export type ShaHolidayRegistrationProps = {
   registeredHolidays: string; // 쉼표로 구분된 날짜 문자열
@@ -52,7 +53,7 @@ const ShaHolidayRegistration: React.FC<ShaHolidayRegistrationProps> = ({
           등록
         </Button>
       </div>
-      <div className="space-y-1">
+      <ScrollArea className="max-h-20 w-30 rounded-md border ">
         {dates.map((date, index) => (
           <div key={index} className="flex items-center text-sm">
             <span>{format(new Date(date), 'yyyy년 MM월 dd일', { locale: ko })}</span>
@@ -66,7 +67,7 @@ const ShaHolidayRegistration: React.FC<ShaHolidayRegistrationProps> = ({
             </Button>
           </div>
         ))}
-      </div>
+      </ScrollArea>
     </div>
   );
 };

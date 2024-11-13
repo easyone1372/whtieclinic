@@ -7,31 +7,6 @@ import { orderApi } from '@/service/Order/Order';
 const Page = () => {
   return (
     <div>
-      <ShaFormTemplate<CustomerFormValues>
-        title="고객 정보 등록"
-        initialValues={{
-          customerName: '',
-          customerPhone: '',
-          customerAddr: '',
-          customerRemark: '',
-          orderDate: '',
-          orderCategory: '',
-          orderProduct: '',
-          orderTotalAmount: 0,
-          orderCount: 1,
-          orderIsDiscount: false,
-          orderDiscountRatio: 0,
-          orderRemark: '',
-          orderDeposit: 0,
-          depositPayed: false,
-          orderPayment: '',
-          orderRecieptDocs: '',
-          recieptDocsIssued: false,
-        }}
-        onSubmit={customerApi.register}
-        formDataGenerator={ShaCustomerFormData}
-      />
-
       <ShaFormTemplate<OrderFormValues>
         title="세척 정보 등록"
         initialValues={{
