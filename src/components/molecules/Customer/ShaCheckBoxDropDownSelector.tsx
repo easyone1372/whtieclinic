@@ -1,10 +1,11 @@
 'use client';
 
 import React from 'react';
-import { productCategories } from '@/constants/productCategory';
+
 import ShaOneCheckbox, { ShaOneCheckboxProps } from '../checkbox/ShaOneCheckBox';
 import ShaDropdown, { ShaDropdownProps } from '@/components/atom/DropdownBox/ShaDropDown';
 import ShaTextarea from '@/components/atom/Input/ShaTextArea';
+import { productCategories } from '@/data/ProductCategory';
 
 export type ShaCheckboxDropdownSelectorProps = {
   onecheckboxprops: ShaOneCheckboxProps;
@@ -60,7 +61,6 @@ const ShaCheckboxDropdownSelector = ({
             value={selectedDropdownValue}
             options={dropdownOptions}
             width="medium"
-            
             onChange={handleDropdownChange}
           />
         )}
