@@ -79,9 +79,9 @@ const SchShow = () => {
         <Card className="w-full Shadow-sm">
           <CardHeader className="border-b w-full flex flex-row justify-between">
             <CardTitle className="text-2xl font-semibold">{selectedEngineerName}</CardTitle>
-            {/* <div>
+            <div>
               <ShaButton onClick={handleEditMode} size="sm" text="수정" />
-            </div> */}
+            </div>
           </CardHeader>
           <CardContent>
             <SchTimeLine

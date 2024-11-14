@@ -22,7 +22,7 @@ export const showSchArray: Array<
 //스케쥴 header 지정
 //특이사항을 합쳐서 비고로 만들어야함
 export const schHeaders = {
-  timeSlot: 'timeSlot',
+  timeSlot: '시간대',
   customerName: '고객명',
   customerPhone: '전화번호',
   customerAddr: '주소',

@@ -1,6 +1,6 @@
 import { ScheduleShowApi, ScheduleShowResponse } from '@/service/Schedule/ScheduleShow';
 import { Engineer } from '../types/type';
-import { SchShowDisplay, TimeSlot } from './ShowSchTypes';
+import { SchShowDisplay, TimeSlot, timeSlots } from './ShowSchTypes';
 
 // 프론트->db로 보낼때 string으로 변환 뒤 전송
 export function formatDateAndTimeSlot(date: Date, timeSlot: TimeSlot): string {
@@ -98,4 +98,19 @@ export const getOrdersByEngineerAndDate = async (
     console.error('Error fetching orders:', error);
     return [];
   }
+};
+
+// scheduleData를 시간대별로 그룹화하는 함수
+export const groupScheduleByTimeSlot = (scheduleData: SchShowDisplay[]) => {
+  const grouped: Record<string, SchShowDisplay[]> = {};
+
+  scheduleData.forEach((order) => {
+    const timeSlot = order.orderTimeslot;
+    if (!grouped[timeSlot]) {
+      grouped[timeSlot] = [];
+    }
+    grouped[timeSlot].push(order);
+  });
+
+  return grouped;
 };
