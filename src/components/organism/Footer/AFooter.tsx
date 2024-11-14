@@ -1,7 +1,8 @@
 import React from 'react';
 
 import PaymentDetails, { PaymentProps } from '@/components/molecules/FooterDisplay/PaymentDetailes';
-import DataDisplay from '@/components/molecules/FooterDisplay/DataDisplay';
+import DataDisplay from '@/components/molecules/DataDisplay';
+
 
 // 
 type AFooterProps<T> = PaymentProps & {
@@ -25,7 +26,7 @@ const AFooter = <T extends Record<string, any>>({
 
       {/* 데이터 표시 컴포넌트 */}
       <div className="grid grid-cols-2 gap-y-2 gap-x-4">
-        <DataDisplay data={data} labelMap={labelMap} />
+        <DataDisplay  data={data} labelMap={labelMap} />
 
         {/* 지급 정보 표시 컴포넌트 */}
         <PaymentDetails
