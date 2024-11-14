@@ -38,17 +38,18 @@ export const getEngineersByDate = async (date: Date): Promise<Engineer[]> => {
 
     // 서버 응답 데이터를 Engineer 타입으로 매핑
     const engineers: Engineer[] = data.map((item: any) => ({
-      engineerId: item.engineer_id,
-      engineerName: item.engineer_name,
-      engineerPhone: item.engineer_phone,
-      engineerAddr: item.engineer_addr,
-      engineerRemark: item.engineer_remark,
-      engineerCommission: item.engineer_commission_rate,
-      engineerDayoff: item.engineer_dayoff,
-      engineerHoliday: item.engineer_holiday,
-      engineerPayday: item.engineer_payday,
-      engineerSkills: item.engineer_skills,
+      engineerId: item.engineerId,
+      engineerName: item.engineerName,
+      engineerPhone: item.engineerPhone,
+      engineerAddr: item.engineerAddr,
+      engineerRemark: item.engineerRemark,
+      engineerCommission: item.engineerCommissionRate, // 이름이 다르므로 주의
+      engineerDayoff: item.engineerDayoff,
+      engineerHoliday: item.engineerHoliday,
+      engineerPayday: item.engineerPayday,
+      engineerSkills: item.engineerSkills,
     }));
+
     // 데이터가 배열 형태인지 확인하고 필터링
     // const engineers: Engineer[] = Array.isArray(data) ? data : data.engineers || [];///
     console.log('Engineers data:', engineers);
@@ -67,7 +68,7 @@ export const getEngineersByDate = async (date: Date): Promise<Engineer[]> => {
           )
         : false;
 
-      console.log('isHoliday:', isHoliday, 'isRegularHoliday:', isRegularHoliday);
+      // console.log('isHoliday:', isHoliday, 'isRegularHoliday:', isRegularHoliday);
       // 해당 날짜에 휴무일이 아닌 기사만 반환
       return !isHoliday && !isRegularHoliday;
     });

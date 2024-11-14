@@ -1,6 +1,6 @@
 import ShaDateSchedulePicker from '@/components/molecules/ADateTimePicker/ShaDateSchedulePicker';
 import SchEngList from './SchEngList';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import ShaButton from '@/components/atom/Button/ShaButton';
 import SchTimeLine from './SchTimeLine';
 import { SchShowDisplay } from '@/constants/LJW/ShowSchTypes';
@@ -19,6 +19,29 @@ const SchShow = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const router = useRouter();
+
+  // 날짜 변경 핸들러 메모이제이션
+  const handleDateChange = useCallback((date: Date | null) => {
+    setSelectedDate(date || new Date());
+  }, []);
+
+  // 기사 선택 핸들러 메모이제이션
+  const handleEngSelect = useCallback((engineer_id: number) => {
+    setSelectEng(engineer_id);
+  }, []);
+
+  // 수정 모드 토글 핸들러 메모이제이션
+  const handleEditMode = useCallback(() => {
+    setIsEditing((prev) => !prev);
+  }, []);
+
+  // 선택된 기사 이름 메모이제이션
+  const selectedEngineerName = useMemo(
+    () =>
+      engList.find((engineer) => engineer.engineerId === selectEng)?.engineerName ||
+      '기사를 선택하세요',
+    [engList, selectEng]
+  );
 
   // 날짜 변경 시, 해당 날짜에 맞는 기사 리스트를 가져옴
   useEffect(() => {
@@ -46,50 +69,37 @@ const SchShow = () => {
     fetchEngineerData();
   }, [selectEng, selectedDate]);
 
-  //우상단 수정버튼 클릭시 작동 함수
-  const handleEditMode = () => {
-    setIsEditing(!isEditing);
-  };
-
-  //row의 수정버튼 클릭시 페이지 전환+데이터 전달 함수
-  const handleRowEdit = (timeSlot: string) => {
-    const order = scheduleData.find((order) => order.orderTimeslot === timeSlot);
-
-    let queryString;
-
-    // 해당 시간대에 스케줄 데이터가 있는 경우
-    if (order) {
-      queryString = new URLSearchParams({
-        selectDate: order.orderDate.toISOString(),
-        selectTime: order.orderTimeslot.toString(),
-        selectCustomerId: order.customerId.toString(),
-        selectOrderid: order.orderId.toString(),
-        engineerId: order.engineerId.toString(),
-      });
-    } else {
-      // 데이터가 없는 경우 기본 정보만으로 쿼리 파라미터 생성
-      queryString = new URLSearchParams({
+  const handleRowEdit = useCallback(
+    (timeSlot: string) => {
+      const order = scheduleData?.find((order) => order.orderTimeslot === timeSlot);
+      let queryParams: Record<string, string> = {
         selectDate: selectedDate.toISOString(),
         selectTime: timeSlot,
         engineerId: selectEng?.toString() ?? '',
-      });
-    }
+      };
 
-    router.push(`/customer/c_modify?${queryString}`);
-  };
-  const handleDateChange = (date: Date | null) => {
-    setSelectedDate(date || new Date());
-  };
+      if (order) {
+        queryParams = {
+          selectDate: order.orderDate.toISOString(),
+          selectTime: order.orderTimeslot.toString(),
+          selectCustomerId: order.customerId.toString(),
+          selectOrderid: order.orderId.toString(),
+          engineerId: order.engineerId.toString(),
+        };
+      }
 
-  const selectedEngineerName =
-    engList.find((engineer) => engineer.engineerId === selectEng)?.engineerName ||
-    '기사를 선택하세요';
+      // console.log('queryString:', queryParams);
+      const queryString = new URLSearchParams(queryParams);
+      router.push(`/customer/c_modify?${queryString}`);
+    },
+    [scheduleData, selectedDate, selectEng, router]
+  );
 
   return (
     <div className="flex flex-row items-center justify-center min-h-screen py-12 px-4 gap-12">
       <div className="space-y-4">
         <ShaDateSchedulePicker value={selectedDate} onChange={handleDateChange} />
-        <SchEngList engineerList={engList} onClick={(engineer_id) => setSelectEng(engineer_id)} />
+        <SchEngList engineerList={engList} onClick={handleEngSelect} />
       </div>
       <div className="min-w-[1250px]">
         <Card className="w-full Shadow-sm">

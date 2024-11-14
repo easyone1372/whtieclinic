@@ -19,7 +19,7 @@ const ATableBody = <T extends { [key: string]: any }>({
   return (
     <TableBody>
       {data.map((row, rowIndex) => (
-        <TableRow key={rowIndex} className="h-[px]">
+        <TableRow key={rowIndex} className="h-[50px]">
           {columns.map((column, colIndex) => (
             <TableCell key={colIndex} className="text-center">
               {/* 'receiptDocsIssued' 컬럼일 때만 체크박스로 표시 */}

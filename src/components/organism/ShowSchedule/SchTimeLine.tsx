@@ -7,23 +7,23 @@ import {
   SchTimeLineProps,
   timeSlots,
 } from '@/constants/LJW/ShowSchTypes';
+import { useMemo } from 'react';
 
 //카드 내부에 들어갈 데이터테이블
 const SchTimeLine = ({ scheduleData, onEditRow, isEditing, selectedDate }: SchTimeLineProps) => {
-  /// TimeSlot 기반의 데이터 구조로 변환
-  const transformDataForTable = () => {
-    return timeSlots.map((timeSlot) => {
-      // 해당 시간대의 주문 찾기
-      const order = scheduleData.find((order) => order.orderTimeslot === timeSlot);
+  // 테이블 데이터 메모이제이션
+  const tableData = useMemo(() => {
+    // 스케줄 데이터를 Map으로 변환하여 검색 성능 향상
+    const orderMap = new Map(scheduleData.map((order) => [order.orderTimeslot, order]));
 
-      // 기본 행 데이터 구조 생성
-      const baseRow = showSchArray.reduce(
-        (acc, key) => ({
-          ...acc,
-          [key]: '',
-        }),
-        { timeSlot } as SchTableRow
-      );
+    return timeSlots.map((timeSlot) => {
+      const order = orderMap.get(timeSlot);
+
+      // 기본 행 데이터 생성
+      const baseRow = {
+        timeSlot,
+        ...Object.fromEntries(showSchArray.map((key) => [key, ''])),
+      } as SchTableRow;
 
       // 주문이 있으면 데이터 채우기
       if (order) {
@@ -34,23 +34,17 @@ const SchTimeLine = ({ scheduleData, onEditRow, isEditing, selectedDate }: SchTi
 
       return baseRow;
     });
-  };
-  const handleEditRow = (row: SchTableRow) => {
-    const order = scheduleData.find((order) => order.orderTimeslot === row.timeSlot);
-    if (order) {
-      // onEditOrder(order);
-      // console.log('수정 버튼:', order, 'SchTime isEditing:', isEditing);
-    }
-  };
-  const tableColumns: SchTableColumn[] = ['timeSlot', ...showSchArray];
+  }, [scheduleData]);
+
+  const tableColumns = useMemo<SchTableColumn[]>(() => ['timeSlot', ...showSchArray], []);
 
   return (
     <ATable
       headers={schHeaders}
-      data={transformDataForTable()}
+      data={tableData}
       columns={tableColumns}
       isEditing={isEditing}
-      onEditRow={handleEditRow}
+      onEditRow={(row) => onEditRow(row.timeSlot)}
     />
   );
 };
