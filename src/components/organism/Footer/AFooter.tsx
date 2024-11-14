@@ -1,7 +1,7 @@
 import React from 'react';
 
 import PaymentDetails, { PaymentProps } from '@/components/molecules/FooterDisplay/PaymentDetailes';
-import DataDisplay from '@/components/molecules/DataDisplay';
+import DataDisplay from '@/components/molecules/FooterDisplay/DataDisplay';
 
 
 // 

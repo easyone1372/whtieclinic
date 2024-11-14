@@ -5,7 +5,7 @@ import api from '@/utils/axios';
 // 엔지니어 목록을 가져오는 함수
 export const fetchEngineers = async (): Promise<Engineer[]> => {
   try {
-    const response = await api.get('/api'); // api 수정해야됨
+    const response = await api.get('/engineer/searchAllEngineer'); // api 수정해야됨
     return response.data;
   } catch (error) {
     console.error('Error fetching engineers:', error);
