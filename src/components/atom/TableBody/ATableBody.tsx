@@ -22,8 +22,8 @@ const ATableBody = <T extends { [key: string]: any }>({
         <TableRow key={rowIndex} className="h-[px]">
           {columns.map((column, colIndex) => (
             <TableCell key={colIndex} className="text-center">
-              {/* 'reciept_docs_issued' 컬럼일 때만 체크박스로 표시 */}
-              {column === 'reciept_docs_issued' ? (
+              {/* 'receiptDocsIssued' 컬럼일 때만 체크박스로 표시 */}
+              {column === 'receiptDocsIssued' ? (
                 <ShaCheckbox
                   isChecked={row[column] === 'true'}
                   textprops={{ text: '' }} // 체크박스 텍스트는 빈 값으로 설정
