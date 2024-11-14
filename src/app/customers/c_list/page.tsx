@@ -1,10 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import api from '@/utils/axios'; 
+import api from '@/utils/axios';
 import FilterTable from '@/components/organism/FilterTable/FiterTable';
 
-// 회원관리 리스트보기 
+
+// 회원관리 리스트보기
 type CustomerListInfo = {
   orderDate: string;
   customerName: string;
@@ -16,7 +17,7 @@ type CustomerListInfo = {
   orderPayment: string;
   orderReceiptDocs: string;
   receiptDocsIssued: boolean;
-};  
+};
 
 // 테이블 헤더 설정
 const headers = {
@@ -28,7 +29,7 @@ const headers = {
   engineerName: '담당기사님',
   orderProduct: '청소품목',
   orderPayment: '결제방식',
-  orderReceiptDocs: '증빙서류',
+  orderRecieptDocs: '증빙서류',
   receiptDocsIssued: '영수증 발행여부',
 };
 
@@ -52,8 +53,9 @@ const Page = () => {
   // 고객 데이터를 API에서 가져오는 함수
   const fetchCustomerData = async () => {
     try {
-      const response = await api.get<CustomerListInfo[]>('/api'); // API 수정해야됨
+      const response = await api.get<CustomerListInfo[]>('/api/order-info/getAllOrderDetails'); // API 수정해야됨
       setCustomerData(response.data); // 받아온 데이터로 상태 업데이트
+      console.log(response.data); // 데이터 확인용 콘솔 출력
     } catch (error) {
       console.error('고객 데이터 로드 에러:', error);
     }

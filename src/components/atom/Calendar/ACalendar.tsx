@@ -1,5 +1,3 @@
-'use client';
-
 import React, { useState } from 'react';
 import { Calendar, momentLocalizer, ToolbarProps, Event } from 'react-big-calendar';
 import moment from 'moment';
@@ -26,18 +24,9 @@ interface CustomToolbarProps extends ToolbarProps {
 }
 
 const CustomToolbar: React.FC<CustomToolbarProps> = ({ date, onNavigate }) => {
-  const goToBack = () => {
-    onNavigate('PREV');
-  };
-
-  const goToNext = () => {
-    onNavigate('NEXT');
-  };
-
-  const goToCurrent = () => {
-    onNavigate('TODAY');
-  };
-
+  const goToBack = () => onNavigate('PREV');
+  const goToNext = () => onNavigate('NEXT');
+  const goToCurrent = () => onNavigate('TODAY');
   const formattedLabel = moment(date).format('YYYY년 M월');
 
   return (
@@ -73,20 +62,31 @@ const CustomToolbar: React.FC<CustomToolbarProps> = ({ date, onNavigate }) => {
 interface CustomCalendarProps {
   events?: CalendarEventType[];
   onEventSelect?: (event: CalendarEventType) => void;
+  onSelectSlot?: (slotInfo: { start: Date }) => void;
+  selectable?: boolean;
 }
 
-const ACalendar: React.FC<CustomCalendarProps> = ({ events = [], onEventSelect }) => {
+const ACalendar: React.FC<CustomCalendarProps> = ({ events = [], onEventSelect, onSelectSlot }) => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const handleSelectEvent = (event: CalendarEventType) => {
-    if (onEventSelect) {
-      onEventSelect(event);
+    if (onEventSelect) onEventSelect(event);
+  };
+
+  const handleSelectSlot = (slotInfo: { start: Date }) => {
+    const selectedDate = moment(slotInfo.start);
+    const startOfMonth = selectedDate.clone().startOf('month');
+    const weekNumber = selectedDate.diff(startOfMonth, 'weeks') + 1;
+
+    // 출력 예시: "11월 2주차"
+    console.log(`${selectedDate.format('MM월')} ${weekNumber}주차`);
+
+    if (onSelectSlot) {
+      onSelectSlot(slotInfo);
     }
   };
 
-  const handleNavigate = (newDate: Date) => {
-    setCurrentDate(newDate);
-  };
+  const handleNavigate = (newDate: Date) => setCurrentDate(newDate);
 
   return (
     <Box
@@ -95,9 +95,7 @@ const ACalendar: React.FC<CustomCalendarProps> = ({ events = [], onEventSelect }
         width: '100%',
         margin: '0 auto',
         padding: '20px',
-        '@media (max-width: 1024px)': {
-          height: 'calc(100vh - 150px)',
-        },
+        '@media (max-width: 1024px)': { height: 'calc(100vh - 150px)' },
       }}
     >
       <Calendar<CalendarEventType>
@@ -105,15 +103,12 @@ const ACalendar: React.FC<CustomCalendarProps> = ({ events = [], onEventSelect }
         events={events}
         startAccessor="start"
         endAccessor="end"
-        style={{
-          height: '100%',
-          minHeight: '500px',
-        }}
+        style={{ height: '100%', minHeight: '500px' }}
         views={['month']}
-        components={{
-          toolbar: (toolbarProps) => <CustomToolbar {...toolbarProps} />,
-        }}
+        components={{ toolbar: (toolbarProps) => <CustomToolbar {...toolbarProps} /> }}
         onSelectEvent={handleSelectEvent}
+        onSelectSlot={handleSelectSlot} // onSelectSlot 연결
+        selectable // 셀을 클릭 가능하도록 설정
         date={currentDate}
         onNavigate={handleNavigate}
         messages={{
