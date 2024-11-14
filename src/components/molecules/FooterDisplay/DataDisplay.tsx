@@ -22,7 +22,11 @@ const DataDisplay = <T extends Record<string, any>>({
           {/* 데이터 값 표시: 배열이면 콤마로 연결하여 표시, 'commission' 키면 퍼센트 추가 */}
           <ShaText
             text={
-              key === 'commission' ? `${value}%` : Array.isArray(value) ? value.join(', ') : value
+              key === 'engineerCommissionRate'
+                ? `${value}%`
+                : Array.isArray(value)
+                  ? value.join(', ')
+                  : value
             }
             size="small"
           />
