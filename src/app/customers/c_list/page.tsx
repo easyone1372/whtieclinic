@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import api from '@/utils/axios'; 
+import api from '@/utils/axios';
 import FilterTable from '@/components/organism/FilterTable/FiterTable';
 
-// 회원관리 리스트보기 
+// 회원관리 리스트보기
 type CustomerListInfo = {
   orderDate: string;
   customerName: string;
@@ -16,7 +16,7 @@ type CustomerListInfo = {
   orderPayment: string;
   orderReceiptDocs: string;
   receiptDocsIssued: boolean;
-};  
+};
 
 // 테이블 헤더 설정
 const headers = {

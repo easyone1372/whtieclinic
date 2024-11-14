@@ -15,7 +15,19 @@ export const ScheduleShowApi = {
     engineerId: number;
     selectedDate: string;
   }): Promise<ScheduleShowResponse> => {
-    const response = await api.get<ScheduleShowResponse>('/schdule/show', { params });
+    const response = await api.get<ScheduleShowResponse>('/api/engineer/getAllEngineerSchedule', {
+      params,
+    });
     return response.data;
   },
+};
+
+export const fetchSchedule = async (): Promise<SchShowDisplay> => {
+  try {
+    const response = await api.get('/api/engineer/getAllEngineerSchedule');
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching engineers:', error);
+    throw error;
+  }
 };

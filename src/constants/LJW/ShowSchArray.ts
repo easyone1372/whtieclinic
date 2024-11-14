@@ -5,7 +5,7 @@ export const showSchArray: Array<
   | 'customerAddr'
   | 'orderProductDetail'
   | 'orderCount'
-  | 'orderTotalAmount' // 'orderTotalAmount' 오타 수정
+  | 'orderTotalAmount'
   | 'orderRemarks'
   | 'customerRemarks'
 > = [
@@ -14,7 +14,7 @@ export const showSchArray: Array<
   'customerAddr',
   'orderProductDetail',
   'orderCount',
-  'orderTotalAmount', // 'orderTotalAmount' 오타 수정
+  'orderTotalAmount',
   'orderRemarks',
   'customerRemarks',
 ];

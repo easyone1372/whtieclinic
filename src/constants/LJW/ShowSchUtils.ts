@@ -1,6 +1,8 @@
 import { ScheduleShowApi, ScheduleShowResponse } from '@/service/Schedule/ScheduleShow';
 import { Engineer } from '../types/type';
 import { SchShowDisplay, TimeSlot, timeSlots } from './ShowSchTypes';
+import { dummyEngineers, dummyScheduleDisplays } from './dummyAgain';
+import api from '@/utils/axios';
 
 // 프론트->db로 보낼때 string으로 변환 뒤 전송
 export function formatDateAndTimeSlot(date: Date, timeSlot: TimeSlot): string {
@@ -17,19 +19,41 @@ export function parseDateAndTimeSlot(dateTimeString: string): { date: Date; time
 
   // Date 객체 생성
   const date = new Date(`${dateString}T00:00:00Z`);
-
   return { date, timeSlot };
 }
+
+//
 
 //해당 날짜에 휴무일이 아닌 기사 찾는 함수
 export const getEngineersByDate = async (date: Date): Promise<Engineer[]> => {
   try {
     const selectedDayOfWeek = date.toLocaleString('ko-KR', { weekday: 'long' });
-    const response = await fetch('/api/engineers');
-    const data = await response.json();
+    console.log('selectedDayOfWeek:', selectedDayOfWeek);
 
-    const engineers: Engineer[] = Array.isArray(data) ? data : data.engineers || [];
+    // API 호출
+    const response = await api.get('/api/engineer/searchAllEngineer'); ///api/ 안붙여서 안된거였음
+    console.log('response:', response);
+    const data = await response.data;
+    console.log('API response:', data);
 
+    // 서버 응답 데이터를 Engineer 타입으로 매핑
+    const engineers: Engineer[] = data.map((item: any) => ({
+      engineerId: item.engineer_id,
+      engineerName: item.engineer_name,
+      engineerPhone: item.engineer_phone,
+      engineerAddr: item.engineer_addr,
+      engineerRemark: item.engineer_remark,
+      engineerCommission: item.engineer_commission_rate,
+      engineerDayoff: item.engineer_dayoff,
+      engineerHoliday: item.engineer_holiday,
+      engineerPayday: item.engineer_payday,
+      engineerSkills: item.engineer_skills,
+    }));
+    // 데이터가 배열 형태인지 확인하고 필터링
+    // const engineers: Engineer[] = Array.isArray(data) ? data : data.engineers || [];///
+    console.log('Engineers data:', engineers);
+
+    // 해당 날짜에 휴무일이 아닌 기사만 반환
     return engineers.filter((engineer) => {
       // 주중 정규 휴무일 체크 (쉼표로 구분된 경우를 대비)
       const isRegularHoliday = engineer.engineerDayoff
@@ -38,11 +62,12 @@ export const getEngineersByDate = async (date: Date): Promise<Engineer[]> => {
 
       // 비정규 휴무일 체크 (쉼표로 구분된 날짜들)
       const isHoliday = engineer.engineerHoliday
-        ? engineer.engineerHoliday
-            .split(',')
-            .some((holiday) => new Date(holiday.trim()).toDateString() === date.toDateString())
+        ? engineer.engineerHoliday.some(
+            (holiday) => new Date(holiday).toDateString() === date.toDateString()
+          )
         : false;
 
+      console.log('isHoliday:', isHoliday, 'isRegularHoliday:', isRegularHoliday);
       // 해당 날짜에 휴무일이 아닌 기사만 반환
       return !isHoliday && !isRegularHoliday;
     });
@@ -64,19 +89,28 @@ export const getOrdersByEngineerAndDate = async (
       selectedDate: selectedDate.toISOString(),
     });
 
+    console.log('getOrdersByEngineerAndDate response:', response);
+    console.log('getOrdersByEngineerAndDate response.success:', response.success);
+    console.log('getOrdersByEngineerAndDate response.data:', response.data);
+
     if (response.success && response.data) {
       // DB에서 받은 데이터를 변환하여 SchShowDisplay 배열로 반환
       const mappedData: SchShowDisplay[] = response.data.map((item: any) => {
-        // orderDate를 date와 timeSlot으로 분리
-        const { date, timeSlot } = parseDateAndTimeSlot(item.order_date);
+        // orderDate를 date와 timeSlot으로 분리하는 코드
+        // const { date, timeSlot } = parseDateAndTimeSlot(item.order_date);
+
+        //!!1115!!// 근데 db에서 order_timeslot이 추가될 경우
+        //-> formatDateAndTimeSlot, parseDateAndTimeSlot 함수, 98, 106,107번 코드 삭제해야함.
 
         // 변환된 데이터를 SchShowDisplay 형식으로 반환
         return {
           orderId: item.order_id,
           engineerId: item.engineer_id,
           customerId: item.customer_id,
-          orderDate: date,
-          orderTimeslot: timeSlot,
+          // orderDate: date,
+          // orderTimeslot: timeSlot,
+          orderDate: item.order_date,
+          orderTimeslot: item.order_timeslot,
           customerName: item.customer_name,
           customerAddr: item.customer_addr,
           customerPhone: item.customer_phone,
@@ -89,6 +123,7 @@ export const getOrdersByEngineerAndDate = async (
         };
       });
 
+      console.log('맵핑한 데이터: ', mappedData);
       return mappedData;
     } else {
       console.error('Failed to fetch schedule data:', response.message);
@@ -100,17 +135,15 @@ export const getOrdersByEngineerAndDate = async (
   }
 };
 
-// scheduleData를 시간대별로 그룹화하는 함수
-export const groupScheduleByTimeSlot = (scheduleData: SchShowDisplay[]) => {
-  const grouped: Record<string, SchShowDisplay[]> = {};
-
-  scheduleData.forEach((order) => {
-    const timeSlot = order.orderTimeslot;
-    if (!grouped[timeSlot]) {
-      grouped[timeSlot] = [];
-    }
-    grouped[timeSlot].push(order);
-  });
-
-  return grouped;
+// 기사와 날짜에 맞는 스케줄을 반환하는 함수 (더미데이터) - 서버 연결 성공시 삭제
+export const getOrdersByEngineerAndDate2 = async (
+  engineerId: number,
+  selectedDate: Date
+): Promise<SchShowDisplay[]> => {
+  // 선택된 날짜에 해당하는 스케줄 데이터 필터링
+  return dummyScheduleDisplays.filter(
+    (schedule) =>
+      schedule.engineerId === engineerId &&
+      schedule.orderDate.toDateString() === selectedDate.toDateString()
+  );
 };

@@ -11,6 +11,7 @@ const SchEngList = ({ engineerList, onClick }: SchEngListType) => {
               key={eng.engineerId}
               onClick={() => onClick(eng.engineerId)}
               className="cursor-pointer hover:bg-gray-100"
+              style={{ padding: '10px', borderBottom: '1px solid #ddd' }}
             >
               {eng.engineerName}
             </li>

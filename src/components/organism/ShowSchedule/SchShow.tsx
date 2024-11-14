@@ -25,6 +25,7 @@ const SchShow = () => {
     const fetchData = async () => {
       if (selectedDate) {
         const engineers = await getEngineersByDate(selectedDate);
+        console.log('SchShow Engineer 정보', engineers);
         setEngList(engineers);
         setSelectEng(null);
         setScheduleData([]);
@@ -51,17 +52,31 @@ const SchShow = () => {
   };
 
   //row의 수정버튼 클릭시 페이지 전환+데이터 전달 함수
-  const handleRowEdit = (order: SchShowDisplay) => {
-    const queryString = new URLSearchParams({
-      selectTime: order.orderDate.toISOString(),
-      selectCustomerId: order.customerId.toString(),
-      selectOrderid: order.orderId.toString(),
-      engineerId: order.engineerId.toString(),
-    });
+  const handleRowEdit = (timeSlot: string) => {
+    const order = scheduleData.find((order) => order.orderTimeslot === timeSlot);
+
+    let queryString;
+
+    // 해당 시간대에 스케줄 데이터가 있는 경우
+    if (order) {
+      queryString = new URLSearchParams({
+        selectDate: order.orderDate.toISOString(),
+        selectTime: order.orderTimeslot.toString(),
+        selectCustomerId: order.customerId.toString(),
+        selectOrderid: order.orderId.toString(),
+        engineerId: order.engineerId.toString(),
+      });
+    } else {
+      // 데이터가 없는 경우 기본 정보만으로 쿼리 파라미터 생성
+      queryString = new URLSearchParams({
+        selectDate: selectedDate.toISOString(),
+        selectTime: timeSlot,
+        engineerId: selectEng?.toString() ?? '',
+      });
+    }
 
     router.push(`/customer/c_modify?${queryString}`);
   };
-
   const handleDateChange = (date: Date | null) => {
     setSelectedDate(date || new Date());
   };
@@ -76,20 +91,18 @@ const SchShow = () => {
         <ShaDateSchedulePicker value={selectedDate} onChange={handleDateChange} />
         <SchEngList engineerList={engList} onClick={(engineer_id) => setSelectEng(engineer_id)} />
       </div>
-      <div className="min-w-[1200px]">
+      <div className="min-w-[1250px]">
         <Card className="w-full Shadow-sm">
           <CardHeader className="border-b w-full flex flex-row justify-between">
             <CardTitle className="text-2xl font-semibold">{selectedEngineerName}</CardTitle>
-            <div>
-              <ShaButton onClick={handleEditMode} size="sm" text="수정" />
-            </div>
+            <ShaButton onClick={handleEditMode} size="sm" text="수정" />
           </CardHeader>
           <CardContent>
             <SchTimeLine
               scheduleData={scheduleData}
               selectedDate={selectedDate}
+              onEditRow={handleRowEdit}
               isEditing={isEditing}
-              onEditOrder={handleRowEdit}
             />
           </CardContent>
         </Card>

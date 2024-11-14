@@ -36,7 +36,7 @@ export type SchShowDisplay = {
 //datatable 기본 props
 export type SchTimeLineProps = {
   scheduleData: SchShowDisplay[];
-  onEditOrder: (order: SchShowDisplay) => void;
+  onEditRow: (timeSlot: string) => void;
   isEditing: boolean;
   selectedDate: Date;
 };

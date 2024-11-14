@@ -6,20 +6,20 @@ import ShaButton from '../Button/ShaButton';
 type TableBodyProps<T> = {
   data: T[]; // 렌더링할 데이터 배열
   columns: (keyof T)[]; // 열에 해당하는 데이터 키 배열
-  isEditing?: false;
+  isEditing?: boolean;
   onEditRow?: (row: T) => void;
 };
 
 const ATableBody = <T extends { [key: string]: any }>({
   data,
   columns,
-  isEditing = false,
+  isEditing,
   onEditRow,
 }: TableBodyProps<T>) => {
   return (
     <TableBody>
       {data.map((row, rowIndex) => (
-        <TableRow key={rowIndex}>
+        <TableRow key={rowIndex} className="h-[px]">
           {columns.map((column, colIndex) => (
             <TableCell key={colIndex} className="text-center">
               {/* 'reciept_docs_issued' 컬럼일 때만 체크박스로 표시 */}

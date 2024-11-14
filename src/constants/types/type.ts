@@ -1,4 +1,3 @@
-
 export type Customer = {
   customerId: number;
   customerName: string;
@@ -15,9 +14,9 @@ export type Engineer = {
   engineerRemark?: string;
   engineerCommission: number;
   engineerDayoff?: string;
-  engineerHoliday?: string;
+  engineerHoliday?: string[]; //1114 배열로 받는거 같아서 [] 붙임.
   engineerPayday: string;
-  engineerSkills?: Skill[]
+  engineerSkills?: Skill[];
 };
 
 export type Order = {

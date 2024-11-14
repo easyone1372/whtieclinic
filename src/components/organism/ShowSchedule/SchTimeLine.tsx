@@ -9,7 +9,7 @@ import {
 } from '@/constants/LJW/ShowSchTypes';
 
 //카드 내부에 들어갈 데이터테이블
-const SchTimeLine = ({ scheduleData, onEditOrder, isEditing, selectedDate }: SchTimeLineProps) => {
+const SchTimeLine = ({ scheduleData, onEditRow, isEditing, selectedDate }: SchTimeLineProps) => {
   /// TimeSlot 기반의 데이터 구조로 변환
   const transformDataForTable = () => {
     return timeSlots.map((timeSlot) => {
@@ -35,26 +35,23 @@ const SchTimeLine = ({ scheduleData, onEditOrder, isEditing, selectedDate }: Sch
       return baseRow;
     });
   };
-
-  const tableColumns: SchTableColumn[] = ['timeSlot', ...showSchArray];
-
   const handleEditRow = (row: SchTableRow) => {
     const order = scheduleData.find((order) => order.orderTimeslot === row.timeSlot);
     if (order) {
-      onEditOrder(order);
+      // onEditOrder(order);
+      // console.log('수정 버튼:', order, 'SchTime isEditing:', isEditing);
     }
   };
+  const tableColumns: SchTableColumn[] = ['timeSlot', ...showSchArray];
 
   return (
-    <div>
-      <ATable
-        headers={schHeaders}
-        data={transformDataForTable()}
-        columns={tableColumns}
-        isEditing={isEditing}
-        onEditRow={handleEditRow}
-      />
-    </div>
+    <ATable
+      headers={schHeaders}
+      data={transformDataForTable()}
+      columns={tableColumns}
+      isEditing={isEditing}
+      onEditRow={handleEditRow}
+    />
   );
 };
 

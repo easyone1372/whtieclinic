@@ -29,7 +29,8 @@ const ATable = <T extends { [key: string]: any }>({
       )}
       <Table>
         <ATableHeader props={headers} isEditing={isEditing} /> {/* 헤더 정보 전달 */}
-        <ATableBody data={data} columns={columns} /> {/* 데이터와 열 배열 전달 */}
+        <ATableBody data={data} columns={columns} onEditRow={onEditRow} isEditing={isEditing} />
+        {/* 데이터와 열 배열 전달 */}
       </Table>
     </>
   );
