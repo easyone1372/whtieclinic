@@ -3,6 +3,7 @@
 import React from 'react';
 import ACard from '@/components/molecules/Card/Cards';
 import ShaFilter from '../Filter/ShaFilter';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 // 카드필터 타입정의 (제너릭화 시켜서 추상화시킴 )
 export type CardFilterProps<T> = {
@@ -35,7 +36,7 @@ const CardFilter = <T extends { [key: string]: any }>({
   return (
     <div className="flex flex-col min-h-0 flex-1">
       {/* 필터 입력 필드 */}
-      <div className="p-4 flex-shrink-0">
+      <div>
         <ShaFilter
           placeholder="이름, 주소 또는 전화번호로 검색"
           value={filter}
@@ -43,14 +44,13 @@ const CardFilter = <T extends { [key: string]: any }>({
         />
       </div>
 
-      {/* 필터링된 카드 리스트 */}
-      <div className="flex flex-col space-y-4 px-4 overflow-y-auto">
+      <div className="flex flex-col px-4 ">
         {filteredData.map((item, index) => (
           <ACard
             key={index}
-            name={item.name} // 이름
-            tel={item.phone_number} // 전화번호
-            address={item.address} // 주소
+            name={item.engineerName}
+            tel={item.engineerPhone}
+            address={item.engineerAddr}
             onClick={() => onItemClick(item)}
           />
         ))}

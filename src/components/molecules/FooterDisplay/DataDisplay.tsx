@@ -12,20 +12,22 @@ const DataDisplay = <T extends Record<string, any>>({
   labelMap = {},
 }: DataDisplayProps<T>) => (
   <>
-    {Object.entries(data).map(([key, value]) => (
-      <div key={key} className="flex gap-1">
-        {/* 데이터 키에 대한 레이블 (커스텀 레이블 또는 기본 키 사용) */}
-        <ShaText text={`${labelMap[key as keyof T] || key}:`} isBold size="small" />
+    {Object.entries(data)
+      .filter(([key]) => labelMap[key as keyof T]) // labelMap에 없는 키는 건너뛰기
+      .map(([key, value]) => (
+        <div key={key} className="flex gap-1">
+          {/* 데이터 키에 대한 레이블 (커스텀 레이블 또는 기본 키 사용) */}
+          <ShaText text={`${labelMap[key as keyof T] || key}:`} isBold size="small" />
 
-        {/* 데이터 값 표시: 배열이면 콤마로 연결하여 표시, 'commission' 키면 퍼센트 추가 */}
-        <ShaText
-          text={
-            key === 'commission' ? `${value}%` : Array.isArray(value) ? value.join(', ') : value
-          }
-          size="small"
-        />
-      </div>
-    ))}
+          {/* 데이터 값 표시: 배열이면 콤마로 연결하여 표시, 'commission' 키면 퍼센트 추가 */}
+          <ShaText
+            text={
+              key === 'commission' ? `${value}%` : Array.isArray(value) ? value.join(', ') : value
+            }
+            size="small"
+          />
+        </div>
+      ))}
   </>
 );
 

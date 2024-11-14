@@ -4,7 +4,6 @@ import * as React from 'react';
 import { User, Phone, Home } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { colors } from '@/styles/colors';
-import ACardContent from '@/components/atom/CardContent/ShaCardContent';
 import ShaCardContent from '@/components/atom/CardContent/ShaCardContent';
 
 type CardProps = {

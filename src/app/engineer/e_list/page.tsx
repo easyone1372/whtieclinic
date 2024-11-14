@@ -11,6 +11,7 @@ import {
   fetchEngineers,
   LABEL_MAP,
 } from '@/service/EngineerList/EngineerList';
+import ShaText from '@/components/atom/Text/ShaText';
 
 export type LabelMapType = typeof LABEL_MAP;
 
@@ -112,7 +113,9 @@ const Page = () => {
 
       {selectedData && (
         <div>
-          <h2>{selectedData.engineerName}님의 일정</h2>
+          <div className="pt-5 pl-5">
+            <ShaText text={`${selectedData.engineerName}님의 일정`} isBold size="large" />
+          </div>
           <div className="mb-3">
             <ACalendar
               events={events}

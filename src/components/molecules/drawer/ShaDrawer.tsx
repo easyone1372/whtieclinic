@@ -34,25 +34,21 @@ const ShaDrawer = <T extends { [key: string]: any }>({
   filter,
   onFilterChange,
   onItemClick,
-  drawerTitle = '기사님 목록', // 기본 타이틀
-  drawerDescription = '기사님을 클릭하세요.', // 기본 설명
+  drawerTitle = '기사님 목록',
+  drawerDescription = '기사님을 클릭하세요.',
   isOpen,
   setIsOpen,
 }: ShaDrawerProps<T>) => {
   return (
-    // Drawer 컴포넌트 - open과 onOpenChange 속성으로 열림 상태를 제어
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
-      <DrawerTrigger asChild>  
-        {/* drawer 작동 버튼  */}
+      <DrawerTrigger asChild>
         <ShaButton variant="outline" text="">
           <AlignJustify />
         </ShaButton>
       </DrawerTrigger>
 
-      {/* DrawerContent - 드로어의 주요 컨텐츠 */}
-      <DrawerContent className="w-[350px] h-full">
-        {/* 닫기 버튼 - 드로어의 오른쪽 상단 */}
-        <div className="flex justify-end p-2">
+      <DrawerContent className="w-[350px] h-screen">
+        <div className="flex justify-end">
           <DrawerClose asChild>
             <ShaButton variant="outline" text="" size="sm">
               <X />
@@ -60,30 +56,29 @@ const ShaDrawer = <T extends { [key: string]: any }>({
           </DrawerClose>
         </div>
 
-        {/* 드로어 헤더 */}
-        <div className="mx-auto w-full max-w-sm">
-          <DrawerHeader className=" ml-3 flex-col">
-            <DrawerTitle>{drawerTitle}</DrawerTitle> {/* 드로어 타이틀 */}
-            <DrawerDescription>{drawerDescription}</DrawerDescription> {/* 드로어 설명 */}
+        {/* Drawer 헤더 영역 */}
+        <div className="mx-auto w-full max-w-sm ">
+          <DrawerHeader className=" ml-2 flex-col">
+            <DrawerTitle>{drawerTitle}</DrawerTitle>
+            <DrawerDescription>{drawerDescription}</DrawerDescription>
           </DrawerHeader>
+        </div>
 
-          {/* CardFilter 컴포넌트 - 필터 기능이 있는 카드 목록 */}
-          <div>
-            <CardFilter
-              data={data} // 필터링할 데이터
-              filterKeys={filterKeys} // 필터링에 사용할 키 목록
-              filter={filter} // 현재 필터 상태
-              onFilterChange={onFilterChange} // 필터 상태 변경 함수
-              onItemClick={(item) => {
-                onItemClick(item); // 항목 클릭 시 부모로 전달
-                setIsOpen(false); // 항목 클릭 후 드로어 닫기
-              }}
-            />
-          </div>
+        {/* CardFilter 영역 - 스크롤 가능 영역 */}
+        <div className="overflow-y-auto h-[calc(100vh-200px)] ">
+          <CardFilter
+            data={data}
+            filterKeys={filterKeys}
+            filter={filter}
+            onFilterChange={onFilterChange}
+            onItemClick={(item) => {
+              onItemClick(item);
+              setIsOpen(false);
+            }}
+          />
         </div>
       </DrawerContent>
     </Drawer>
   );
 };
-
 export default ShaDrawer;
