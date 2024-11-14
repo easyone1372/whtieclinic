@@ -1,5 +1,7 @@
 //ShowSchTypes.ts
 
+import { showSchArray } from './ShowSchArray';
+
 //기사리스트 맵핑을 위한 타입지정
 export type schEngType = {
   engineerId: number;
@@ -31,6 +33,7 @@ export type SchShowDisplay = {
   customerRemarks?: string; //고객 특이사항
 };
 
+//datatable 기본 props
 export type SchTimeLineProps = {
   scheduleData: SchShowDisplay[];
   onEditOrder: (order: SchShowDisplay) => void;
@@ -38,6 +41,7 @@ export type SchTimeLineProps = {
   selectedDate: Date;
 };
 
+//시간대 설정 배열 - 드롭박스 등에 사용
 export const timeSlots = [
   '8시 이전',
   '08:00 ~ 09:00',
@@ -55,3 +59,10 @@ export const timeSlots = [
 ];
 
 export type TimeSlot = (typeof timeSlots)[number];
+
+//테이블 행을 위한 타입 정의
+export type SchTableRow = {
+  [K in (typeof showSchArray)[number] | 'timeSlot']: string;
+};
+
+export type SchTableColumn = keyof SchTableRow;
