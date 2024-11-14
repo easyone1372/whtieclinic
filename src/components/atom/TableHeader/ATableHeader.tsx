@@ -2,11 +2,12 @@ import { TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 // ATableHeaderProps 타입 정의
 type ATableHeaderProps = {
-  [key: string]: string; // 각 헤더의 텍스트 레이블
+  props: { [key: string]: string }; // 각 헤더의 텍스트 레이블
+  isEditing?: boolean;
 };
 
 // ATableHeader 컴포넌트 정의
-const ATableHeader = (props: ATableHeaderProps) => {
+const ATableHeader = ({ props, isEditing = false }: ATableHeaderProps) => {
   return (
     <TableHeader>
       <TableRow>
@@ -16,6 +17,7 @@ const ATableHeader = (props: ATableHeaderProps) => {
             {label} {/* 헤더 텍스트 표시 */}
           </TableHead>
         ))}
+        {isEditing && <TableHead className="text-center">수정</TableHead>}
       </TableRow>
     </TableHeader>
   );

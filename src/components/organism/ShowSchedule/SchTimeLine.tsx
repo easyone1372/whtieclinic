@@ -38,9 +38,22 @@ const SchTimeLine = ({ scheduleData, onEditOrder, isEditing, selectedDate }: Sch
 
   const tableColumns: SchTableColumn[] = ['timeSlot', ...showSchArray];
 
+  const handleEditRow = (row: SchTableRow) => {
+    const order = scheduleData.find((order) => order.orderTimeslot === row.timeSlot);
+    if (order) {
+      onEditOrder(order);
+    }
+  };
+
   return (
     <div>
-      <ATable headers={schHeaders} data={transformDataForTable()} columns={tableColumns} />
+      <ATable
+        headers={schHeaders}
+        data={transformDataForTable()}
+        columns={tableColumns}
+        isEditing={isEditing}
+        onEditRow={handleEditRow}
+      />
     </div>
   );
 };

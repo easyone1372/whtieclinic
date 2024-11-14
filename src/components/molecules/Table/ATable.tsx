@@ -8,6 +8,8 @@ export type ATableProps<T> = {
   data: T[]; // 테이블에 표시할 데이터
   columns: (keyof T)[]; // 열의 데이터 키 배열
   title?: string; // 선택적 테이블 제목
+  isEditing?: boolean; // 스케쥴테이블에서 수정 버튼 클릭시 반응
+  onEditRow?: (row: T) => void;
 };
 
 const ATable = <T extends { [key: string]: any }>({
@@ -15,6 +17,8 @@ const ATable = <T extends { [key: string]: any }>({
   data,
   columns,
   title = '',
+  isEditing = false,
+  onEditRow,
 }: ATableProps<T>) => {
   return (
     <>
@@ -24,7 +28,7 @@ const ATable = <T extends { [key: string]: any }>({
         </div>
       )}
       <Table>
-        <ATableHeader {...headers} /> {/* 헤더 정보 전달 */}
+        <ATableHeader props={headers} isEditing={isEditing} /> {/* 헤더 정보 전달 */}
         <ATableBody data={data} columns={columns} /> {/* 데이터와 열 배열 전달 */}
       </Table>
     </>
