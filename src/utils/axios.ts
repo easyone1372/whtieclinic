@@ -2,7 +2,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: '/',
   withCredentials: true, // CORS credentials 설정
   headers: {
     'Content-Type': 'application/json',
