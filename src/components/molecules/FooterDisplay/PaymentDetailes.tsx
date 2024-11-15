@@ -46,11 +46,7 @@ const PaymentDetails = ({
     {/* 지급 여부 체크박스 */}
     <div className="flex items-center gap-2">
       <ShaText text="지급여부:" isBold size="small" />
-      <ShaCheckbox
-        isChecked={isChecked}
-        onChange={onCheckboxChange}
-        textprops={{ text: '지급 완료' }}
-      />
+      <ShaCheckbox isChecked={isChecked} onChange={onCheckboxChange} />
     </div>
   </>
 );
