@@ -136,16 +136,3 @@ export const getOrdersByEngineerAndDate = async (
     return [];
   }
 };
-
-// 기사와 날짜에 맞는 스케줄을 반환하는 함수 (더미데이터) - 서버 연결 성공시 삭제
-export const getOrdersByEngineerAndDate2 = async (
-  engineerId: number,
-  selectedDate: Date
-): Promise<SchShowDisplay[]> => {
-  // 선택된 날짜에 해당하는 스케줄 데이터 필터링
-  return dummyScheduleDisplays.filter(
-    (schedule) =>
-      schedule.engineerId === engineerId &&
-      schedule.orderDate.toString() === selectedDate.toDateString()
-  );
-};

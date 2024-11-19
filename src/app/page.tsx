@@ -5,7 +5,6 @@ import * as React from 'react';
 import ACalendar from '@/components/atom/Calendar/ACalendar';
 import LoginForm from '@/components/organism/Login/LoginForm';
 import SalesCalendar from '@/components/atom/Calendar/MainCalendar';
-import { sampleSalesData } from '@/constants/MainCalendarSalesData';
 import SalesDashboard from '@/components/atom/Calendar/MainCalendar';
 
 const Home = () => {
