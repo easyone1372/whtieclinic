@@ -11,14 +11,13 @@ export interface ScheduleShowResponse {
 }
 
 export const ScheduleShowApi = {
-  schshow: async (params: {
-    engineerId: number;
-    selectedDate: string;
-  }): Promise<ScheduleShowResponse> => {
-    const response = await api.get<ScheduleShowResponse>('/api/engineer/getAllEngineerSchedule', {
+  schshow: async (params: { engineerId: number; selectedDate: string }): Promise<any> => {
+    // 임시로 any 타입 사용
+    const response = await api.get('/api/engineer/getAllEngineerSchedule', {
       params,
     });
-    return response.data;
+    console.log('API Response:', response); // 서버 응답 구조 확인
+    return response.data; // 필요한 응답 형식에 맞춰 조정
   },
 };
 

@@ -84,50 +84,40 @@ export const getOrdersByEngineerAndDate = async (
   selectedDate: Date
 ): Promise<SchShowDisplay[]> => {
   try {
-    // API 호출 시 날짜와 엔지니어 ID로 필터링
-    const response: ScheduleShowResponse = await ScheduleShowApi.schshow({
+    const response = await ScheduleShowApi.schshow({
       engineerId,
       selectedDate: selectedDate.toISOString(),
     });
 
     console.log('getOrdersByEngineerAndDate response:', response);
-    console.log('getOrdersByEngineerAndDate response.success:', response.success);
-    console.log('getOrdersByEngineerAndDate response.data:', response.data);
 
-    if (response.success && response.data) {
-      // DB에서 받은 데이터를 변환하여 SchShowDisplay 배열로 반환
-      const mappedData: SchShowDisplay[] = response.data.map((item: any) => {
-        // orderDate를 date와 timeSlot으로 분리하는 코드
-        // const { date, timeSlot } = parseDateAndTimeSlot(item.order_date);
+    // 응답 데이터 확인
+    const data = Array.isArray(response) ? response : response.data;
 
-        //!!1115!!// 근데 db에서 order_timeslot이 추가될 경우
-        //-> formatDateAndTimeSlot, parseDateAndTimeSlot 함수, 98, 106,107번 코드 삭제해야함.
+    if (Array.isArray(data) && data.length > 0) {
+      // 서버 데이터 매핑
+      const mappedData: SchShowDisplay[] = data.map((item: any) => ({
+        orderId: item.orderId || item.order_id || 0,
+        engineerId: item.engineerId || item.engineer_id || 0,
+        engineerName: item.engineerName || item.engineer_name || '',
+        customerId: item.customerId || item.customer_id || 0,
+        orderDate: item.orderDate || item.order_date || '',
+        orderTimeslot: item.orderTimeslot || item.order_timeslot || '미지정',
+        customerName: item.customerName || item.customer_name || '',
+        customerAddr: item.customerAddr || item.customer_addr || '',
+        customerPhone: item.customerPhone || item.customer_phone || '',
+        orderProduct: item.orderProduct || item.order_product || '',
+        orderProductDetail: item.orderProductDetail || item.order_product_detail || '',
+        orderCount: item.orderCount || item.order_count || 0,
+        orderTotalAmount: item.orderTotalAmount || item.order_total_amount || 0,
+        orderRemarks: item.orderRemarks || item.order_remarks || '',
+        customerRemarks: item.customerRemarks || item.customer_remarks || '',
+      }));
 
-        // 변환된 데이터를 SchShowDisplay 형식으로 반환
-        return {
-          orderId: item.order_id,
-          engineerId: item.engineer_id,
-          customerId: item.customer_id,
-          // orderDate: date,
-          // orderTimeslot: timeSlot,
-          orderDate: item.order_date,
-          orderTimeslot: item.order_timeslot,
-          customerName: item.customer_name,
-          customerAddr: item.customer_addr,
-          customerPhone: item.customer_phone,
-          orderProduct: item.order_product,
-          orderProductDetail: item.order_product_detail,
-          orderCount: item.order_count,
-          orderTotalAmount: item.order_total_amount,
-          orderRemarks: item.order_remarks,
-          customerRemarks: item.customer_remark,
-        };
-      });
-
-      console.log('맵핑한 데이터: ', mappedData);
+      console.log('Mapped Data:', mappedData);
       return mappedData;
     } else {
-      console.error('Failed to fetch schedule data:', response.message);
+      console.error('Unexpected response structure:', response);
       return [];
     }
   } catch (error) {

@@ -1,13 +1,8 @@
-//SchTimeLine.tsx
-import ATable from '@/components/molecules/Table/ATable';
-import { schHeaders, showSchArray } from '@/constants/LJW/ShowSchArray';
-import {
-  SchTableColumn,
-  SchTableRow,
-  SchTimeLineProps,
-  timeSlots,
-} from '@/constants/LJW/ShowSchTypes';
-import { useMemo } from 'react';
+import ATable from "@/components/molecules/Table/ATable";
+import { schHeaders, showSchArray } from "@/constants/LJW/ShowSchArray";
+import { SchTableColumn, SchTableRow, SchTimeLineProps, timeSlots } from "@/constants/LJW/ShowSchTypes";
+import { useMemo } from "react";
+
 
 //카드 내부에 들어갈 데이터테이블
 const SchTimeLine = ({ scheduleData, onEditRow, isEditing, selectedDate }: SchTimeLineProps) => {
@@ -20,15 +15,24 @@ const SchTimeLine = ({ scheduleData, onEditRow, isEditing, selectedDate }: SchTi
       const order = orderMap.get(timeSlot);
 
       // 기본 행 데이터 생성
-      const baseRow = {
+      const baseRow: SchTableRow = {
         timeSlot,
-        ...Object.fromEntries(showSchArray.map((key) => [key, ''])),
-      } as SchTableRow;
+        // SchTableRow에 필요한 모든 필드를 빈 문자열로 초기화
+        customerName: '',
+        customerPhone: '',
+        customerAddr: '',
+        orderProductDetail: '',
+        orderCount: '',
+        orderTotalAmount: '',
+        orderRemarks: '',
+        customerRemarks: '',
+      };
 
       // 주문이 있으면 데이터 채우기
       if (order) {
         showSchArray.forEach((key) => {
-          baseRow[key] = order[key]?.toString() ?? '';
+          // order 객체에 해당 key가 존재하면 baseRow에 값을 할당
+          baseRow[key as keyof SchTableRow] = order[key as keyof typeof order]?.toString() ?? '';
         });
       }
 

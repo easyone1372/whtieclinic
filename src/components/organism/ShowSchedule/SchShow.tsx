@@ -36,12 +36,16 @@ const SchShow = () => {
   }, []);
 
   // 선택된 기사 이름 메모이제이션
-  const selectedEngineerName = useMemo(
-    () =>
-      engList.find((engineer) => engineer.engineerId === selectEng)?.engineerName ||
-      '기사를 선택하세요',
-    [engList, selectEng]
-  );
+  // const selectedEngineerName = useMemo(
+  //   () =>
+  //     engList.find((engineer) => engineer.engineerId === selectEng)?.engineerName ||
+  //     '기사를 선택하세요',
+  //   [engList, selectEng]
+  // );
+  const selectedEngineerName = useMemo(() => {
+    const engineer = engList.find((engineer) => engineer.engineerId === selectEng);
+    return engineer ? `${engineer.engineerName}님의 일정` : '기사를 선택하세요';
+  }, [engList, selectEng]);
 
   // 날짜 변경 시, 해당 날짜에 맞는 기사 리스트를 가져옴
   useEffect(() => {
@@ -63,9 +67,16 @@ const SchShow = () => {
     const fetchEngineerData = async () => {
       if (selectEng && selectedDate) {
         const schedule = await getOrdersByEngineerAndDate(selectEng, selectedDate);
-        setScheduleData(schedule);
+
+        if (schedule.length > 0) {
+          console.log('Fetched schedule data:', schedule); // 매핑된 데이터 출력
+          setScheduleData(schedule); // 테이블 데이터로 설정
+        } else {
+          console.warn('No schedule data found');
+        }
       }
     };
+
     fetchEngineerData();
   }, [selectEng, selectedDate]);
 
@@ -80,7 +91,7 @@ const SchShow = () => {
 
       if (order) {
         queryParams = {
-          selectDate: order.orderDate.toISOString(),
+          selectDate: order.orderDate.toString(),
           selectTime: order.orderTimeslot.toString(),
           selectCustomerId: order.customerId.toString(),
           selectOrderid: order.orderId.toString(),

@@ -18,19 +18,19 @@ export type SchEngListType = {
 export type SchShowDisplay = {
   orderId: number;
   engineerId: number;
+  engineerName?: string; 
   customerId: number;
-  orderDate: Date; //예약날짜
-  orderTimeslot: string; //예약 시간. 고민.
-  engineerName: string;
+  orderDate: string;
+  orderTimeslot: string;
   customerName: string;
   customerAddr: string;
   customerPhone: string;
-  orderProduct: string; //에어컨|세탁기
-  orderProductDetail: string; //드럼, 원웨이 등
-  orderCount: number; //주문대수
-  orderTotalAmount: number; //최종가격
-  orderRemarks?: string; //주문 특이사항
-  customerRemarks?: string; //고객 특이사항
+  orderProduct: string;
+  orderProductDetail: string;
+  orderCount: number;
+  orderTotalAmount: number;
+  orderRemarks: string;
+  customerRemarks: string;
 };
 
 //datatable 기본 props
