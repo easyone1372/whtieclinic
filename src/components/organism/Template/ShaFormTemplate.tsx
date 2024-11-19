@@ -26,6 +26,7 @@ type FormTemplateProps<T> = {
     isSubmitAttempted: boolean
   ) => ShaTitledFormControlProps[];
   validationRules?: ((formValues: T) => boolean)[];
+  twoColumns?: boolean;
 };
 
 const EnhancedFormTemplate = <T extends object>({
@@ -35,6 +36,7 @@ const EnhancedFormTemplate = <T extends object>({
   onSuccess,
   formDataGenerator,
   validationRules = [],
+  twoColumns = false,
 }: FormTemplateProps<T>) => {
   const {
     formValues,
@@ -67,6 +69,7 @@ const EnhancedFormTemplate = <T extends object>({
           handleFieldChange,
           isSubmitAttempted
         )}
+        twoColumns={twoColumns}
       />
       {error && <p className="text-red-500 mt-4">{error}</p>}
     </ShaCard>

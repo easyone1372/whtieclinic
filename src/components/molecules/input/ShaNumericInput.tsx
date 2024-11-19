@@ -42,7 +42,7 @@ const ShaNumericInput = ({
   placeholder = '0',
   className,
   size = 'medium',
-  disabled = false, // 초기값 제거하고 prop으로 직접 사용
+  disabled = false,
   min = 0,
   max,
   required = false,
