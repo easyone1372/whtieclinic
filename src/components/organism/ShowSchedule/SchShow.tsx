@@ -69,10 +69,11 @@ const SchShow = () => {
         const schedule = await getOrdersByEngineerAndDate(selectEng, selectedDate);
 
         if (schedule.length > 0) {
-          console.log('Fetched schedule data:', schedule); // 매핑된 데이터 출력
-          setScheduleData(schedule); // 테이블 데이터로 설정
+          console.log('Fetched schedule data for engineerId:', selectEng, schedule); // 디버깅용
+          setScheduleData(schedule);
         } else {
-          console.warn('No schedule data found');
+          console.warn('No schedule data found for engineerId:', selectEng);
+          setScheduleData([]);
         }
       }
     };
@@ -83,6 +84,7 @@ const SchShow = () => {
   const handleRowEdit = useCallback(
     (timeSlot: string) => {
       const order = scheduleData?.find((order) => order.orderTimeslot === timeSlot);
+      console.log('Passing scheduleData to SchTimeLine:', scheduleData);
       let queryParams: Record<string, string> = {
         selectDate: selectedDate.toISOString(),
         selectTime: timeSlot,

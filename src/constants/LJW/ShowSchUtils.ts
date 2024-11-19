@@ -86,40 +86,51 @@ export const getOrdersByEngineerAndDate = async (
   try {
     const response = await ScheduleShowApi.schshow({
       engineerId,
-      selectedDate: selectedDate.toISOString(),
+      selectedDate: selectedDate.toISOString().split('T')[0],
     });
 
-    console.log('getOrdersByEngineerAndDate response:', response);
-
-    // 응답 데이터 확인
     const data = Array.isArray(response) ? response : response.data;
 
-    if (Array.isArray(data) && data.length > 0) {
-      // 서버 데이터 매핑
-      const mappedData: SchShowDisplay[] = data.map((item: any) => ({
-        orderId: item.orderId || item.order_id || 0,
-        engineerId: item.engineerId || item.engineer_id || 0,
-        engineerName: item.engineerName || item.engineer_name || '',
-        customerId: item.customerId || item.customer_id || 0,
-        orderDate: item.orderDate || item.order_date || '',
-        orderTimeslot: item.orderTimeslot || item.order_timeslot || '미지정',
-        customerName: item.customerName || item.customer_name || '',
-        customerAddr: item.customerAddr || item.customer_addr || '',
-        customerPhone: item.customerPhone || item.customer_phone || '',
-        orderProduct: item.orderProduct || item.order_product || '',
-        orderProductDetail: item.orderProductDetail || item.order_product_detail || '',
-        orderCount: item.orderCount || item.order_count || 0,
-        orderTotalAmount: item.orderTotalAmount || item.order_total_amount || 0,
-        orderRemarks: item.orderRemarks || item.order_remarks || '',
-        customerRemarks: item.customerRemarks || item.customer_remarks || '',
-      }));
-
-      console.log('Mapped Data:', mappedData);
-      return mappedData;
-    } else {
-      console.error('Unexpected response structure:', response);
+    if (!Array.isArray(data) || data.length === 0) {
+      console.warn('No data returned or invalid response format:', response);
       return [];
     }
+
+    const mappedData: SchShowDisplay[] = data
+      .filter((item) => item.engineerId === engineerId) // 필터링 추가
+      .map((item: any) => {
+        if (!item.orderDate) {
+          console.warn('Missing orderDate in item:', item);
+          return null;
+        }
+
+        const [orderDate, orderTime] = item.orderDate.split(' ');
+        const formattedTime = orderTime
+          ? `${orderTime}:00 ~ ${Number(orderTime) + 1}:00`.replace('9:00', '09:00')
+          : '미지정';
+
+        return {
+          orderId: item.orderId || 0,
+          engineerId: item.engineerId || 0,
+          engineerName: item.engineerName || '',
+          customerId: item.customerId || 0,
+          orderDate: orderDate || '',
+          orderTimeslot: formattedTime,
+          customerName: item.customerName || '',
+          customerAddr: item.customerAddr || '',
+          customerPhone: item.customerPhone || '',
+          orderProduct: item.orderProduct || '',
+          orderProductDetail: item.orderProductDetail || '',
+          orderCount: item.orderCount || 0,
+          orderTotalAmount: item.orderTotalAmount || 0,
+          orderRemarks: item.orderRemarks || '',
+          customerRemarks: item.customerRemarks || '',
+        };
+      })
+      .filter((item) => item !== null);
+
+    console.log('Filtered Mapped Data by engineerId:', mappedData); // 디버깅용
+    return mappedData;
   } catch (error) {
     console.error('Error fetching orders:', error);
     return [];
