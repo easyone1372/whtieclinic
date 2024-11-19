@@ -135,6 +135,6 @@ export const getOrdersByEngineerAndDate2 = async (
   return dummyScheduleDisplays.filter(
     (schedule) =>
       schedule.engineerId === engineerId &&
-      schedule.orderDate.toDateString() === selectedDate.toDateString()
+      schedule.orderDate.toString() === selectedDate.toDateString()
   );
 };
