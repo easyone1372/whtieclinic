@@ -13,6 +13,7 @@ type FormCardProps = {
   isLoading?: boolean;
 };
 
+// 이 컴포넌트 molecules로 옮기기
 const ShaCard = ({
   title,
   children,

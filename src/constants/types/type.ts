@@ -12,7 +12,7 @@ export type Engineer = {
   engineerPhone: string;
   engineerAddr: string;
   engineerRemark?: string;
-  engineerCommission: number;
+  engineerCommissionRate: number;
   engineerDayoff?: string;
   engineerHoliday?: string[]; //1114 배열로 받는거 같아서 [] 붙임.
   engineerPayday: string;

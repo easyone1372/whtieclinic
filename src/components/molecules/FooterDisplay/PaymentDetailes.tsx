@@ -23,7 +23,7 @@ const PaymentDetails = ({
   <>
     {/* 총 지급액 표시 */}
     <div className="flex items-center">
-      <ShaText text="합계 수당:" isBold size="small" />
+      <ShaText text="합계 금액:" isBold size="small" />
       <ShaText text={`${totalAmount.toLocaleString()}원`} size="small" className="ml-2" />
     </div>
 

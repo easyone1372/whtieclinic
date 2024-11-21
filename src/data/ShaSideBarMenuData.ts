@@ -68,11 +68,11 @@ export const sideBarMenuData = {
         href: '/schedule/s_list',
         icon: ClipboardList,
       },
-      {
-        name: '등록하기',
-        href: '/schedule/s_register',
-        icon: CalendarPlus,
-      },
+      // {
+      //   name: '등록하기',
+      //   href: '/schedule/s_register',
+      //   icon: CalendarPlus,
+      // },
       {
         name: '수정하기',
         href: '/schedule/s_modify',
@@ -80,25 +80,25 @@ export const sideBarMenuData = {
       },
     ],
   },
-  sales: {
-    title: '매출 관리',
-    icon: BarChart3,
-    links: [
-      {
-        name: '일자별 매출',
-        href: '/sales/daily',
-        icon: FileSpreadsheet,
-      },
-      {
-        name: '주간 매출',
-        href: '/sales/weekly',
-        icon: LineChart,
-      },
-      {
-        name: '월별 매출',
-        href: '/sales/monthly',
-        icon: PieChart,
-      },
-    ],
-  },
+  // sales: {
+  //   title: '매출 관리',
+  //   icon: BarChart3,
+  //   links: [
+  //     {
+  //       name: '일자별 매출',
+  //       href: '/sales/daily',
+  //       icon: FileSpreadsheet,
+  //     },
+  //     {
+  //       name: '주간 매출',
+  //       href: '/sales/weekly',
+  //       icon: LineChart,
+  //     },
+  //     {
+  //       name: '월별 매출',
+  //       href: '/sales/monthly',
+  //       icon: PieChart,
+  //     },
+  //   ],
+  // },
 };

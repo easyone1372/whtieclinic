@@ -10,6 +10,7 @@ import {
   fetchEngineerEvents,
   fetchEngineers,
   LABEL_MAP,
+  updateEngineerPayment,
 } from '@/service/EngineerList/EngineerList';
 import ShaText from '@/components/atom/Text/ShaText';
 import moment from 'moment';
@@ -17,24 +18,33 @@ import moment from 'moment';
 export type LabelMapType = typeof LABEL_MAP;
 
 const Page = () => {
-  // 상태 설정
-  const [filter, setFilter] = useState(''); // 필터 입력 상태
-  const [engineers, setEngineers] = useState<Engineer[]>([]); // 엔지니어 목록 배열
-  const [events, setEvents] = useState<CalendarEventType[]>([]); // 일정 이벤트 배열
-  const [selectedData, setSelectedData] = useState<Engineer | null>(null); // 선택된 엔지니어 정보
+  const [filter, setFilter] = useState(''); // 검색 필터 상태
+  const [engineers, setEngineers] = useState<Engineer[]>([]); // 엔지니어 목록 상태
+  const [events, setEvents] = useState<CalendarEventType[]>([]); // 일정 이벤트 상태
+  const [selectedData, setSelectedData] = useState<Engineer | null>(null); // 선택된 엔지니어 데이터 상태
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Drawer 열림 상태
-  const [totalAmount, setTotalAmount] = useState(0); // 총 지급액 (주차별 금액 합계)
-  const [finalPayment, setFinalPayment] = useState(0); // 최종 지급액
-  const [isChecked, setIsChecked] = useState(false); // 지급 여부 체크 상태
-  const [initialCheckedState, setInitialCheckedState] = useState(false); // 체크 상태 초기값
+  const [weeklyTotals, setWeeklyTotals] = useState<Record<string, number>>({}); // 주차별 합계 금액 상태
+  const [totalAmount, setTotalAmount] = useState(0); // 주차별 합계금액 상태
   const [isEditing, setIsEditing] = useState(false); // 수정 모드 상태
 
-  // 페이지 로드 시 엔지니어 데이터 가져오기
+  const [editData, setEditData] = useState({
+    week: '',
+    amount: 0,
+    isPaid: false,
+  }); // 편집 데이터 상태
+
+  const [initialEditData, setInitialEditData] = useState({
+    week: '',
+    amount: 0,
+    isPaid: false,
+  }); // 초기 편집 데이터 상태
+
+  // 엔지니어 목록 가져오기
   useEffect(() => {
     const loadEngineers = async () => {
       try {
-        const data = await fetchEngineers(); // API를 통해 엔지니어 목록 가져오기
-        setEngineers(data); // 상태에 엔지니어 목록 설정
+        const data = await fetchEngineers();
+        setEngineers(data);
       } catch (error) {
         console.error('Error loading engineers:', error);
       }
@@ -42,14 +52,31 @@ const Page = () => {
     loadEngineers();
   }, []);
 
-  // 선택된 엔지니어의 일정 데이터 가져오기
+  // 일정 이벤트 가져오기
   useEffect(() => {
     if (selectedData) {
-      // 엔지니어가 선택된 경우
       const loadEngineerEvents = async () => {
         try {
-          const data = await fetchEngineerEvents(selectedData.engineerId); // API를 통해 해당 엔지니어의 일정 가져오기
-          setEvents(data); // 상태에 일정 이벤트 설정
+          const data = await fetchEngineerEvents(selectedData.engineerId);
+          const events = data.map((event) => ({
+            title: `${event.dailyIncome.toLocaleString()}원`,
+            start: new Date(event.date.split(' ')[0]),
+            end: new Date(event.date.split(' ')[0]),
+            amount: event.dailyIncome,
+          }));
+          setEvents(events);
+
+          // 주차별로 그룹화하여 합계 계산
+          const weeklyData = events.reduce(
+            (acc, event) => {
+              const week = getWeekOfMonth(event.start);
+              acc[week] = (acc[week] || 0) + (event.amount || 0);
+              return acc;
+            },
+            {} as Record<string, number>
+          );
+
+          setWeeklyTotals(weeklyData); // 주차별 합계 금액 업데이트
         } catch (error) {
           console.error('Error loading engineer events:', error);
         }
@@ -58,61 +85,103 @@ const Page = () => {
     }
   }, [selectedData]);
 
-  // 주차를 계산하는 함수
-  const getWeekOfMonth = (date: Date) => {
-    const startOfMonth = moment(date).startOf('month'); // 해당 달의 시작 날짜 가져오기
-    return Math.ceil(moment(date).diff(startOfMonth, 'days') / 7) + 1; // 주차 계산하여 반환
+  // **ISO 8601 기반 주차 계산 함수**
+  const getWeekOfMonth = (date: Date): string => {
+    const targetDate = moment(date);
+    const firstDayOfMonth = targetDate.clone().startOf('month'); // 해당 월의 첫날
+    const firstWeekStart = firstDayOfMonth.clone().startOf('isoWeek'); // 첫 번째 ISO 주의 시작
+
+    const diffWeeks = targetDate.diff(firstWeekStart, 'weeks');
+    return `${targetDate.format('YYYY년 M월')} ${diffWeeks + 1}주차`;
   };
 
-  // 특정 주차의 totalAmount를 계산하는 함수
-  const calculateTotalAmountForWeek = useCallback(
+  // 주차별 합계 금액 및 수당금액 계산
+  const calculateTotalAndCommission = useCallback(
     (selectedDate: Date) => {
-      const selectedWeek = getWeekOfMonth(selectedDate);
-
-      // 이벤트 배열에서 해당 주차에 속하는 이벤트들의 금액을 합산
+      const selectedWeek = getWeekOfMonth(selectedDate); // 선택된 주차 계산
       const weeklyTotal = events
-        .filter((event) => event.start && getWeekOfMonth(new Date(event.start)) === selectedWeek) // `event.start`가 존재하는지 확인
-        .reduce((sum, event) => sum + (event.amount || 0), 0);
+        .filter((event) => event.start && getWeekOfMonth(event.start) === selectedWeek)
+        .reduce((sum, event) => sum + (event.amount || 0), 0); // 주차별 합계 금액 계산
 
-      setTotalAmount(weeklyTotal); // 주차별 총 금액 설정
+      // 선택된 엔지니어의 수당률 가져오기
+      const commissionRate = selectedData?.engineerCommissionRate
+        ? selectedData.engineerCommissionRate / 100 // 백분율 변환
+        : 0;
+
+      const commissionAmount = Math.floor(weeklyTotal * commissionRate); // 수당금액 계산
+
+      // 상태 업데이트
+      setTotalAmount(weeklyTotal); // 합계금액 업데이트
+      setEditData((prev) => ({
+        ...prev,
+        amount: commissionAmount, // 수당금액 업데이트
+      }));
     },
-    [events]
+    [events, selectedData]
   );
 
-  // 달력에서 셀 클릭 시 실행되는 핸들러
+  // 달력 셀 선택 핸들러
   const handleSelectSlot = (slotInfo: { start: Date }) => {
-    calculateTotalAmountForWeek(slotInfo.start); // 클릭한 셀의 날짜에 해당하는 주차 금액 계산
+    if (!slotInfo.start) {
+      return;
+    }
+
+    const selectedWeek = getWeekOfMonth(slotInfo.start); // ISO 주차 계산
+    calculateTotalAndCommission(slotInfo.start); // 합계금액과 수당금액 계산
+
+    setEditData((prev) => ({
+      ...prev,
+      week: `${slotInfo.start.getFullYear()}년 ${slotInfo.start.getMonth() + 1}월 ${selectedWeek}`,
+    }));
   };
 
-  // 필터 변경 핸들러
-  const handleFilterChange = (value: string) => setFilter(value);
+  const handleFilterChange = (value: string) => setFilter(value); // 검색 필터 변경
 
-  // 엔지니어 선택 핸들러
   const handleItemClick = (item: Engineer) => {
-    setSelectedData(item); // 선택된 엔지니어 데이터 설정
+    setSelectedData(item); // 선택된 엔지니어 업데이트
     setIsDrawerOpen(false); // Drawer 닫기
   };
 
-  // 수정 모드 토글 핸들러
   const handleEditToggle = () => {
-    if (!isEditing) {
-      setInitialCheckedState(isChecked); // 수정 모드 진입 전 체크 상태 저장
-    }
-    setIsEditing(!isEditing); // 수정 모드 상태 토글
+    setInitialEditData({ ...editData }); // 초기 편집 데이터 저장
+    setIsEditing(!isEditing); // 수정 모드 토글
   };
 
-  // 수정 취소 핸들러
   const handleEditCancel = () => {
+    setEditData({ ...initialEditData }); // 초기 데이터 복원
     setIsEditing(false); // 수정 모드 종료
-    setIsChecked(initialCheckedState); // 체크 상태 초기값으로 복원
   };
 
-  // 체크박스 상태 변경 핸들러
-  const handleCheckboxChange = (checked: boolean) => isEditing && setIsChecked(checked);
+  const handleSaveEdit = async () => {
+    if (!selectedData) return;
+
+    try {
+      await updateEngineerPayment(
+        selectedData.engineerId,
+        editData.week,
+        editData.amount,
+        editData.isPaid
+      );
+      setIsEditing(false);
+
+      const updatedEvents = await fetchEngineerEvents(selectedData.engineerId);
+      const eventsWithDateConversion = updatedEvents.map((event) => ({
+        title: `${event.dailyIncome.toLocaleString()}원`,
+        start: new Date(event.date.split(' ')[0]),
+        end: new Date(event.date.split(' ')[0]),
+        amount: event.dailyIncome,
+      }));
+      setEvents(eventsWithDateConversion);
+
+      alert('수정이 완료되었습니다!');
+    } catch (error) {
+      console.error('Error saving edit:', error);
+      alert('수정에 실패했습니다. 다시 시도해주세요.');
+    }
+  };
 
   return (
     <div>
-      {/* Drawer 컴포넌트 */}
       <ShaDrawer
         data={engineers}
         filterKeys={['engineerName', 'engineerPhone', 'engineerAddr']}
@@ -124,41 +193,33 @@ const Page = () => {
         isOpen={isDrawerOpen}
         setIsOpen={setIsDrawerOpen}
       />
-
-      {/* 선택된 엔지니어가 있을 때 일정과 상세 정보 표시 */}
       {selectedData && (
         <div>
-          {/* 선택된 엔지니어 이름 */}
           <div className="pt-5 pl-5">
             <ShaText text={`${selectedData.engineerName}님의 일정`} isBold size="large" />
           </div>
-
-          {/* 달력 컴포넌트 */}
           <div className="mb-3">
-            <ACalendar
-              events={events} // 일정 이벤트 배열
-              onEventSelect={(event) => console.log('Event selected:', event)} // 이벤트 선택 핸들러
-              onSelectSlot={handleSelectSlot} // 셀 클릭 핸들러
-              selectable={true} // 셀 클릭 가능하게 설정
-            />
+            <ACalendar events={events} onSelectSlot={handleSelectSlot} selectable={true} />
           </div>
-
-          {/* Footer 컴포넌트 - 엔지니어 상세 정보 및 지급 정보 */}
           <AFooter
-            data={selectedData} // 선택된 엔지니어 데이터
-            totalAmount={totalAmount} // 주차별 총 금액
-            finalPayment={finalPayment} // 최종 지급액
-            isEditing={isEditing} // 수정 모드 상태
-            isChecked={isChecked} // 체크박스 상태
-            onFinalPaymentChange={setFinalPayment} // 최종 지급액 변경 함수
-            onCheckboxChange={handleCheckboxChange} // 체크박스 상태 변경 함수
-            labelMap={{ ...LABEL_MAP }} // 레이블 매핑
+            data={selectedData}
+            totalAmount={totalAmount} // 합계 금액 전달
+            finalPayment={editData.amount} // 수당 금액 전달
+            isEditing={isEditing}
+            isChecked={editData.isPaid}
+            onFinalPaymentChange={(value) => setEditData({ ...editData, amount: value })}
+            onCheckboxChange={(checked) => setEditData({ ...editData, isPaid: checked })}
+            labelMap={{ ...LABEL_MAP }}
           />
-
-          {/* 수정 및 취소 버튼 */}
           <div className="flex justify-center gap-2 mt-4">
-            <ShaButton text={isEditing ? '저장' : '수정'} onClick={handleEditToggle} />
-            {isEditing && <ShaButton text="취소" onClick={handleEditCancel} />}
+            {isEditing ? (
+              <>
+                <ShaButton text="저장" onClick={handleSaveEdit} />
+                <ShaButton text="취소" onClick={handleEditCancel} />
+              </>
+            ) : (
+              <ShaButton text="수정" onClick={handleEditToggle} />
+            )}
           </div>
         </div>
       )}

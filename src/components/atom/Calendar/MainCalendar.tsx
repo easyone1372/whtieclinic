@@ -6,7 +6,6 @@ import moment from 'moment';
 import 'moment/locale/ko';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { Box, IconButton, Typography } from '@mui/material';
-import { sampleSalesData } from '@/constants/MainCalendarSalesData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, ShoppingCart, ArrowUpRight, CalendarDays, CreditCard } from 'lucide-react';
 
@@ -96,19 +95,19 @@ const WeeklySummaryCard = ({ summary }: { summary: WeeklySummary }) => (
 const SalesDashboard: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
 
-  const events: CalendarEventType[] = sampleSalesData.map((data) => {
-    const date = moment(data.date).toDate();
-    return {
-      title: `${data.totalOrders}건 / ₩${data.dailySales.toLocaleString()}`,
-      start: date,
-      end: date,
-      allDay: true,
-      resource: {
-        orders: data.totalOrders,
-        sales: data.dailySales,
-      },
-    };
-  });
+  // const events: CalendarEventType[] = sampleSalesData.map((data) => {
+  //   const date = moment(data.date).toDate();
+  //   return {
+  //     title: `${data.totalOrders}건 / ₩${data.dailySales.toLocaleString()}`,
+  //     start: date,
+  //     end: date,
+  //     allDay: true,
+  //     resource: {
+  //       orders: data.totalOrders,
+  //       sales: data.dailySales,
+  //     },
+  //   };
+  // });
 
   // 주간 데이터 계산 함수
   const calculateWeeklySummaries = (salesData: SalesData[]): WeeklySummary[] => {
@@ -162,10 +161,10 @@ const SalesDashboard: React.FC = () => {
     };
   };
 
-  const { totalWeeklySales, totalWeeklyOrders, totalMonthlySales, totalMonthlyOrders } =
-    calculateWeeklyMonthlySales(sampleSalesData);
+  // const { totalWeeklySales, totalWeeklyOrders, totalMonthlySales, totalMonthlyOrders } =
+  //   calculateWeeklyMonthlySales();
 
-  const weeklySummaries = calculateWeeklySummaries(sampleSalesData);
+  // const weeklySummaries = calculateWeeklySummaries();
 
   const handleSelectEvent = (event: CalendarEventType) => {
     console.log('Selected event:', event);
@@ -176,25 +175,29 @@ const SalesDashboard: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <StatCard
           title="주간 총 매출"
-          value={`￦${totalWeeklySales.toLocaleString()}`}
+          // value={`￦${totalWeeklySales.toLocaleString()}`}
+          value={'sdf'}
           icon={<TrendingUp className="w-6 h-6 text-blue-600" />}
           // trend={12}
         />
         <StatCard
           title="주간 총 주문"
-          value={totalWeeklyOrders.toLocaleString()}
+          // value={totalWeeklyOrders.toLocaleString()}
+          value={'123'}
           subtitle="지난 7일 동안의 총 주문 수"
           icon={<ShoppingCart className="w-6 h-6 text-blue-600" />}
         />
         <StatCard
           title="월간 총 매출"
-          value={`￦${totalMonthlySales.toLocaleString()}`}
+          // value={`￦${totalMonthlySales.toLocaleString()}`}
+          value={``}
           icon={<CreditCard className="w-6 h-6 text-blue-600" />}
           // trend={8}
         />
         <StatCard
           title="월간 총 주문"
-          value={totalMonthlyOrders.toLocaleString()}
+          // value={totalMonthlyOrders.toLocaleString()}
+          value={'123'}
           subtitle="이번 달의 총 주문 수"
           icon={<CalendarDays className="w-6 h-6 text-blue-600" />}
         />
@@ -204,7 +207,7 @@ const SalesDashboard: React.FC = () => {
         <div className="lg:col-span-3 h-[900px] bg-white p-4 rounded-lg ">
           <Calendar
             localizer={localizer}
-            events={events}
+            events={undefined}
             startAccessor="start"
             endAccessor="end"
             style={{ height: '100%' }}
@@ -230,9 +233,9 @@ const SalesDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {weeklySummaries.map((summary, index) => (
+                {/* {weeklySummaries.map((summary, index) => (
                   <WeeklySummaryCard key={index} summary={summary} />
-                ))}
+                ))} */}
               </div>
             </CardContent>
           </Card>
