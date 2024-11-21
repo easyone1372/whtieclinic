@@ -16,53 +16,47 @@ import { getAvailableEngineers, getEngineerInfo } from '@/service/Order/EngSched
 import { fetchEngineers } from '@/service/EngineerList/EngineerList';
 import { isNumberOnly } from '@/constants/validation';
 
-// 통합된 폼 값 타입
 export type OrderFormValues = {
   // 예약 정보
+  orderDate: string;
+  orderEngineerName: string;
 
   // 고객 정보
-  customerName: string;
-  customerPhone: string;
-  customerAddr: string;
-  customerRemark: string;
+  orderCustomerName: string;
+  orderCustomerPhone: string;
+  orderCustomerAddr: string;
+  orderCustomerRemark: string;
 
   // 주문 정보
+  orderCategory: string;
   orderProduct: string;
-  orderProductDetail: string;
+  orderRemark?: string;
 
-  orderTotalAmount: number;
+  // 금액 정보
+  orderTotalAmount: number; // 세척금액
+  totalAmount: number; // 총금액 (세척금액 - 계약금 - 할인금액)
   orderCount: number;
-  orderIsDiscount: boolean; // 할인 여부
-  orderDiscountRatio: number; // 할인금액
-  orderRemark?: string; // 특이사항
-  orderDeposit: number; //계약금 금액
-  depositPayed: boolean; // 계약금 여부
-  orderPayment: string;
-  orderRecieptDocs: string;
-  recieptDocsIssued: boolean;
+  orderIsDiscount: boolean;
+  orderDiscountRatio: number;
+  orderDeposit: number;
+  depositPayed: boolean;
 
-  // 기사 정보 표시용
-  orderDate: string;
+  // 결제 정보
+  orderPayment: string;
+  orderReceiptDocs: string;
+  receiptDocsIssued: boolean;
+
+  // 기사 정보 표시용 (내부용)
   selectedEngineerId: number | null;
   engineerInfo?: string;
   availableEngineers?: { value: string; text: string }[];
 };
-
-interface Engineer {
-  engineerId: number;
-  engineerName: string;
-  engineerSkills: string[];
-  engineerAddress: string;
-  engineerPhone: string;
-  engineerAvailability: boolean;
-}
 
 export const ShaOrderFormData = (
   formValues: OrderFormValues,
   handleFieldChange: (fieldName: keyof OrderFormValues, value: any) => void
 ): ShaTitledFormControlProps[] => [
   // 1. 예약 정보 섹션
-
   {
     titleprops: {
       text: '예약일시',
@@ -74,22 +68,19 @@ export const ShaOrderFormData = (
           prevprops: {
             dateLabel: '예약 날짜',
             value: formValues.orderDate
-              ? new Date(formValues.orderDate.replace(' ', 'T') + ':00:00') // "2024-11-16 12" -> Date 객체로 변환
+              ? new Date(formValues.orderDate.replace(' ', 'T') + ':00:00')
               : null,
             onChange: async (newValue: Date | null) => {
               if (newValue) {
-                // Date 객체를 "2024-11-16 12" 형식으로 변환
                 const formattedDate = format(newValue, 'yyyy-MM-dd HH');
                 handleFieldChange('orderDate', formattedDate);
 
-                // 가능한 엔지니어 목록 업데이트
                 const availableEngineers = await getAvailableEngineers(
                   formattedDate,
                   formValues.orderProduct
                 );
                 handleFieldChange('availableEngineers', availableEngineers);
 
-                // 선택된 엔지니어가 새 시간에 가능한지 확인
                 if (formValues.selectedEngineerId) {
                   const isStillAvailable = availableEngineers.some(
                     (eng) => eng.value === formValues.selectedEngineerId?.toString()
@@ -97,6 +88,7 @@ export const ShaOrderFormData = (
                   if (!isStillAvailable) {
                     handleFieldChange('selectedEngineerId', null);
                     handleFieldChange('engineerInfo', '');
+                    handleFieldChange('orderEngineerName', '');
                   }
                 }
               } else {
@@ -104,6 +96,7 @@ export const ShaOrderFormData = (
                 handleFieldChange('availableEngineers', []);
                 handleFieldChange('selectedEngineerId', null);
                 handleFieldChange('engineerInfo', '');
+                handleFieldChange('orderEngineerName', '');
               }
             },
           } as ShaDateTimePickerProps,
@@ -111,7 +104,6 @@ export const ShaOrderFormData = (
       ],
     },
   },
-
   {
     titleprops: { text: '담당 기사' },
     formfieldprops: {
@@ -121,16 +113,20 @@ export const ShaOrderFormData = (
           prevprops: {
             label: '기사 선택',
             width: 'medium',
-            options: formValues.availableEngineers || [], // 가능한 엔지니어 목록 사용
+            options: formValues.availableEngineers || [],
             value: formValues.selectedEngineerId?.toString() || '',
             onChange: async (value: string) => {
               const engineerId = Number(value);
               handleFieldChange('selectedEngineerId', engineerId);
 
-              // 엔지니어 정보 가져오기
               const engineerInfo = await getEngineerInfo(engineerId);
               if (engineerInfo) {
                 handleFieldChange('engineerInfo', engineerInfo);
+                // 기사 이름 설정
+                const engineer = formValues.availableEngineers?.find((eng) => eng.value === value);
+                if (engineer) {
+                  handleFieldChange('orderEngineerName', engineer.text);
+                }
               }
             },
           } as ShaDropdownProps,
@@ -150,7 +146,6 @@ export const ShaOrderFormData = (
   },
 
   // 2. 고객 정보 섹션
-
   {
     titleprops: { text: '고객성함' },
     formfieldprops: {
@@ -159,8 +154,8 @@ export const ShaOrderFormData = (
           formfieldtype: 'ShaInput' as ShaFormFieldType,
           prevprops: {
             placeholder: '고객성함',
-            value: formValues.customerName,
-            onChange: (value: string) => handleFieldChange('customerName', value),
+            value: formValues.orderCustomerName,
+            onChange: (value: string) => handleFieldChange('orderCustomerName', value),
           } as ShaInputProps,
         },
       ],
@@ -177,8 +172,8 @@ export const ShaOrderFormData = (
           prevprops: {
             placeholder: '연락처',
             type: 'tel',
-            value: formValues.customerPhone,
-            onChange: (value: string) => handleFieldChange('customerPhone', value),
+            value: formValues.orderCustomerPhone,
+            onChange: (value: string) => handleFieldChange('orderCustomerPhone', value),
           } as ShaInputProps,
         },
       ],
@@ -194,8 +189,8 @@ export const ShaOrderFormData = (
           formfieldtype: 'ShaInput' as ShaFormFieldType,
           prevprops: {
             placeholder: '방문주소',
-            value: formValues.customerAddr,
-            onChange: (value: string) => handleFieldChange('customerAddr', value),
+            value: formValues.orderCustomerAddr,
+            onChange: (value: string) => handleFieldChange('orderCustomerAddr', value),
           } as ShaInputProps,
         },
       ],
@@ -213,8 +208,8 @@ export const ShaOrderFormData = (
             placeholder: '특이사항을 입력해주세요',
             size: 'large',
             rows: 4,
-            value: formValues.customerRemark,
-            onChange: (value: string) => handleFieldChange('customerRemark', value),
+            value: formValues.orderCustomerRemark,
+            onChange: (value: string) => handleFieldChange('orderCustomerRemark', value),
           } as ShaTextareaProps,
         },
       ],
@@ -229,12 +224,27 @@ export const ShaOrderFormData = (
           prevprops: {
             checkboxProps: {
               checked: formValues.depositPayed,
-              onCheckedChange: (checked: boolean) => handleFieldChange('depositPayed', checked),
+              onCheckedChange: (checked: boolean) => {
+                handleFieldChange('depositPayed', checked);
+                const totalAmount =
+                  formValues.orderTotalAmount -
+                  (checked ? formValues.orderDeposit : 0) -
+                  (formValues.orderIsDiscount ? formValues.orderDiscountRatio : 0);
+                handleFieldChange('totalAmount', totalAmount);
+              },
               label: '계약금 입금완료',
             },
             numericInputProps: {
               value: formValues.orderDeposit.toString(),
-              onChange: (value: string) => handleFieldChange('orderDeposit', Number(value)),
+              onChange: (value: string) => {
+                const newDeposit = Number(value);
+                handleFieldChange('orderDeposit', newDeposit);
+                const totalAmount =
+                  formValues.orderTotalAmount -
+                  (formValues.depositPayed ? newDeposit : 0) -
+                  (formValues.orderIsDiscount ? formValues.orderDiscountRatio : 0);
+                handleFieldChange('totalAmount', totalAmount);
+              },
               max: 1000000,
               size: 'medium',
               placeholder: '계약금 입금액',
@@ -282,15 +292,15 @@ export const ShaOrderFormData = (
               value: doc,
               text: doc,
             })),
-            value: formValues.orderRecieptDocs,
-            onChange: (value: string) => handleFieldChange('orderRecieptDocs', value),
+            value: formValues.orderReceiptDocs,
+            onChange: (value: string) => handleFieldChange('orderReceiptDocs', value),
           } as ShaDropdownProps,
         },
         {
           formfieldtype: 'ShaCheckbox' as ShaFormFieldType,
           prevprops: {
-            isChecked: formValues.recieptDocsIssued,
-            onChange: (checked: boolean) => handleFieldChange('recieptDocsIssued', checked),
+            isChecked: formValues.receiptDocsIssued,
+            onChange: (checked: boolean) => handleFieldChange('receiptDocsIssued', checked),
             textprops: {
               text: '발행완료',
               className: 'start',
@@ -302,7 +312,6 @@ export const ShaOrderFormData = (
   },
 
   // 3. 세척 정보 섹션
-
   {
     titleprops: { text: '세척품목' },
     formfieldprops: {
@@ -321,12 +330,12 @@ export const ShaOrderFormData = (
               },
               value: formValues.orderProduct?.split(':')[0],
               onChange: (value: string) => {
-                handleFieldChange('orderProduct', value); // 에어컨/세탁기
-                handleFieldChange('orderProductDetail', '');
-
+                handleFieldChange('orderCategory', value);
+                handleFieldChange('orderProduct', value);
                 handleFieldChange('selectedEngineerId', null);
                 handleFieldChange('engineerInfo', '');
                 handleFieldChange('availableEngineers', []);
+                handleFieldChange('orderEngineerName', '');
               },
             },
             dropdownprops: {
@@ -343,15 +352,11 @@ export const ShaOrderFormData = (
               onChange: async (value: string) => {
                 const product = formValues.orderProduct?.split(':')[0];
                 handleFieldChange('orderProduct', `${product}:${value}`);
-                handleFieldChange('orderProductDetail', value);
 
                 if (formValues.orderDate) {
-                  // 1. 먼저 모든 엔지니어 데이터 가져오기
                   const allEngineers = await fetchEngineers();
-                  // 2. 날짜/시간 기반으로 가능한 엔지니어 가져오기
                   const availableEngineers = await getAvailableEngineers(formValues.orderDate);
 
-                  // 3. 스킬 기반으로 필터링
                   const filteredEngineers = availableEngineers.filter((eng) => {
                     const engineer = allEngineers.find(
                       (e) => e.engineerId.toString() === eng.value
@@ -361,7 +366,6 @@ export const ShaOrderFormData = (
 
                   handleFieldChange('availableEngineers', filteredEngineers);
 
-                  // 4. 선택된 엔지니어가 여전히 가능한지 확인
                   if (formValues.selectedEngineerId) {
                     const isStillAvailable = filteredEngineers.some(
                       (eng) => eng.value === formValues.selectedEngineerId?.toString()
@@ -369,7 +373,7 @@ export const ShaOrderFormData = (
                     if (!isStillAvailable) {
                       handleFieldChange('selectedEngineerId', null);
                       handleFieldChange('engineerInfo', '');
-                      handleFieldChange('engineerInfo', '가능한 기사가 없습니다.');
+                      handleFieldChange('orderEngineerName', '');
                     }
                   }
                 }
@@ -388,9 +392,35 @@ export const ShaOrderFormData = (
           formfieldtype: 'ShaNumericInput' as ShaFormFieldType,
           prevprops: {
             value: formValues.orderTotalAmount.toString(),
-            onChange: (value: string) => handleFieldChange('orderTotalAmount', Number(value)),
+            onChange: (value: string) => {
+              const newOrderTotal = Number(value);
+              handleFieldChange('orderTotalAmount', newOrderTotal);
+              const totalAmount =
+                newOrderTotal -
+                (formValues.depositPayed ? formValues.orderDeposit : 0) -
+                (formValues.orderIsDiscount ? formValues.orderDiscountRatio : 0);
+              handleFieldChange('totalAmount', totalAmount);
+            },
             size: 'medium',
             placeholder: '세척금액을 입력하세요',
+            validate: isNumberOnly,
+          } as ShaNumericInputProps,
+        },
+      ],
+    },
+  },
+  {
+    titleprops: { text: '총금액' },
+    formfieldprops: {
+      fields: [
+        {
+          formfieldtype: 'ShaNumericInput' as ShaFormFieldType,
+          prevprops: {
+            value: formValues.totalAmount.toString(),
+            size: 'medium',
+            placeholder: '총금액',
+            readOnly: true,
+            className: 'bg-gray-50',
             validate: isNumberOnly,
           } as ShaNumericInputProps,
         },
@@ -413,7 +443,7 @@ export const ShaOrderFormData = (
             min: 0,
             max: 999,
             step: 1,
-            validate: isNumberOnly, // 숫자만 허용
+            validate: isNumberOnly,
           } as ShaNumericInputProps,
         },
       ],
@@ -428,18 +458,52 @@ export const ShaOrderFormData = (
           prevprops: {
             checkboxProps: {
               checked: formValues.orderIsDiscount,
-              onCheckedChange: (checked: boolean) => handleFieldChange('orderIsDiscount', checked),
+              onCheckedChange: (checked: boolean) => {
+                handleFieldChange('orderIsDiscount', checked);
+                const totalAmount =
+                  formValues.orderTotalAmount -
+                  (formValues.depositPayed ? formValues.orderDeposit : 0) -
+                  (checked ? formValues.orderDiscountRatio : 0);
+                handleFieldChange('totalAmount', totalAmount);
+              },
               label: '할인 적용',
             },
             numericInputProps: {
               value: formValues.orderDiscountRatio.toString(),
-              onChange: (value: string) => handleFieldChange('orderDiscountRatio', Number(value)),
+              onChange: (value: string) => {
+                const newDiscount = Number(value);
+                handleFieldChange('orderDiscountRatio', newDiscount);
+                const totalAmount =
+                  formValues.orderTotalAmount -
+                  (formValues.depositPayed ? formValues.orderDeposit : 0) -
+                  (formValues.orderIsDiscount ? newDiscount : 0);
+                handleFieldChange('totalAmount', totalAmount);
+              },
               max: 1000000,
               size: 'medium',
               placeholder: '할인금액',
               validate: isNumberOnly,
             },
           } as ShaDiscountCheckboxProps,
+        },
+      ],
+    },
+  },
+  {
+    titleprops: {
+      text: '특이사항',
+    },
+    formfieldprops: {
+      fields: [
+        {
+          formfieldtype: 'ShaTextarea' as ShaFormFieldType,
+          prevprops: {
+            placeholder: '특이사항을 입력해주세요',
+            size: 'large',
+            rows: 4,
+            value: formValues.orderRemark,
+            onChange: (value: string) => handleFieldChange('orderRemark', value),
+          } as ShaTextareaProps,
         },
       ],
     },

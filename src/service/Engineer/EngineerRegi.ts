@@ -10,7 +10,7 @@ export interface EngineerResponse {
 
 export const engineerApi = {
   register: async (data: EngineerFormValues): Promise<EngineerResponse> => {
-    const response = await api.post<EngineerResponse>('/engineer/createEngineer', data);
+    const response = await api.post<EngineerResponse>('/registration/engineer', data);
     return response.data;
   },
 };
