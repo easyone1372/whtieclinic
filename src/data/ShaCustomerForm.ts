@@ -12,14 +12,9 @@ import { format } from 'date-fns';
 import { Payment } from '@/constants/Payment';
 import { Document } from '@/constants/Document';
 import { productCategories } from './ProductCategory';
-<<<<<<< HEAD
-import { isHangulOnly, isNumberOnly } from '@/constants/validation';
-=======
-import { isNumberOnly } from '@/constants/validation';
-
->>>>>>> 15096fa20ccce7f2cbbde80773fa3c6b96670c42
 import { getAvailableEngineers, getEngineerInfo } from '@/service/Order/EngSchedul';
 import { fetchEngineers } from '@/service/EngineerList/EngineerList';
+import { isNumberOnly } from '@/constants/validation';
 
 // 통합된 폼 값 타입
 export type OrderFormValues = {
