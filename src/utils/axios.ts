@@ -1,4 +1,3 @@
-// src/utils/axios.ts
 import axios from 'axios';
 
 // 스네이크케이스를 카멜케이스로 변환하는 유틸리티 함수
@@ -6,18 +5,39 @@ const toCamelCase = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map((v) => toCamelCase(v));
   } else if (obj !== null && obj.constructor === Object) {
-    return Object.keys(obj).reduce((result, key) => {
-      const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-      result[camelKey] = toCamelCase(obj[key]);
-      return result;
-    }, {} as Record<string, any>);
+    return Object.keys(obj).reduce(
+      (result, key) => {
+        const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+        result[camelKey] = toCamelCase(obj[key]);
+        return result;
+      },
+      {} as Record<string, any>
+    );
   }
   return obj;
 };
 
+// 카멜케이스를 스네이크케이스로 변환하는 유틸리티 함수
+const toSnakeCase = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map((v) => toSnakeCase(v));
+  } else if (obj !== null && obj.constructor === Object) {
+    return Object.keys(obj).reduce(
+      (result, key) => {
+        const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+        result[snakeKey] = toSnakeCase(obj[key]);
+        return result;
+      },
+      {} as Record<string, any>
+    );
+  }
+  return obj;
+};
+
+// Axios 인스턴스 생성
 const api = axios.create({
-  baseURL: '/api', // 서버의 base URL을 여기에 추가
-  withCredentials: true, // CORS credentials 설정
+  baseURL: '/api',
+  withCredentials: true,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -31,6 +51,12 @@ api.interceptors.request.use(
       method: config.method,
       data: config.data,
     });
+
+    // 요청 데이터를 스네이크케이스로 변환
+    if (config.data && typeof config.data === 'object') {
+      config.data = toSnakeCase(config.data);
+    }
+
     return config;
   },
   (error) => {
@@ -47,7 +73,8 @@ api.interceptors.response.use(
       status: response.status,
       data: response.data,
     });
-    // 응답 데이터의 키를 카멜케이스로 변환
+
+    // 응답 데이터를 카멜케이스로 변환
     response.data = toCamelCase(response.data);
     return response;
   },

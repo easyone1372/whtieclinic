@@ -43,10 +43,7 @@ const SchTimeLine = ({ scheduleData, onEditRow, isEditing, selectedDate }: SchTi
   }, [scheduleData]);
 
   const tableColumns = useMemo<SchTableColumn[]>(() => ['timeSlot', ...showSchArray], []);
-  console.log('Passing scheduleData to SchTimeLine:', scheduleData);
-  console.log('Passing to ATable - headers:', schHeaders); // 위치 7
-  console.log('Passing to ATable - data:', tableData); // 위치 8
-  console.log('Passing to ATable - columns:', tableColumns); // 위치 9
+
 
   return (
     <ATable

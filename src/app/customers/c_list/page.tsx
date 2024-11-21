@@ -48,10 +48,12 @@ const customerColumns: Array<keyof CustomerListInfo> = [
 
 // 데이터 변환 함수 날짜형식
 const transformCustomerData = (data: CustomerListInfo[]): CustomerListInfo[] => {
-  return data.map((item) => ({
-    ...item,
-    orderDate: item.orderDate.split(' ')[0], // 시간 제거
-  }));
+  return data
+    .map((item) => ({
+      ...item,
+      orderDate: item.orderDate.split(' ')[0], // 시간 제거
+    }))
+    .sort((a, b) => new Date(a.orderDate).getTime() - new Date(b.orderDate).getTime()); // 예약일 기준 정렬
 };
 
 const Page = () => {
@@ -61,9 +63,9 @@ const Page = () => {
   const fetchCustomerData = async () => {
     try {
       const response = await api.get<CustomerListInfo[]>('/order-info/getAllOrderDetails'); // API 호출
-      const transformedData = transformCustomerData(response.data); // 데이터 변환
+      const transformedData = transformCustomerData(response.data); // 데이터 변환 및 정렬
       setCustomerData(transformedData); // 상태 업데이트
-      console.log('Transformed Data:', transformedData); // 변환된 데이터 확인
+      console.log('Transformed and Sorted Data:', transformedData); // 변환된 데이터 확인
     } catch (error) {
       console.error('고객 데이터 로드 에러:', error);
     }

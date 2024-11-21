@@ -18,7 +18,7 @@ export type SchEngListType = {
 export type SchShowDisplay = {
   orderId: number;
   engineerId: number;
-  engineerName?: string; 
+  engineerName?: string;
   customerId: number;
   orderDate: string;
   orderTimeslot: string;
@@ -43,7 +43,7 @@ export type SchTimeLineProps = {
 
 //시간대 설정 배열 - 드롭박스 등에 사용
 export const timeSlots = [
-  '8시 이전',
+  '07:00 ~ 08:00',
   '08:00 ~ 09:00',
   '09:00 ~ 10:00',
   '10:00 ~ 11:00',
@@ -55,7 +55,7 @@ export const timeSlots = [
   '16:00 ~ 17:00',
   '17:00 ~ 18:00',
   '18:00 ~ 19:00',
-  '19시 이후',
+  '19:00 ~ 20:00',
 ];
 
 export type TimeSlot = (typeof timeSlots)[number];

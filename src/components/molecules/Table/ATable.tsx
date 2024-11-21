@@ -27,11 +27,12 @@ const ATable = <T extends { [key: string]: any }>({
           <h1>{title}</h1>
         </div>
       )}
-      <Table>
-        <ATableHeader props={headers} isEditing={isEditing} /> {/* 헤더 정보 전달 */}
-        <ATableBody data={data} columns={columns} onEditRow={onEditRow} isEditing={isEditing} />
-        {/* 데이터와 열 배열 전달 */}
-      </Table>
+      <div className="overflow-x-auto max-h-[1000px] overflow-y-scroll">
+        <Table>
+          <ATableHeader props={headers} isEditing={isEditing} />
+          <ATableBody data={data} columns={columns} onEditRow={onEditRow} isEditing={isEditing} />
+        </Table>
+      </div>
     </>
   );
 };
