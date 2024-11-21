@@ -10,9 +10,9 @@ const EngineerRegisterPage = () => {
     engineerName: '',
     engineerPhone: '',
     engineerAddr: '',
-    skills: [],
+    engineerValidSkill: [],
     engineerRemark: '',
-    engineerCommission: 50,
+    engineerCommissionRate: 50,
     engineerPayday: '',
     engineerHoliday: [],
     engineerDayoff: '',
@@ -22,10 +22,10 @@ const EngineerRegisterPage = () => {
     (formValues: EngineerFormValues) => !!formValues.engineerPhone,
     (formValues: EngineerFormValues) => !!formValues.engineerAddr,
     (formValues: EngineerFormValues) =>
-      typeof formValues.engineerCommission === 'number' &&
-      formValues.engineerCommission >= 0 &&
-      formValues.engineerCommission <= 100,
-    (formValues: EngineerFormValues) => !!formValues.skills,
+      typeof formValues.engineerCommissionRate === 'number' &&
+      formValues.engineerCommissionRate >= 0 &&
+      formValues.engineerCommissionRate <= 100,
+    (formValues: EngineerFormValues) => !!formValues.engineerValidSkill,
     (formValues: EngineerFormValues) => !!formValues.engineerPayday,
   ];
   return (

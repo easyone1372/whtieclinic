@@ -10,13 +10,12 @@ import { ShaTextareaProps } from '@/components/atom/Input/ShaTextArea';
 import { ShaTitledFormControlProps } from '@/components/molecules/Form/ShaTitledFormControl';
 
 export type EngineerFormValues = {
-  engineerId?: number;
   engineerName: string; // name -> engineerName
   engineerPhone: string; // phoneNumber -> engineerPhone
   engineerAddr: string; // location -> engineerAddr
-  skills: string[]; // 그대로 유지 (Many-to-Many 관계를 위한 필드)
+  engineerValidSkill: string[]; // 그대로 유지 (Many-to-Many 관계를 위한 필드)
   engineerRemark?: string; // remark -> engineerRemark
-  engineerCommission: number; // commissionRate -> engineerCommission
+  engineerCommissionRate: number; // commissionRate -> engineerCommission
   engineerPayday?: string; // paymentDay -> engineerPayday
   engineerHoliday?: string[]; // regularHolidays -> engineerHoliday
   engineerDayoff?: string; // specialHolidays -> engineerDayoff
@@ -91,9 +90,10 @@ export const ShaEngineerFormData = (
         {
           formfieldtype: 'ShaLabelCheckBox' as ShaFormFieldType,
           prevprops: {
-            selectedItems: formValues.skills,
+            selectedItems: formValues.engineerValidSkill,
 
-            onItemsChange: (newItems: string[]) => handleFieldChange('skills', newItems),
+            onItemsChange: (newItems: string[]) =>
+              handleFieldChange('engineerValidSkill', newItems),
           } as ShaLabelCheckBoxProps,
         },
       ],
@@ -133,8 +133,8 @@ export const ShaEngineerFormData = (
               value: payment,
               text: `${payment}%`,
             })),
-            value: formValues.engineerCommission.toString(),
-            onChange: (value: string) => handleFieldChange('engineerCommission', Number(value)),
+            value: formValues.engineerCommissionRate.toString(),
+            onChange: (value: string) => handleFieldChange('engineerCommissionRate', Number(value)),
           } as ShaDropdownProps,
         },
       ],

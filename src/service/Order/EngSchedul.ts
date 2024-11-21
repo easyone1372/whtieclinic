@@ -2,7 +2,7 @@
 import { format, isSameDay } from 'date-fns';
 import { fetchEngineers } from '../EngineerList/EngineerList';
 import api from '@/utils/axios';
-import { Engineer, Skill } from '@/constants/types/type';
+import { ko } from 'date-fns/locale';
 
 export interface ScheduleData {
   orderId: number;
@@ -49,6 +49,7 @@ export const getAvailableEngineers = async (
       .map((schedule) => schedule.engineerId);
 
     const availableEngineers = engineers.filter((engineer) => {
+      // 1. 이미 예약된 엔지니어 제외
       if (bookedEngineersIds.includes(engineer.engineerId)) {
         return false;
       }
@@ -58,12 +59,16 @@ export const getAvailableEngineers = async (
         const [year, month, day] = dateOnly.split('-').map(Number);
         const date = new Date(year, month - 1, day);
 
-        const selectedDay = format(date, 'EEEE');
-        if (engineer.engineerDayoff === selectedDay) {
-          return false;
+        // 2. 휴무일(요일) 체크
+        const selectedDay = format(date, 'EEEE', { locale: ko });
+        if (engineer.engineerDayoff) {
+          const daysOff = engineer.engineerDayoff.split(/[,\s]+/).map((day) => day.trim());
+          if (daysOff.includes(selectedDay)) {
+            return false;
+          }
         }
 
-        // 휴가일 체크
+        // 3. 휴가일 체크
         if (engineer.engineerHoliday && Array.isArray(engineer.engineerHoliday)) {
           const hasHoliday = engineer.engineerHoliday.some((holiday) => {
             try {
@@ -78,13 +83,17 @@ export const getAvailableEngineers = async (
         console.error('Date parsing error:', error);
         return false;
       }
-      // 휴무일(요일) 체크
-     
+
+      // 4. 제품 상세 스킬 체크 (orderProductDetail 사용)
       if (orderProduct && engineer.engineerSkills) {
-        const hasSkill = engineer.engineerSkills.some(
-          (skill: Skill) => skill.skillType === orderProduct
-        );
-        if (!hasSkill) return false;
+        // schedule의 orderProductDetail과 엔지니어 스킬 매칭
+        const schedule = schedules.find((s) => s.engineerId === engineer.engineerId);
+        if (schedule?.orderProductDetail) {
+          const hasSkill = engineer.engineerSkills.some((skill) =>
+            schedule.orderProductDetail.includes(skill)
+          );
+          if (!hasSkill) return false;
+        }
       }
 
       return true;
@@ -111,7 +120,7 @@ export const getEngineerInfo = async (engineerId: number) => {
     if (!engineer) return null;
 
     const skillsText = engineer.engineerSkills
-      ? engineer.engineerSkills.map((skill) => skill.skillType).join(', ')
+      ? engineer.engineerSkills.map((v) => v).join(', ')
       : '없음';
 
     return `이름: ${engineer.engineerName}

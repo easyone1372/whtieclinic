@@ -16,7 +16,7 @@ export type Engineer = {
   engineerDayoff?: string;
   engineerHoliday?: string[]; //1114 배열로 받는거 같아서 [] 붙임.
   engineerPayday: string;
-  engineerSkills?: Skill[];
+  engineerSkills?: string[];
 };
 
 export type Order = {

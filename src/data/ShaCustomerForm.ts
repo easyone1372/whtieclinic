@@ -13,10 +13,8 @@ import { Payment } from '@/constants/Payment';
 import { Document } from '@/constants/Document';
 import { productCategories } from './ProductCategory';
 import { isHangulOnly, isNumberOnly } from '@/constants/validation';
-import { SchShowDisplay, TimeSlot, timeSlots } from '@/constants/LJW/ShowSchTypes';
-import { dummyEngineers } from '@/constants/LJW/dummyAgain';
-import { Skill } from '@/constants/types/type';
 import { getAvailableEngineers, getEngineerInfo } from '@/service/Order/EngSchedul';
+import { fetchEngineers } from '@/service/EngineerList/EngineerList';
 
 // 통합된 폼 값 타입
 export type OrderFormValues = {
@@ -29,8 +27,9 @@ export type OrderFormValues = {
   customerRemark: string;
 
   // 주문 정보
-  orderCategory: string;
   orderProduct: string;
+  orderProductDetail: string;
+
   orderTotalAmount: number;
   orderCount: number;
   orderIsDiscount: boolean; // 할인 여부
@@ -143,7 +142,7 @@ export const ShaOrderFormData = (
             size: 'large',
             rows: 5,
             readOnly: true,
-            className: 'mt-2 bg-gray-50',
+            className: 'mt-2 bg-gray-50 h-fit',
           } as ShaTextareaProps,
         },
       ],
@@ -320,27 +319,60 @@ export const ShaOrderFormData = (
                   textprops: { text: productCategories.washingMachine.product },
                 },
               },
-              value: formValues.orderCategory?.split(':')[0],
+              value: formValues.orderProduct?.split(':')[0],
               onChange: (value: string) => {
-                handleFieldChange('orderCategory', value);
-                handleFieldChange('orderProduct', '');
+                handleFieldChange('orderProduct', value); // 에어컨/세탁기
+                handleFieldChange('orderProductDetail', '');
+
+                handleFieldChange('selectedEngineerId', null);
+                handleFieldChange('engineerInfo', '');
+                handleFieldChange('availableEngineers', []);
               },
             },
             dropdownprops: {
               label: '카테고리 선택',
               width: 'small',
-              options: formValues.orderCategory
+              options: formValues.orderProduct
                 ? productCategories[
-                    formValues.orderCategory.split(':')[0] === '에어컨'
+                    formValues.orderProduct.split(':')[0] === '에어컨'
                       ? 'airConditioner'
                       : 'washingMachine'
                   ].categories.map((item) => ({ value: item.category, text: item.category }))
                 : [],
-              value: formValues.orderCategory?.split(':')[1],
-              onChange: (value: string) => {
-                const product = formValues.orderCategory?.split(':')[0];
-                handleFieldChange('orderCategory', `${product}:${value}`);
-                handleFieldChange('orderProduct', value);
+              value: formValues.orderProduct?.split(':')[1],
+              onChange: async (value: string) => {
+                const product = formValues.orderProduct?.split(':')[0];
+                handleFieldChange('orderProduct', `${product}:${value}`);
+                handleFieldChange('orderProductDetail', value);
+
+                if (formValues.orderDate) {
+                  // 1. 먼저 모든 엔지니어 데이터 가져오기
+                  const allEngineers = await fetchEngineers();
+                  // 2. 날짜/시간 기반으로 가능한 엔지니어 가져오기
+                  const availableEngineers = await getAvailableEngineers(formValues.orderDate);
+
+                  // 3. 스킬 기반으로 필터링
+                  const filteredEngineers = availableEngineers.filter((eng) => {
+                    const engineer = allEngineers.find(
+                      (e) => e.engineerId.toString() === eng.value
+                    );
+                    return engineer?.engineerSkills?.includes(value);
+                  });
+
+                  handleFieldChange('availableEngineers', filteredEngineers);
+
+                  // 4. 선택된 엔지니어가 여전히 가능한지 확인
+                  if (formValues.selectedEngineerId) {
+                    const isStillAvailable = filteredEngineers.some(
+                      (eng) => eng.value === formValues.selectedEngineerId?.toString()
+                    );
+                    if (!isStillAvailable) {
+                      handleFieldChange('selectedEngineerId', null);
+                      handleFieldChange('engineerInfo', '');
+                      handleFieldChange('engineerInfo', '가능한 기사가 없습니다.');
+                    }
+                  }
+                }
               },
             },
           } as ShaCheckboxDropdownSelectorProps,

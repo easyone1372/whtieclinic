@@ -40,11 +40,6 @@ const ShaCheckboxDropdownSelector = ({
       }))
     : [];
 
-  const needsCustomInput =
-    selectedDropdownValue === '스탠드' ||
-    selectedDropdownValue === '투인원' ||
-    selectedDropdownValue === '기타';
-
   return (
     <div className="flex items-center gap-4">
       <ShaOneCheckbox
@@ -54,28 +49,24 @@ const ShaCheckboxDropdownSelector = ({
       />
 
       <div className="flex flex-col gap-2">
-        {selectedCategory && (
-          <ShaDropdown
-            key={selectedCategory}
-            label={label}
-            value={selectedDropdownValue}
-            options={dropdownOptions}
-            width="medium"
-            onChange={handleDropdownChange}
-          />
-        )}
+        <ShaDropdown
+          key={selectedCategory}
+          label={label}
+          value={selectedDropdownValue}
+          options={dropdownOptions}
+          width="medium"
+          onChange={handleDropdownChange}
+        />
 
-        {needsCustomInput && (
-          <ShaTextarea
-            key={selectedDropdownValue}
-            placeholder="세부 사항 입력"
-            value={customInputValue}
-            onChange={onProductChange}
-            size="medium"
-            rows={2}
-            className="min-h-[60px]"
-          />
-        )}
+        <ShaTextarea
+          key={selectedDropdownValue}
+          placeholder="세부 사항 입력"
+          value={customInputValue}
+          onChange={onProductChange}
+          size="medium"
+          rows={2}
+          className="min-h-[60px]"
+        />
       </div>
     </div>
   );

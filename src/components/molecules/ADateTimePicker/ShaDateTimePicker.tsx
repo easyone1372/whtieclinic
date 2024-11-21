@@ -31,7 +31,7 @@ const ShaDateTimePicker = ({
   className,
 }: ShaDateTimePickerProps) => {
   const [open, setOpen] = React.useState(false);
-  const hours = Array.from({ length: 10 }, (_, i) => (i + 9).toString().padStart(2, '0'));
+  const hours = Array.from({ length: 13 }, (_, i) => (i + 7).toString().padStart(2, '0'));
 
   const handleDateSelect = (date: Date | undefined) => {
     if (!date) return;
@@ -45,7 +45,7 @@ const ShaDateTimePicker = ({
     );
 
     onChange?.(newDateTime);
-    setOpen(false); // 날짜 선택 시 Popover 닫기
+    setOpen(false);
   };
 
   const handleTimeChange = (timeValue: string) => {

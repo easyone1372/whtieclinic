@@ -6,20 +6,17 @@ const toCamelCase = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map((v) => toCamelCase(v));
   } else if (obj !== null && obj.constructor === Object) {
-    return Object.keys(obj).reduce(
-      (result, key) => {
-        const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
-        result[camelKey] = toCamelCase(obj[key]);
-        return result;
-      },
-      {} as Record<string, any>
-    );
+    return Object.keys(obj).reduce((result, key) => {
+      const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
+      result[camelKey] = toCamelCase(obj[key]);
+      return result;
+    }, {} as Record<string, any>);
   }
   return obj;
 };
 
 const api = axios.create({
-  baseURL: '', // 서버의 base URL을 여기에 추가
+  baseURL: '/api', // 서버의 base URL을 여기에 추가
   withCredentials: true, // CORS credentials 설정
   headers: {
     'Content-Type': 'application/json',
