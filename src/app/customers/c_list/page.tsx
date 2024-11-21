@@ -46,15 +46,24 @@ const customerColumns: Array<keyof CustomerListInfo> = [
   'receiptDocsIssued',
 ];
 
+// 데이터 변환 함수 날짜형식
+const transformCustomerData = (data: CustomerListInfo[]): CustomerListInfo[] => {
+  return data.map((item) => ({
+    ...item,
+    orderDate: item.orderDate.split(' ')[0], // 시간 제거
+  }));
+};
+
 const Page = () => {
   const [customerData, setCustomerData] = useState<CustomerListInfo[]>([]); // 고객 데이터 상태
 
   // 고객 데이터를 API에서 가져오는 함수
   const fetchCustomerData = async () => {
     try {
-      const response = await api.get<CustomerListInfo[]>('/api/order-info/getAllOrderDetails'); // API 수정해야됨
-      setCustomerData(response.data); // 받아온 데이터로 상태 업데이트
-      console.log(response.data); // 데이터 확인용 콘솔 출력
+      const response = await api.get<CustomerListInfo[]>('/order-info/getAllOrderDetails'); // API 호출
+      const transformedData = transformCustomerData(response.data); // 데이터 변환
+      setCustomerData(transformedData); // 상태 업데이트
+      console.log('Transformed Data:', transformedData); // 변환된 데이터 확인
     } catch (error) {
       console.error('고객 데이터 로드 에러:', error);
     }

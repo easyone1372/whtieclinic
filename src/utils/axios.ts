@@ -19,7 +19,7 @@ const toCamelCase = (obj: any): any => {
 };
 
 const api = axios.create({
-  baseURL: '', // 서버의 base URL을 여기에 추가
+  baseURL: '/api', // 서버의 base URL을 여기에 추가
   withCredentials: true, // CORS credentials 설정
   headers: {
     'Content-Type': 'application/json',

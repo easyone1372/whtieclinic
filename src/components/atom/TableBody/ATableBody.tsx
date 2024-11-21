@@ -25,7 +25,7 @@ const ATableBody = <T extends { [key: string]: any }>({
               {/* 'receiptDocsIssued' 컬럼일 때만 체크박스로 표시 */}
               {column === 'receiptDocsIssued' ? (
                 <ShaCheckbox
-                  isChecked={row[column] === 'true'}
+                  isChecked={row[column] === true}
                   textprops={{ text: '' }} // 체크박스 텍스트는 빈 값으로 설정
                 />
               ) : (

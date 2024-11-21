@@ -9,8 +9,8 @@ import { useRouter } from 'next/navigation';
 import { getEngineersByDate, getOrdersByEngineerAndDate } from '@/constants/LJW/ShowSchUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-//SchShow.tsx
-//스케쥴 화면 전체
+// SchShow.tsx
+// 스케쥴 화면 전체
 const SchShow = () => {
   const [engList, setEngList] = useState<Engineer[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -20,71 +20,63 @@ const SchShow = () => {
 
   const router = useRouter();
 
-  // 날짜 변경 핸들러 메모이제이션
+  // 날짜 변경 핸들러
   const handleDateChange = useCallback((date: Date | null) => {
     setSelectedDate(date || new Date());
   }, []);
 
-  // 기사 선택 핸들러 메모이제이션
+  // 기사 선택 핸들러
   const handleEngSelect = useCallback((engineer_id: number) => {
     setSelectEng(engineer_id);
   }, []);
 
-  // 수정 모드 토글 핸들러 메모이제이션
+  // 수정 모드 토글 핸들러
   const handleEditMode = useCallback(() => {
     setIsEditing((prev) => !prev);
   }, []);
 
-  // 선택된 기사 이름 메모이제이션
-  // const selectedEngineerName = useMemo(
-  //   () =>
-  //     engList.find((engineer) => engineer.engineerId === selectEng)?.engineerName ||
-  //     '기사를 선택하세요',
-  //   [engList, selectEng]
-  // );
+  // 선택된 기사 이름
   const selectedEngineerName = useMemo(() => {
     const engineer = engList.find((engineer) => engineer.engineerId === selectEng);
     return engineer ? `${engineer.engineerName}님의 일정` : '기사를 선택하세요';
   }, [engList, selectEng]);
 
-  // 날짜 변경 시, 해당 날짜에 맞는 기사 리스트를 가져옴
+  // 날짜 변경 시 초기화 및 데이터 가져오기
   useEffect(() => {
     const fetchData = async () => {
       if (selectedDate) {
-        const engineers = await getEngineersByDate(selectedDate);
-        console.log('SchShow Engineer 정보', engineers);
-        setEngList(engineers);
+        // 날짜 변경 시 초기화
+        setEngList([]);
         setSelectEng(null);
         setScheduleData([]);
+
+        const engineers = await getEngineersByDate(selectedDate);
+        setEngList(engineers);
       }
     };
 
     fetchData();
   }, [selectedDate]);
 
-  // 기사 선택 시, 해당 기사의 스케줄을 가져옴
+  // 기사 선택 시 해당 기사의 스케줄 가져오기
   useEffect(() => {
     const fetchEngineerData = async () => {
       if (selectEng && selectedDate) {
         const schedule = await getOrdersByEngineerAndDate(selectEng, selectedDate);
-
-        if (schedule.length > 0) {
-          console.log('Fetched schedule data for engineerId:', selectEng, schedule); // 디버깅용
-          setScheduleData(schedule);
-        } else {
-          console.warn('No schedule data found for engineerId:', selectEng);
-          setScheduleData([]);
-        }
+        setScheduleData(schedule);
+      } else {
+        // 기사가 선택되지 않은 경우 초기화
+        setScheduleData([]);
       }
     };
 
     fetchEngineerData();
   }, [selectEng, selectedDate]);
 
+  // 스케줄 수정 핸들러
   const handleRowEdit = useCallback(
     (timeSlot: string) => {
       const order = scheduleData?.find((order) => order.orderTimeslot === timeSlot);
-      console.log('Passing scheduleData to SchTimeLine:', scheduleData);
       let queryParams: Record<string, string> = {
         selectDate: selectedDate.toISOString(),
         selectTime: timeSlot,
@@ -101,7 +93,6 @@ const SchShow = () => {
         };
       }
 
-      // console.log('queryString:', queryParams);
       const queryString = new URLSearchParams(queryParams);
       router.push(`/customer/c_modify?${queryString}`);
     },
@@ -122,7 +113,7 @@ const SchShow = () => {
           </CardHeader>
           <CardContent>
             <SchTimeLine
-              scheduleData={scheduleData}
+              scheduleData={selectEng ? scheduleData : []} // 기사가 선택되지 않은 경우 빈 배열 전달
               selectedDate={selectedDate}
               onEditRow={handleRowEdit}
               isEditing={isEditing}

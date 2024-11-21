@@ -47,17 +47,20 @@ const ShaDrawer = <T extends { [key: string]: any }>({
         </ShaButton>
       </DrawerTrigger>
 
-      <DrawerContent className="w-[350px] h-screen">
+      <DrawerContent className="w-[350px] h-screen ">
         <div className="flex justify-end">
           <DrawerClose asChild>
-            <ShaButton variant="outline" text="" size="sm">
-              <X />
-            </ShaButton>
+            {/* 취소버튼 */}
+            <div className="pr-5">
+              <ShaButton variant="outline" text="" size="sm">
+                <X />
+              </ShaButton>
+            </div>
           </DrawerClose>
         </div>
 
         {/* Drawer 헤더 영역 */}
-        <div className="mx-auto w-full max-w-sm ">
+        <div className="mx-auto w-full max-w-sm flex pl-2">
           <DrawerHeader className=" ml-2 flex-col">
             <DrawerTitle>{drawerTitle}</DrawerTitle>
             <DrawerDescription>{drawerDescription}</DrawerDescription>

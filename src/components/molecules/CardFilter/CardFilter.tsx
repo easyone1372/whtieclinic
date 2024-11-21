@@ -34,7 +34,7 @@ const CardFilter = <T extends { [key: string]: any }>({
       : []; // data가 없으면 빈 배열 반환
 
   return (
-    <div className="flex flex-col min-h-0 flex-1">
+    <div className="flex flex-col min-h-0 pl-1 ">
       {/* 필터 입력 필드 */}
       <div>
         <ShaFilter
@@ -43,8 +43,8 @@ const CardFilter = <T extends { [key: string]: any }>({
           onChange={(value) => onFilterChange(value)}
         />
       </div>
-
-      <div className="flex flex-col px-4 ">
+      {/* 기사님 정보 리스트   */}
+      <div className="flex flex-col px-4 gap-3">
         {filteredData.map((item, index) => (
           <ACard
             key={index}

@@ -12,10 +12,8 @@ import { format } from 'date-fns';
 import { Payment } from '@/constants/Payment';
 import { Document } from '@/constants/Document';
 import { productCategories } from './ProductCategory';
-import { isHangulOnly, isNumberOnly } from '@/constants/validation';
-import { SchShowDisplay, TimeSlot, timeSlots } from '@/constants/LJW/ShowSchTypes';
-import { dummyEngineers } from '@/constants/LJW/dummyAgain';
-import { Skill } from '@/constants/types/type';
+import { isNumberOnly } from '@/constants/validation';
+
 import { getAvailableEngineers, getEngineerInfo } from '@/service/Order/EngSchedul';
 
 // 통합된 폼 값 타입

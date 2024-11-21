@@ -1,7 +1,6 @@
 import { ScheduleShowApi, ScheduleShowResponse } from '@/service/Schedule/ScheduleShow';
 import { Engineer } from '../types/type';
 import { SchShowDisplay, TimeSlot, timeSlots } from './ShowSchTypes';
-import { dummyEngineers, dummyScheduleDisplays } from './dummyAgain';
 import api from '@/utils/axios';
 
 // 프론트->db로 보낼때 string으로 변환 뒤 전송
@@ -31,7 +30,7 @@ export const getEngineersByDate = async (date: Date): Promise<Engineer[]> => {
     console.log('selectedDayOfWeek:', selectedDayOfWeek);
 
     // API 호출
-    const response = await api.get('/api/engineer/searchAllEngineer'); ///api/ 안붙여서 안된거였음
+    const response = await api.get('/engineer/searchAllEngineer'); ///api/ 안붙여서 안된거였음
     console.log('response:', response);
     const data = await response.data;
     console.log('API response:', data);
@@ -96,8 +95,13 @@ export const getOrdersByEngineerAndDate = async (
       return [];
     }
 
+    const isSameDate = (orderDate: string, selectedDate: Date) => {
+      const [orderDateOnly] = orderDate.split(' ');
+      return new Date(orderDateOnly).toDateString() === selectedDate.toDateString();
+    };
+
     const mappedData: SchShowDisplay[] = data
-      .filter((item) => item.engineerId === engineerId) // 필터링 추가
+      .filter((item) => item.engineerId === engineerId && isSameDate(item.orderDate, selectedDate)) // 필터링 추가
       .map((item: any) => {
         if (!item.orderDate) {
           console.warn('Missing orderDate in item:', item);

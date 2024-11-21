@@ -59,6 +59,9 @@ const CustomToolbar: React.FC<CustomToolbarProps> = ({ date, onNavigate }) => {
   );
 };
 
+
+
+
 interface CustomCalendarProps {
   events?: CalendarEventType[];
   onEventSelect?: (event: CalendarEventType) => void;
@@ -73,18 +76,7 @@ const ACalendar: React.FC<CustomCalendarProps> = ({ events = [], onEventSelect, 
     if (onEventSelect) onEventSelect(event);
   };
 
-  const handleSelectSlot = (slotInfo: { start: Date }) => {
-    const selectedDate = moment(slotInfo.start);
-    const startOfMonth = selectedDate.clone().startOf('month');
-    const weekNumber = selectedDate.diff(startOfMonth, 'weeks') + 1;
-
-    // 출력 예시: "11월 2주차"
-    console.log(`${selectedDate.format('MM월')} ${weekNumber}주차`);
-
-    if (onSelectSlot) {
-      onSelectSlot(slotInfo);
-    }
-  };
+ 
 
   const handleNavigate = (newDate: Date) => setCurrentDate(newDate);
 
@@ -107,7 +99,7 @@ const ACalendar: React.FC<CustomCalendarProps> = ({ events = [], onEventSelect, 
         views={['month']}
         components={{ toolbar: (toolbarProps) => <CustomToolbar {...toolbarProps} /> }}
         onSelectEvent={handleSelectEvent}
-        onSelectSlot={handleSelectSlot} // onSelectSlot 연결
+        onSelectSlot={onSelectSlot} // onSelectSlot 연결
         selectable // 셀을 클릭 가능하도록 설정
         date={currentDate}
         onNavigate={handleNavigate}

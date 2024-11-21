@@ -10,7 +10,7 @@ const initialEngineerData: Engineer[] = [
     engineerName: '홍길동',
     engineerPhone: '01012345678',
     engineerAddr: '인천 부평구',
-    engineerCommission: 50,
+    engineerCommissionRate: 50,
     engineerPayday: '일요일',
   },
 ];
