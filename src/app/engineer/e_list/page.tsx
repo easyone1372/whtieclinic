@@ -67,14 +67,11 @@ const Page = () => {
           setEvents(events);
 
           // 주차별 합계 계산
-          const weeklyData = events.reduce(
-            (acc, event) => {
-              const week = getWeekOfMonth(event.start);
-              acc[week] = (acc[week] || 0) + (event.amount || 0);
-              return acc;
-            },
-            {} as Record<string, number>
-          );
+          const weeklyData = events.reduce((acc, event) => {
+            const week = getWeekOfMonth(event.start);
+            acc[week] = (acc[week] || 0) + (event.amount || 0);
+            return acc;
+          }, {} as Record<string, number>);
           setWeeklyTotals(weeklyData);
         } catch (error) {
           console.error('Error loading engineer events:', error);

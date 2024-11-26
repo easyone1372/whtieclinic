@@ -25,6 +25,7 @@ const EngineerModify = () => {
   const [engineers, setEngineers] = useState<Engineer[]>([]);
   const [selectedEngineer, setSelectedEngineer] = useState<Engineer | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [formKey, setFormKey] = useState(0); // 폼을 강제로 리렌더링하기 위한 key
 
   // 엔지니어 목록을 불러오는 함수
   const loadEngineers = async () => {
@@ -44,24 +45,24 @@ const EngineerModify = () => {
 
   const handleItemClick = async (item: Engineer) => {
     try {
+      setIsDrawerOpen(false);
       // 선택한 엔지니어의 세부 정보를 받아옴
       const engineer = await engineerApi.getEngineer(item.engineerId);
       setSelectedEngineer({
         ...item,
-        engineerValidSkill: engineer.engineerSkills || [], // 서버에서 받은 `engineerSkills`를 `engineerValidSkill`로 변환
+        engineerValidSkill: engineer.engineerSkills || [],
       });
-      setIsDrawerOpen(false);
+      setFormKey((prev) => prev + 1); // 새로운 엔지니어 선택시 폼 리렌더링
     } catch (error) {
       console.error('Error fetching engineer details:', error);
     }
   };
 
-  // 서버에서 받은 엔지니어 정보를 폼의 초기값으로 변환
   const engineerToFormValues = (engineer: EngineerModifyType): EngineerFormValues => ({
     engineerName: engineer.engineerName,
     engineerPhone: engineer.engineerPhone,
     engineerAddr: engineer.engineerAddr,
-    engineerValidSkill: engineer.engineerSkills || [], // `engineerValidSkill`을 그대로 사용
+    engineerValidSkill: engineer.engineerSkills || [],
     engineerRemark: engineer.engineerRemark || '',
     engineerCommissionRate: engineer.engineerCommissionRate || 50,
     engineerPayday: engineer.engineerPayday || '',
@@ -69,40 +70,33 @@ const EngineerModify = () => {
     engineerDayoff: engineer.engineerDayoff || '',
   });
 
-  // 폼 데이터 제출 시 `engineerValidSkill`을 그대로 서버에 전송하고, `engineerId`도 함께 전송
   const handleSubmit = async (values: EngineerFormValues) => {
     try {
-      if (!selectedEngineer) {
-        console.error('No engineer selected');
+      if (!selectedEngineer?.engineerId) {
+        console.error('No engineer selected or missing ID');
         return;
       }
 
-      const { engineerId } = selectedEngineer;
-      if (!engineerId) {
-        console.error('Engineer ID is missing');
-        return;
-      }
-
-      // `engineerValidSkill`을 그대로 서버에 전송하고 `engineerId`도 추가하여 전송
       const modifiedValues = {
         ...values,
-        engineerId, // `engineerId` 추가
+        engineerId: selectedEngineer.engineerId,
       };
 
-      const response = await engineerApi.modify(engineerId, modifiedValues);
+      const response = await engineerApi.modify(selectedEngineer.engineerId, modifiedValues);
 
       if (response.success) {
-        // 성공적으로 수정되면 리스트를 새로고침
         await loadEngineers();
-        // 선택된 엔지니어 정보도 업데이트
-        const updatedEngineer = await engineerApi.getEngineer(engineerId);
-        setSelectedEngineer({
-          ...selectedEngineer,
+        const updatedEngineer = await engineerApi.getEngineer(selectedEngineer.engineerId);
+        setSelectedEngineer((prev) => ({
+          ...prev!,
           ...updatedEngineer,
-        });
+          engineerValidSkill: updatedEngineer.engineerSkills || [],
+        }));
+        alert('수정이 완료되었습니다!');
       }
     } catch (error) {
       console.error('Error updating engineer:', error);
+      alert('수정에 실패했습니다.');
     }
   };
 
@@ -122,9 +116,10 @@ const EngineerModify = () => {
       {selectedEngineer && (
         <div className="p-6">
           <ShaFormTemplate<EngineerFormValues>
+            key={formKey}
             title="기사 정보 수정"
-            initialValues={engineerToFormValues(selectedEngineer)} // `engineerValidSkill`을 사용
-            onSubmit={handleSubmit} // `handleSubmit`을 호출하여 `engineerValidSkill`을 서버로 전송
+            initialValues={engineerToFormValues(selectedEngineer)}
+            onSubmit={handleSubmit}
             formDataGenerator={ShaEngineerFormData}
             validationRules={validationRules}
           />

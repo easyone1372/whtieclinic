@@ -33,12 +33,12 @@ export type ProductType = '에어컨' | '세탁기';
 
 type ProductCategory = {
   product: ProductType;
-  categories: { category: AirConditionerCategory | WashingMachineCategory }[]; // Product[] 대신 인라인으로 타입 정의
+  categories: { category: AirConditionerCategory | WashingMachineCategory }[];
 };
 
-export const productCategories: Record<'airConditioner' | 'washingMachine', ProductCategory> = {
-  // ProductCategoryProps 대신 Record 사용
-  airConditioner: {
+// key를 한글로 변경
+export const productCategories: Record<'에어컨' | '세탁기', ProductCategory> = {
+  에어컨: {
     product: '에어컨',
     categories: [
       { category: '벽걸이' },
@@ -56,7 +56,7 @@ export const productCategories: Record<'airConditioner' | 'washingMachine', Prod
       { category: '기타' },
     ],
   },
-  washingMachine: {
+  세탁기: {
     product: '세탁기',
     categories: [
       { category: '통돌이 5~17kg' },

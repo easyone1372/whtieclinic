@@ -1,6 +1,5 @@
 'use client';
-
-import React from 'react';
+import React, { useState } from 'react';
 import ShaSideNav from './ShaSideNav';
 import { cn } from '@/lib/utils';
 
@@ -9,21 +8,20 @@ type LayoutWrapperProps = {
 };
 
 const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
+  const [isExpanded, setIsExpanded] = useState(true);
+
   return (
     <div className="min-h-screen bg-background flex">
-      <ShaSideNav />
-      <main 
+      <ShaSideNav isExpanded={isExpanded} onToggle={setIsExpanded} />
+      <main
         className={cn(
           'flex-1',
-          'ml-72', // 사이드바 너비와 맞춤
+          isExpanded ? 'ml-72' : 'ml-16', // 사이드바 상태에 따라 margin 조절
           'p-8',
-          'transition-all duration-300'
+          'transition-all duration-300' // 부드러운 전환 효과
         )}
       >
-        {/* 여기 사이드바제외 컨텐츠들 가운데정렬하게끔  */}
-        <div className="w-full h-full max-w-[2400px] mx-auto">   
-          {children}
-        </div>
+        <div className="w-full h-full max-w-[2400px] mx-auto">{children}</div>
       </main>
     </div>
   );

@@ -14,7 +14,7 @@ const orderApi = {
       orderCustomerPhone: data.orderCustomerPhone.replace(/-/g, ''),
     };
 
-    const response = await api.post<OrderResponse>('/order-info/createNewOrder', cleanedData);
+    const response = await api.post<OrderResponse>('/order-management/orders', cleanedData);
     return response.data;
   },
 
