@@ -1,14 +1,11 @@
 'use client';
 
-import UnifiedSchedulePage from '@/components/organism/Customer/OrderForm';
-import ShaFormTemplate from '@/components/organism/Template/ShaFormTemplate';
-import { OrderFormValues, ShaOrderFormData } from '@/data/ShaOrderFormData';
-import { orderApi } from '@/service/Order/Order';
+import OrderForm from '@/components/organism/Customer/OrderForm';
 
 const Page = () => {
   return (
     <div>
-      <UnifiedSchedulePage></UnifiedSchedulePage>
+      <OrderForm></OrderForm>
     </div>
   );
 };

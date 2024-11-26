@@ -16,6 +16,19 @@ export type Engineer = {
   engineerDayoff?: string;
   engineerHoliday?: string[]; //1114 배열로 받는거 같아서 [] 붙임.
   engineerPayday: string;
+  engineerValidSkill?: string[];
+};
+
+export type EngineerModifyType = {
+  engineerId: number;
+  engineerName: string;
+  engineerPhone: string;
+  engineerAddr: string;
+  engineerRemark?: string;
+  engineerCommissionRate: number;
+  engineerDayoff?: string;
+  engineerHoliday?: string[]; //1114 배열로 받는거 같아서 [] 붙임.
+  engineerPayday: string;
   engineerSkills?: string[];
 };
 

@@ -10,6 +10,7 @@ import { ShaTextareaProps } from '@/components/atom/Input/ShaTextArea';
 import { ShaTitledFormControlProps } from '@/components/molecules/Form/ShaTitledFormControl';
 
 export type EngineerFormValues = {
+  engineerId?: number;
   engineerName: string; // name -> engineerName
   engineerPhone: string; // phoneNumber -> engineerPhone
   engineerAddr: string; // location -> engineerAddr

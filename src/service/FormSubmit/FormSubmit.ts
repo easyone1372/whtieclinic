@@ -42,12 +42,17 @@ export const useFormSubmit = <T extends object>({
 
     try {
       const response = await onSubmit(formValues);
-      if (response.success) {
+      if (response.statusCode === 200) {
+        // 성공 시 처리
         onSuccess?.();
         resetFormValues();
+      } else {
+        // 실패 시 처리
+        setError(response.message || '등록 중 오류가 발생했습니다. 다시 시도해 주세요.');
       }
-    } catch (error) {
-      setError('등록 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } catch (error: any) {
+      // 예외 처리
+      setError(error.response?.data.message || '등록 중 오류가 발생했습니다. 다시 시도해 주세요.');
     } finally {
       setIsLoading(false);
     }

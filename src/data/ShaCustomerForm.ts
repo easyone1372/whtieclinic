@@ -361,7 +361,7 @@ export const ShaOrderFormData = (
                     const engineer = allEngineers.find(
                       (e) => e.engineerId.toString() === eng.value
                     );
-                    return engineer?.engineerSkills?.includes(value);
+                    return engineer?.engineerValidSkill?.includes(value);
                   });
 
                   handleFieldChange('availableEngineers', filteredEngineers);

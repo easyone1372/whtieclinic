@@ -6,6 +6,7 @@ import FilterTable from '@/components/organism/FilterTable/FiterTable';
 
 // 회원관리 리스트보기
 type CustomerListInfo = {
+  orderId: number;
   orderDate: string;
   customerName: string;
   customerPhone: string;
@@ -30,6 +31,7 @@ const headers = {
   orderPayment: '결제방식',
   orderRecieptDocs: '증빙서류',
   receiptDocsIssued: '영수증 발행여부',
+  modify: '정보 수정',
 };
 
 // 고객 데이터의 열 키 설정
@@ -73,20 +75,31 @@ const Page = () => {
 
   const handleExcelDownload = async () => {
     try {
-      const response = await api.get(`/order-management/orders/download/excel`, {
+      const response = await api.get('/order-management/orders/download/excel', {
         responseType: 'blob',
       });
-      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+
+      // 현재 날짜로 파일명 생성
+      const fileName = `주문상세_${new Date().toISOString().slice(0, 10)}.xlsx`;
+
+      // Blob 생성
+      const blob = new Blob([response.data], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+
+      // 다운로드 링크 생성 및 클릭
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', 'customer_orders.xlsx'); //다운로드시 파일 이름 설정
+      link.setAttribute('download', fileName); // encodeURIComponent 제거
       document.body.appendChild(link);
       link.click();
+
+      // 클린업
       document.body.removeChild(link);
-      console.log('다운성공');
+      window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('다운 실패', error);
+      console.error('엑셀 다운로드 실패:', error);
     }
   };
 
@@ -97,7 +110,7 @@ const Page = () => {
 
   return (
     <>
-      <button onClick={handleExcelDownload}>엑셀 다운로드</button>  
+      <button onClick={handleExcelDownload}>엑셀 다운로드</button>
       {/* 버튼 다시 수정할것!!! */}
       <div>
         <FilterTable

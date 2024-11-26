@@ -5,7 +5,7 @@ import ShaFormTemplate from '@/components/organism/Template/ShaFormTemplate';
 import ShaOrderFormData, { OrderFormValues } from '@/data/ShaCustomerForm';
 import orderApi from '@/service/Order/Order';
 
-const UnifiedSchedulePage = () => {
+const OrderForm = () => {
   // 초기값 설정
   const initialValues: OrderFormValues = {
     orderDate: '',
@@ -65,4 +65,4 @@ const UnifiedSchedulePage = () => {
   );
 };
 
-export default UnifiedSchedulePage;
+export default OrderForm;

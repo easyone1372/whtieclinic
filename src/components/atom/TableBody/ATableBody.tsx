@@ -1,11 +1,14 @@
+'use client';
+
 import React from 'react';
 import { TableBody, TableRow, TableCell } from '@/components/ui/table';
 import ShaCheckbox from '@/components/atom/CheckBox/ShaCheckBox';
 import ShaButton from '../Button/ShaButton';
+import { useRouter } from 'next/navigation';
 
 type TableBodyProps<T> = {
-  data: T[]; // 렌더링할 데이터 배열
-  columns: (keyof T)[]; // 열에 해당하는 데이터 키 배열
+  data: T[];
+  columns: (keyof T)[];
   isEditing?: boolean;
   onEditRow?: (row: T) => void;
 };
@@ -16,28 +19,30 @@ const ATableBody = <T extends { [key: string]: any }>({
   isEditing,
   onEditRow,
 }: TableBodyProps<T>) => {
+  const router = useRouter();
+
   return (
     <TableBody>
       {data.map((row, rowIndex) => (
         <TableRow key={rowIndex} className="h-[50px]">
           {columns.map((column, colIndex) => (
             <TableCell key={colIndex} className="text-center">
-              {/* 'receiptDocsIssued' 컬럼일 때만 체크박스로 표시 */}
               {column === 'receiptDocsIssued' ? (
-                <ShaCheckbox
-                  isChecked={row[column] === true}
-                  textprops={{ text: '' }} // 체크박스 텍스트는 빈 값으로 설정
-                />
+                <ShaCheckbox isChecked={row[column] === true} textprops={{ text: '' }} />
               ) : (
-                row[column]
+                <span className="truncate max-w-xs inline-block">{row[column]}</span>
               )}
             </TableCell>
           ))}
-          {isEditing && (
-            <TableCell className="text-center">
-              <ShaButton onClick={() => onEditRow && onEditRow(row)} size="sm" text="수정" />
-            </TableCell>
-          )}
+
+          <TableCell className="text-center">
+            <ShaButton
+              variant="outline"
+              size="sm"
+              text="수정"
+              onClick={() => router.push(`/customer/c_modify/${row.orderId}`)}
+            />
+          </TableCell>
         </TableRow>
       ))}
     </TableBody>
