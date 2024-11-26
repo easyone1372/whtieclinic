@@ -40,7 +40,7 @@ export const customerApi = {
   // 모든 주문 정보 조회
   getAllOrders: async (): Promise<Customer[]> => {
     try {
-      const response = await api.get<CustomerApiResponse[]>('/order-info/getAllOrderDetails');
+      const response = await api.get<CustomerApiResponse[]>('/order-management/orders');
       return response.data.map(transformApiResponse);
     } catch (error) {
       console.error('Error fetching orders:', error);
@@ -51,7 +51,7 @@ export const customerApi = {
   // 특정 날짜의 주문 정보 조회
   getOrdersByDate: async (date: string): Promise<Customer[]> => {
     try {
-      const response = await api.get<CustomerApiResponse[]>('/order-info/getAllOrderDetails', {
+      const response = await api.get<CustomerApiResponse[]>('/order-management/orders', {
         params: { date },
       });
       return response.data.map(transformApiResponse);

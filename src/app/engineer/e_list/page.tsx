@@ -24,27 +24,27 @@ const Page = () => {
   const [selectedData, setSelectedData] = useState<Engineer | null>(null); // 선택된 엔지니어 데이터 상태
   const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Drawer 열림 상태
   const [weeklyTotals, setWeeklyTotals] = useState<Record<string, number>>({}); // 주차별 합계 금액 상태
-  const [totalAmount, setTotalAmount] = useState(0); // 주차별 합계금액 상태
+  const [totalAmount, setTotalAmount] = useState(0); // 주차별 합계 금액 상태
   const [isEditing, setIsEditing] = useState(false); // 수정 모드 상태
 
   const [editData, setEditData] = useState({
-    week: '',
-    amount: 0,
-    isPaid: false,
-  }); // 편집 데이터 상태
+    week: '', // 주차 데이터
+    amount: 0, // 수당 금액
+    isPaid: false, // 지급 여부
+  });
 
   const [initialEditData, setInitialEditData] = useState({
     week: '',
     amount: 0,
     isPaid: false,
-  }); // 초기 편집 데이터 상태
+  });
 
   // 엔지니어 목록 가져오기
   useEffect(() => {
     const loadEngineers = async () => {
       try {
         const data = await fetchEngineers();
-        setEngineers(data);
+        setEngineers(data); // 엔지니어 목록 상태 업데이트
       } catch (error) {
         console.error('Error loading engineers:', error);
       }
@@ -52,7 +52,7 @@ const Page = () => {
     loadEngineers();
   }, []);
 
-  // 일정 이벤트 가져오기
+  // 특정 엔지니어 일정 이벤트 가져오기
   useEffect(() => {
     if (selectedData) {
       const loadEngineerEvents = async () => {
@@ -66,7 +66,7 @@ const Page = () => {
           }));
           setEvents(events);
 
-          // 주차별로 그룹화하여 합계 계산
+          // 주차별 합계 계산
           const weeklyData = events.reduce(
             (acc, event) => {
               const week = getWeekOfMonth(event.start);
@@ -75,8 +75,7 @@ const Page = () => {
             },
             {} as Record<string, number>
           );
-
-          setWeeklyTotals(weeklyData); // 주차별 합계 금액 업데이트
+          setWeeklyTotals(weeklyData);
         } catch (error) {
           console.error('Error loading engineer events:', error);
         }
@@ -85,36 +84,30 @@ const Page = () => {
     }
   }, [selectedData]);
 
-  // **ISO 8601 기반 주차 계산 함수**
+  // ISO 주차 계산 함수
   const getWeekOfMonth = (date: Date): string => {
     const targetDate = moment(date);
     const firstDayOfMonth = targetDate.clone().startOf('month'); // 해당 월의 첫날
-    const firstWeekStart = firstDayOfMonth.clone().startOf('isoWeek'); // 첫 번째 ISO 주의 시작
-
+    const firstWeekStart = firstDayOfMonth.clone().startOf('isoWeek'); // 첫 ISO 주의 시작
     const diffWeeks = targetDate.diff(firstWeekStart, 'weeks');
     return `${targetDate.format('YYYY년 M월')} ${diffWeeks + 1}주차`;
   };
 
-  // 주차별 합계 금액 및 수당금액 계산
+  // 주차별 합계 금액 및 수당 금액 계산
   const calculateTotalAndCommission = useCallback(
     (selectedDate: Date) => {
-      const selectedWeek = getWeekOfMonth(selectedDate); // 선택된 주차 계산
+      const selectedWeek = getWeekOfMonth(selectedDate);
       const weeklyTotal = events
         .filter((event) => event.start && getWeekOfMonth(event.start) === selectedWeek)
-        .reduce((sum, event) => sum + (event.amount || 0), 0); // 주차별 합계 금액 계산
-
-      // 선택된 엔지니어의 수당률 가져오기
+        .reduce((sum, event) => sum + (event.amount || 0), 0);
       const commissionRate = selectedData?.engineerCommissionRate
-        ? selectedData.engineerCommissionRate / 100 // 백분율 변환
+        ? selectedData.engineerCommissionRate / 100
         : 0;
-
-      const commissionAmount = Math.floor(weeklyTotal * commissionRate); // 수당금액 계산
-
-      // 상태 업데이트
-      setTotalAmount(weeklyTotal); // 합계금액 업데이트
+      const commissionAmount = Math.floor(weeklyTotal * commissionRate);
+      setTotalAmount(weeklyTotal);
       setEditData((prev) => ({
         ...prev,
-        amount: commissionAmount, // 수당금액 업데이트
+        amount: commissionAmount,
       }));
     },
     [events, selectedData]
@@ -122,48 +115,45 @@ const Page = () => {
 
   // 달력 셀 선택 핸들러
   const handleSelectSlot = (slotInfo: { start: Date }) => {
-    if (!slotInfo.start) {
-      return;
-    }
-
-    const selectedWeek = getWeekOfMonth(slotInfo.start); // ISO 주차 계산
-    calculateTotalAndCommission(slotInfo.start); // 합계금액과 수당금액 계산
-
+    if (!slotInfo.start) return;
+    calculateTotalAndCommission(slotInfo.start);
     setEditData((prev) => ({
       ...prev,
-      week: `${slotInfo.start.getFullYear()}년 ${slotInfo.start.getMonth() + 1}월 ${selectedWeek}`,
+      week: getWeekOfMonth(slotInfo.start),
     }));
   };
 
-  const handleFilterChange = (value: string) => setFilter(value); // 검색 필터 변경
+  const handleFilterChange = (value: string) => setFilter(value);
 
   const handleItemClick = (item: Engineer) => {
-    setSelectedData(item); // 선택된 엔지니어 업데이트
-    setIsDrawerOpen(false); // Drawer 닫기
+    setSelectedData(item);
+    setIsDrawerOpen(false);
   };
 
   const handleEditToggle = () => {
-    setInitialEditData({ ...editData }); // 초기 편집 데이터 저장
-    setIsEditing(!isEditing); // 수정 모드 토글
+    setInitialEditData({ ...editData });
+    setIsEditing(!isEditing);
   };
 
   const handleEditCancel = () => {
-    setEditData({ ...initialEditData }); // 초기 데이터 복원
-    setIsEditing(false); // 수정 모드 종료
+    setEditData({ ...initialEditData });
+    setIsEditing(false);
   };
 
   const handleSaveEdit = async () => {
     if (!selectedData) return;
 
     try {
+      // 서버로 편집 데이터 전송
       await updateEngineerPayment(
         selectedData.engineerId,
-        editData.week,
-        editData.amount,
-        editData.isPaid
+        editData.week, // 주차 정보
+        editData.amount, // 수당 금액
+        editData.isPaid // 지급 여부
       );
       setIsEditing(false);
 
+      // 업데이트된 이벤트 다시 로드
       const updatedEvents = await fetchEngineerEvents(selectedData.engineerId);
       const eventsWithDateConversion = updatedEvents.map((event) => ({
         title: `${event.dailyIncome.toLocaleString()}원`,
@@ -176,7 +166,7 @@ const Page = () => {
       alert('수정이 완료되었습니다!');
     } catch (error) {
       console.error('Error saving edit:', error);
-      alert('수정에 실패했습니다. 다시 시도해주세요.');
+      alert('수정에 실패했습니다.');
     }
   };
 
@@ -203,8 +193,8 @@ const Page = () => {
           </div>
           <AFooter
             data={selectedData}
-            totalAmount={totalAmount} // 합계 금액 전달
-            finalPayment={editData.amount} // 수당 금액 전달
+            totalAmount={totalAmount}
+            finalPayment={editData.amount}
             isEditing={isEditing}
             isChecked={editData.isPaid}
             onFinalPaymentChange={(value) => setEditData({ ...editData, amount: value })}

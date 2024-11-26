@@ -23,7 +23,7 @@ const AFooter = <T extends Record<string, any>>({
   return (
     <div className="mt-4 p-4 bg-gray-100 rounded shadow-lg">
       <div className="mb-4">
-        <ShaText text={`${data.engineerName}의 정보님 상세정보`} isBold size="large" />
+        <ShaText text={`${data.engineerName}기사님 상세정보`} isBold size="large" />
       </div>
       {/* 데이터 표시 컴포넌트 */}
       <div className="grid grid-cols-2 gap-y-2 gap-x-4">
@@ -43,4 +43,4 @@ const AFooter = <T extends Record<string, any>>({
   );
 };
 
-export default AFooter;
+export default AFooter;   

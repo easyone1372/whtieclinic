@@ -42,15 +42,18 @@ export const getAvailableEngineers = async (
 ): Promise<{ value: string; text: string }[]> => {
   try {
     // searchAllEngineer API 호출
-    const engineerResponse = await api.get<Engineer[]>('/engineer/searchAllEngineer');
+    const engineerResponse = await api.get<Engineer[]>('/engineer-management/engineers');
     const engineers = engineerResponse.data;
 
     // getAllEngineerSchedule API 호출
-    const scheduleResponse = await api.get<ScheduleData[]>('/engineer/getAllEngineerSchedule', {
-      params: {
-        selectedDate: selectedDate.split(' ')[0],
-      },
-    });
+    const scheduleResponse = await api.get<ScheduleData[]>(
+      '/engineer-management/engineers/schedules',
+      {
+        params: {
+          selectedDate: selectedDate.split(' ')[0],
+        },
+      }
+    );
     const schedules = scheduleResponse.data;
 
     const selectedHour = selectedDate.split(' ')[1];
@@ -116,7 +119,7 @@ export const getAvailableEngineers = async (
 
 export const getEngineerInfo = async (engineerId: number) => {
   try {
-    const response = await api.get<Engineer[]>('/engineer/searchAllEngineer');
+    const response = await api.get<Engineer[]>('/engineer-management/engineers');
     const engineers = response.data;
     const engineer = engineers.find((eng) => eng.engineerId === engineerId);
 

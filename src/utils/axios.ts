@@ -46,17 +46,11 @@ const api = axios.create({
 // Request 인터셉터
 api.interceptors.request.use(
   (config) => {
-    console.log('API Request:', {
-      url: config.url,
-      method: config.method,
-      data: config.data,
-    });
-
-    // 요청 데이터를 스네이크케이스로 변환
+    console.log('Before toSnakeCase:', config.data); // 변환 전 데이터 확인
     if (config.data && typeof config.data === 'object') {
-      config.data = toSnakeCase(config.data);
+      config.data = toSnakeCase(config.data); // 스네이크 케이스로 변환
     }
-
+    console.log('After toSnakeCase:', config.data); // 변환 후 데이터 확인
     return config;
   },
   (error) => {
@@ -68,23 +62,14 @@ api.interceptors.request.use(
 // Response 인터셉터
 api.interceptors.response.use(
   (response) => {
-    console.log('API Response:', {
-      url: response.config.url,
-      status: response.status,
-      data: response.data,
-    });
-
-    // 응답 데이터를 카멜케이스로 변환
-    response.data = toCamelCase(response.data);
+    console.log('API Response:', response.data); // 응답 데이터 확인
+    response.data = toCamelCase(response.data); // 카멜 케이스 변환
     return response;
   },
   (error) => {
-    console.error('Response Error:', {
-      url: error.config?.url,
-      status: error.response?.status,
-      data: error.response?.data,
-      message: error.message,
-    });
+    if (error.response?.data) {
+      console.error('Validation Error Details:', error.response.data); // 유효성 실패 메시지 출력
+    }
     return Promise.reject(error);
   }
 );

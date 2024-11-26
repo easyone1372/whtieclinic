@@ -30,7 +30,7 @@ export const getEngineersByDate = async (date: Date): Promise<Engineer[]> => {
     console.log('selectedDayOfWeek:', selectedDayOfWeek);
 
     // API 호출
-    const response = await api.get('/engineer/searchAllEngineer'); ///api/ 안붙여서 안된거였음
+    const response = await api.get('/engineer-management/engineers'); ///api/ 안붙여서 안된거였음
     console.log('response:', response);
     const data = await response.data;
     console.log('API response:', data);
@@ -140,4 +140,3 @@ export const getOrdersByEngineerAndDate = async (
     return [];
   }
 };
-

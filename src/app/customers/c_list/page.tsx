@@ -62,12 +62,31 @@ const Page = () => {
   // 고객 데이터를 API에서 가져오는 함수
   const fetchCustomerData = async () => {
     try {
-      const response = await api.get<CustomerListInfo[]>('/order-info/getAllOrderDetails'); // API 호출
+      const response = await api.get<CustomerListInfo[]>('/order-management/orders'); // API 호출
       const transformedData = transformCustomerData(response.data); // 데이터 변환 및 정렬
       setCustomerData(transformedData); // 상태 업데이트
       console.log('Transformed and Sorted Data:', transformedData); // 변환된 데이터 확인
     } catch (error) {
       console.error('고객 데이터 로드 에러:', error);
+    }
+  };
+
+  const handleExcelDownload = async () => {
+    try {
+      const response = await api.get(`/order-management/orders/download/excel`, {
+        responseType: 'blob',
+      });
+      const blob = new Blob([response.data], { type: response.headers['content-type'] });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'customer_orders.xlsx'); //다운로드시 파일 이름 설정
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      console.log('다운성공');
+    } catch (error) {
+      console.error('다운 실패', error);
     }
   };
 
@@ -77,14 +96,18 @@ const Page = () => {
   }, []);
 
   return (
-    <div>
-      <FilterTable
-        headers={headers}
-        data={customerData}
-        columns={customerColumns}
-        placeholder="고객 정보를 검색하세요"
-      />
-    </div>
+    <>
+      <button onClick={handleExcelDownload}>엑셀 다운로드</button>  
+      {/* 버튼 다시 수정할것!!! */}
+      <div>
+        <FilterTable
+          headers={headers}
+          data={customerData}
+          columns={customerColumns}
+          placeholder="고객 정보를 검색하세요"
+        />
+      </div>
+    </>
   );
 };
 
