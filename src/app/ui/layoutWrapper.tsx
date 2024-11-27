@@ -17,7 +17,6 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
         className={cn(
           'flex-1',
           isExpanded ? 'ml-72' : 'ml-16', // 사이드바 상태에 따라 margin 조절
-          'p-8',
           'transition-all duration-300' // 부드러운 전환 효과
         )}
       >

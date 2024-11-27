@@ -42,7 +42,7 @@ export const useFormSubmit = <T extends object>({
 
     try {
       const response = await onSubmit(formValues);
-      if (response.statusCode === 200) {
+      if (response.statusCode === 200 || 201) {
         // 성공 시 처리
         onSuccess?.();
         resetFormValues();

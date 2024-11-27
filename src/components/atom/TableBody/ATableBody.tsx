@@ -1,52 +1,31 @@
-'use client';
-
 import React from 'react';
 import { TableBody, TableRow, TableCell } from '@/components/ui/table';
 import ShaCheckbox from '@/components/atom/CheckBox/ShaCheckBox';
-import ShaButton from '../Button/ShaButton';
-import { useRouter } from 'next/navigation';
-
 type TableBodyProps<T> = {
-  data: T[];
-  columns: (keyof T)[];
-  isEditing?: boolean;
-  onEditRow?: (row: T) => void;
+  data: T[]; // 렌더링할 데이터 배열
+  columns: (keyof T)[]; // 열에 해당하는 데이터 키 배열
 };
-
-const ATableBody = <T extends { [key: string]: any }>({
-  data,
-  columns,
-  isEditing,
-  onEditRow,
-}: TableBodyProps<T>) => {
-  const router = useRouter();
-
+const ATableBody = <T extends { [key: string]: any }>({ data, columns }: TableBodyProps<T>) => {
   return (
     <TableBody>
       {data.map((row, rowIndex) => (
-        <TableRow key={rowIndex} className="h-[50px]">
+        <TableRow key={rowIndex}>
           {columns.map((column, colIndex) => (
             <TableCell key={colIndex} className="text-center">
-              {column === 'receiptDocsIssued' ? (
-                <ShaCheckbox isChecked={row[column] === true} textprops={{ text: '' }} />
+              {/* 'reciept_docs_issued' 컬럼일 때만 체크박스로 표시 */}
+              {column === 'reciept_docs_issued' ? (
+                <ShaCheckbox
+                  isChecked={row[column] === 'true'}
+                  textprops={{ text: '' }} // 체크박스 텍스트는 빈 값으로 설정
+                />
               ) : (
-                <span className="truncate max-w-xs inline-block">{row[column]}</span>
+                row[column]
               )}
             </TableCell>
           ))}
-
-          <TableCell className="text-center">
-            <ShaButton
-              variant="outline"
-              size="sm"
-              text="수정"
-              onClick={() => router.push(`/customer/c_modify/${row.orderId}`)}
-            />
-          </TableCell>
         </TableRow>
       ))}
     </TableBody>
   );
 };
-
 export default ATableBody;

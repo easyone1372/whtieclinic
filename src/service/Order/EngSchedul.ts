@@ -126,11 +126,11 @@ export const getEngineerInfo = async (engineerId: number) => {
     if (!engineer) return null;
 
     return `이름: ${engineer.engineerName}
-전화번호: ${engineer.engineerPhone}
-주소: ${engineer.engineerAddr}
-특이사항: ${engineer.engineerRemark || '없음'}
-보유 기술: ${engineer.engineerSkills.join(', ') || '없음'}
-휴무일: ${engineer.engineerDayoff || '없음'}`;
+           전화번호: ${engineer.engineerPhone}
+           주소: ${engineer.engineerAddr}
+           특이사항: ${engineer.engineerRemark || '없음'}
+           보유 기술: ${engineer.engineerSkills.join(', ') || '없음'}
+           휴무일: ${engineer.engineerDayoff || '없음'}`;
   } catch (error) {
     console.error('Error fetching engineer info:', error);
     return null;

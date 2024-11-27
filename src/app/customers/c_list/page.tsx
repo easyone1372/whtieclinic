@@ -6,7 +6,6 @@ import FilterTable from '@/components/organism/FilterTable/FiterTable';
 
 // 회원관리 리스트보기
 type CustomerListInfo = {
-  orderId: number;
   orderDate: string;
   customerName: string;
   customerPhone: string;
