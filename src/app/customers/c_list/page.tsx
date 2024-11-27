@@ -32,7 +32,6 @@ const headers = {
   orderPayment: '결제방식',
   orderRecieptDocs: '증빙서류',
   receiptDocsIssued: '영수증 발행여부',
-  modify: '정보 수정',
 };
 
 // 고객 데이터의 열 키 설정
