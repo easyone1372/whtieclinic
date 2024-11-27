@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import api from '@/utils/axios';
 import FilterTable from '@/components/organism/FilterTable/FiterTable';
+import ShaButton from '@/components/atom/Button/ShaButton';
+import { FileDown } from 'lucide-react';
 
 // 회원관리 리스트보기
 type CustomerListInfo = {
@@ -110,7 +112,9 @@ const Page = () => {
 
   return (
     <>
-      <button onClick={handleExcelDownload}>엑셀 다운로드</button>
+      <ShaButton text="" onClick={handleExcelDownload}>
+        <FileDown />
+      </ShaButton>
       {/* 버튼 다시 수정할것!!! */}
       <div>
         <FilterTable

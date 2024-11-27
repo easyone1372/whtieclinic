@@ -6,7 +6,7 @@ import ShaText from '@/components/atom/Text/ShaText';
 
 //
 type AFooterProps<T> = PaymentProps & {
-  data: T;
+  data: T | null;
   labelMap?: Partial<Record<keyof T, string>>;
 };
 
@@ -20,6 +20,9 @@ const AFooter = <T extends Record<string, any>>({
   onCheckboxChange,
   labelMap = {},
 }: AFooterProps<T>) => {
+  if (!data) {
+    return <div>데이터가 없습니다.</div>; // 데이터가 없을 경우 기본 UI 표시
+  }
   return (
     <div className="mt-4 p-4 bg-gray-100 rounded shadow-lg">
       <div className="mb-4">
@@ -43,4 +46,4 @@ const AFooter = <T extends Record<string, any>>({
   );
 };
 
-export default AFooter;   
+export default AFooter;

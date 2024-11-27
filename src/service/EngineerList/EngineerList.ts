@@ -83,20 +83,33 @@ export const fetchEngineerWeeklyDetail = async (
   weekly: string
 ): Promise<{ weeklyEarning: number; isPaid: boolean }> => {
   try {
+    console.log('Request Data:', { engineer_id: engineerId, weekly });
+
     const response = await api.post(
       `/engineer-management/engineers/${engineerId}/weekly-salary-details`,
-      {
-        engineer_id: engineerId,
-        weekly,
-      }
+      { engineer_id: engineerId, weekly }
     );
-    return {
-      weeklyEarning: response.data.weekly_earning,
-      isPaid: response.data.is_paid,
+
+    console.log('API Response (Raw):', response.data);
+
+    // response.data에서 직접 camelCase로 된 키를 사용
+    const { weeklyEarning, isPaid } = response.data;
+
+    // null 체크와 타입 변환을 확실하게 처리
+    const processedData = {
+      weeklyEarning: typeof weeklyEarning === 'number' ? weeklyEarning : 0,
+      isPaid: Boolean(isPaid),
     };
+
+    console.log('Processed Response:', processedData);
+
+    return processedData;
   } catch (error) {
-    console.error('Error fetching weekly details:', error);
-    throw error;
+    console.error('Error in fetchEngineerWeeklyDetail:', error);
+    return {
+      weeklyEarning: 0,
+      isPaid: false,
+    };
   }
 };
 

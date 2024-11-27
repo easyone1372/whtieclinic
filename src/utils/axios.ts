@@ -62,14 +62,12 @@ api.interceptors.request.use(
 // Response 인터셉터
 api.interceptors.response.use(
   (response) => {
-    console.log('API Response:', response.data); // 응답 데이터 확인
-    response.data = toCamelCase(response.data); // 카멜 케이스 변환
+    console.log('Before toCamelCase Transformation:', response.data);
+    response.data = toCamelCase(response.data);
+    console.log('After toCamelCase Transformation:', response.data);
     return response;
   },
   (error) => {
-    if (error.response?.data) {
-      console.error('Validation Error Details:', error.response.data); // 유효성 실패 메시지 출력
-    }
     return Promise.reject(error);
   }
 );

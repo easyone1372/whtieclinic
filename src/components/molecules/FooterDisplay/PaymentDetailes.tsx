@@ -24,7 +24,7 @@ const PaymentDetails = ({
     {/* 총 지급액 표시 */}
     <div className="flex items-center">
       <ShaText text="합계 금액:" isBold size="small" />
-      <ShaText text={`${totalAmount.toLocaleString()}원`} size="small" className="ml-2" />
+      <ShaText text={`${(totalAmount ?? 0).toLocaleString()}원`} size="small" className="ml-2" />
     </div>
 
     {/* 최종 지급액 표시 또는 편집 */}
@@ -39,7 +39,7 @@ const PaymentDetails = ({
           className="ml-2 p-1 border rounded"
         />
       ) : (
-        <ShaText text={`${finalPayment.toLocaleString()}원`} size="small" className="ml-2" />
+        <ShaText text={`${(finalPayment ?? 0).toLocaleString()}원`} size="small" className="ml-2" />
       )}
     </div>
 
