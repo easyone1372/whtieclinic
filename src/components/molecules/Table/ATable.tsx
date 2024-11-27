@@ -7,6 +7,8 @@ type ATableProps<T> = {
   data: T[]; // 테이블에 표시할 데이터
   columns: (keyof T)[]; // 열의 데이터 키 배열
   title?: string; // 선택적 테이블 제목
+  onEditRow?: (row: T) => void; // 추가
+  isEditing?: boolean; // 추가된 부분
 };
 const ATable = <T extends { [key: string]: any }>({
   headers,
