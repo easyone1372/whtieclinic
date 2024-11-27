@@ -8,7 +8,6 @@ import { FileDown } from 'lucide-react';
 
 // 회원관리 리스트보기
 type CustomerListInfo = {
-  orderId: number;
   orderDate: string;
   customerName: string;
   customerPhone: string;

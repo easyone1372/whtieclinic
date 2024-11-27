@@ -1,21 +1,26 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Calendar, momentLocalizer, Event } from 'react-big-calendar';
 import moment from 'moment';
 import 'moment/locale/ko';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { Box, IconButton, Typography } from '@mui/material';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { TrendingUp, ShoppingCart, ArrowUpRight, CalendarDays, CreditCard } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import api from '@/utils/axios';
 
 moment.locale('ko');
 const localizer = momentLocalizer(moment);
 
-interface SalesData {
-  date: string;
-  totalOrders: number;
-  dailySales: number;
+interface ScheduleData {
+  orderId: number;
+  engineerId: number;
+  orderDate: string;
+  orderTotalAmount: number;
+  engineerName: string;
+  customerName: string;
+  orderProduct: string;
+  orderCount: number;
 }
 
 interface CalendarEventType extends Event {
@@ -25,6 +30,7 @@ interface CalendarEventType extends Event {
   resource?: {
     orders: number;
     sales: number;
+    details: ScheduleData[]; // 이 부분 추가
   };
 }
 
@@ -94,120 +100,152 @@ const WeeklySummaryCard = ({ summary }: { summary: WeeklySummary }) => (
 
 const SalesDashboard: React.FC = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
+  const [events, setEvents] = useState<CalendarEventType[]>([]);
+  const [salesSummary, setSalesSummary] = useState({
+    totalWeeklySales: 0,
+    totalWeeklyOrders: 0,
+    totalMonthlySales: 0,
+    totalMonthlyOrders: 0,
+  });
+  const [weeklySummaries, setWeeklySummaries] = useState<WeeklySummary[]>([]);
 
-  // const events: CalendarEventType[] = sampleSalesData.map((data) => {
-  //   const date = moment(data.date).toDate();
-  //   return {
-  //     title: `${data.totalOrders}건 / ₩${data.dailySales.toLocaleString()}`,
-  //     start: date,
-  //     end: date,
-  //     allDay: true,
-  //     resource: {
-  //       orders: data.totalOrders,
-  //       sales: data.dailySales,
-  //     },
-  //   };
-  // });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const startOfMonth = moment(currentDate).startOf('month').format('YYYY-MM-DD');
+        const endOfMonth = moment(currentDate).endOf('month').format('YYYY-MM-DD');
 
-  // 주간 데이터 계산 함수
-  const calculateWeeklySummaries = (salesData: SalesData[]): WeeklySummary[] => {
-    const weeklySummaries: WeeklySummary[] = [];
-    const currentMonth = moment(currentDate).month();
-
-    // 현재 월의 시작일
-    let startOfMonth = moment(currentDate).startOf('month');
-
-    // 각 주의 데이터 계산
-    while (startOfMonth.month() === currentMonth) {
-      const endOfWeek = moment(startOfMonth).endOf('week');
-      const weekData = salesData.filter((data) => {
-        const date = moment(data.date);
-        return date.isSameOrAfter(startOfMonth, 'day') && date.isSameOrBefore(endOfWeek, 'day');
-      });
-
-      if (weekData.length > 0) {
-        weeklySummaries.push({
-          startDate: startOfMonth.format('M/D'),
-          endDate: endOfWeek.format('M/D'),
-          totalSales: weekData.reduce((sum, data) => sum + data.dailySales, 0),
-          totalOrders: weekData.reduce((sum, data) => sum + data.totalOrders, 0),
+        const response = await api.get<ScheduleData[]>('/engineer-management/engineers/schedules', {
+          params: {
+            startDate: startOfMonth,
+            endDate: endOfMonth,
+          },
         });
+
+        // 날짜별로 데이터 그룹화
+        const dailyData = response.data.reduce((acc, schedule) => {
+          const date = schedule.orderDate.split(' ')[0];
+          if (!acc[date]) {
+            acc[date] = {
+              orders: 0,
+              sales: 0,
+              details: [],
+            };
+          }
+          acc[date].orders += 1;
+          acc[date].sales += schedule.orderTotalAmount;
+          acc[date].details.push(schedule);
+          return acc;
+        }, {} as Record<string, { orders: number; sales: number; details: ScheduleData[] }>);
+
+        // 캘린더 이벤트 변환
+        const calendarEvents = Object.entries(dailyData).map(([date, data]) => ({
+          title: `${data.orders}건 / ₩${data.sales.toLocaleString()}`,
+          start: new Date(date),
+          end: new Date(date),
+          resource: {
+            orders: data.orders,
+            sales: data.sales,
+            details: data.details,
+          },
+        }));
+
+        setEvents(calendarEvents);
+
+        // 주간/월간 요약 계산
+        const now = moment(currentDate);
+        const startOfWeek = now.clone().startOf('week');
+        const endOfWeek = now.clone().endOf('week');
+
+        const weeklySales = calendarEvents
+          .filter((event) => moment(event.start).isBetween(startOfWeek, endOfWeek, 'day', '[]'))
+          .reduce((sum, event) => sum + event.resource!.sales, 0);
+
+        const weeklyOrders = calendarEvents
+          .filter((event) => moment(event.start).isBetween(startOfWeek, endOfWeek, 'day', '[]'))
+          .reduce((sum, event) => sum + event.resource!.orders, 0);
+
+        const monthlySales = calendarEvents.reduce((sum, event) => sum + event.resource!.sales, 0);
+        const monthlyOrders = calendarEvents.reduce(
+          (sum, event) => sum + event.resource!.orders,
+          0
+        );
+
+        setSalesSummary({
+          totalWeeklySales: weeklySales,
+          totalWeeklyOrders: weeklyOrders,
+          totalMonthlySales: monthlySales,
+          totalMonthlyOrders: monthlyOrders,
+        });
+
+        // 주간 요약 데이터 계산
+        const weekSummaries: WeeklySummary[] = [];
+        let startOfCurrentWeek = moment(currentDate).startOf('month').startOf('week');
+
+        while (startOfCurrentWeek.isBefore(moment(currentDate).endOf('month'))) {
+          const endOfCurrentWeek = startOfCurrentWeek.clone().endOf('week');
+
+          const weekData = calendarEvents.filter((event) =>
+            moment(event.start).isBetween(startOfCurrentWeek, endOfCurrentWeek, 'day', '[]')
+          );
+
+          if (weekData.length > 0) {
+            weekSummaries.push({
+              startDate: startOfCurrentWeek.format('M/D'),
+              endDate: endOfCurrentWeek.format('M/D'),
+              totalSales: weekData.reduce((sum, event) => sum + event.resource!.sales, 0),
+              totalOrders: weekData.reduce((sum, event) => sum + event.resource!.orders, 0),
+            });
+          }
+
+          startOfCurrentWeek.add(1, 'week');
+        }
+
+        setWeeklySummaries(weekSummaries);
+      } catch (error) {
+        console.error('Error fetching schedule data:', error);
       }
-
-      startOfMonth = endOfWeek.add(1, 'day');
-    }
-
-    return weeklySummaries;
-  };
-
-  const calculateWeeklyMonthlySales = (salesData: SalesData[]) => {
-    const today = new Date();
-
-    const weeklyData = salesData.slice(-7);
-    const monthlyData = salesData.filter(
-      (data) => new Date(data.date).getMonth() === today.getMonth()
-    );
-
-    const totalWeeklySales = weeklyData.reduce((acc, data) => acc + data.dailySales, 0);
-    const totalWeeklyOrders = weeklyData.reduce((acc, data) => acc + data.totalOrders, 0);
-    const totalMonthlySales = monthlyData.reduce((acc, data) => acc + data.dailySales, 0);
-    const totalMonthlyOrders = monthlyData.reduce((acc, data) => acc + data.totalOrders, 0);
-
-    return {
-      totalWeeklySales,
-      totalWeeklyOrders,
-      totalMonthlySales,
-      totalMonthlyOrders,
     };
-  };
 
-  // const { totalWeeklySales, totalWeeklyOrders, totalMonthlySales, totalMonthlyOrders } =
-  //   calculateWeeklyMonthlySales();
-
-  // const weeklySummaries = calculateWeeklySummaries();
+    fetchData();
+  }, [currentDate]);
 
   const handleSelectEvent = (event: CalendarEventType) => {
-    console.log('Selected event:', event);
+    console.log('Selected event:', event.resource?.details);
   };
 
   return (
-    <div className="max-w-full m-auto pl-10">
+    <div className="max-w-full m-auto pl-10 pt-5 pr-5">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         <StatCard
           title="주간 총 매출"
-          // value={`￦${totalWeeklySales.toLocaleString()}`}
-          value={'sdf'}
+          value={`￦${salesSummary.totalWeeklySales.toLocaleString()}`}
           icon={<TrendingUp className="w-6 h-6 text-blue-600" />}
-          // trend={12}
         />
         <StatCard
           title="주간 총 주문"
-          // value={totalWeeklyOrders.toLocaleString()}
-          value={'123'}
+          value={salesSummary.totalWeeklyOrders.toLocaleString()}
           subtitle="지난 7일 동안의 총 주문 수"
           icon={<ShoppingCart className="w-6 h-6 text-blue-600" />}
         />
         <StatCard
           title="월간 총 매출"
-          // value={`￦${totalMonthlySales.toLocaleString()}`}
-          value={``}
+          value={`￦${salesSummary.totalMonthlySales.toLocaleString()}`}
           icon={<CreditCard className="w-6 h-6 text-blue-600" />}
-          // trend={8}
         />
         <StatCard
           title="월간 총 주문"
-          // value={totalMonthlyOrders.toLocaleString()}
-          value={'123'}
+          value={salesSummary.totalMonthlyOrders.toLocaleString()}
           subtitle="이번 달의 총 주문 수"
           icon={<CalendarDays className="w-6 h-6 text-blue-600" />}
         />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        <div className="lg:col-span-3 h-[900px] bg-white p-4 rounded-lg ">
+        <div className="lg:col-span-3 h-[900px] bg-white p-4 rounded-lg">
           <Calendar
             localizer={localizer}
-            events={undefined}
+            events={events}
             startAccessor="start"
             endAccessor="end"
             style={{ height: '100%' }}
@@ -226,16 +264,16 @@ const SalesDashboard: React.FC = () => {
           />
         </div>
 
-        <div className="lg:col-span-1 bg-white rounded-lg pt-16 ">
+        <div className="lg:col-span-1 bg-white rounded-lg pt-16">
           <Card>
             <CardHeader>
               <CardTitle>주간 매출 요약</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {/* {weeklySummaries.map((summary, index) => (
+                {weeklySummaries.map((summary, index) => (
                   <WeeklySummaryCard key={index} summary={summary} />
-                ))} */}
+                ))}
               </div>
             </CardContent>
           </Card>

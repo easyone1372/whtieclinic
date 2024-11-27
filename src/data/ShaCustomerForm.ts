@@ -19,34 +19,26 @@ import { isNumberOnly } from '@/constants/validation';
 export type OrderFormValues = {
   // 예약 정보
   orderDate: string;
-  orderEngineerName: string;
-
-  // 고객 정보
   orderCustomerName: string;
   orderCustomerPhone: string;
   orderCustomerAddr: string;
   orderCustomerRemark: string;
-
-  // 주문 정보
-  orderCategory: string;
-  orderProduct: string;
-  orderRemark?: string;
-
-  // 금액 정보
-  orderTotalAmount: number; // 세척금액
-  totalAmount: number; // 총금액 (세척금액 - 계약금 - 할인금액)
-  orderCount: number;
-  orderIsDiscount: boolean;
-  orderDiscountRatio: number;
-  orderDeposit: number;
   depositPayed: boolean;
-
-  // 결제 정보
+  orderDeposit: number;
   orderPayment: string;
   orderReceiptDocs: string;
   receiptDocsIssued: boolean;
+  orderCategory: string;
+  orderProduct: string;
+  orderRemark?: string;
+  orderCount: number;
+  orderTotalAmount: number; // 세척금액
+  orderIsDiscount: boolean;
+  orderDiscountRatio: number;
+  orderEngineerName: string;
 
-  // 기사 정보 표시용 (내부용)
+  totalAmount: number;
+
   selectedEngineerId: number | null;
   engineerInfo?: string;
   availableEngineers?: { value: string; text: string }[];
@@ -75,20 +67,23 @@ export const ShaOrderFormData = (
                 const formattedDate = format(newValue, 'yyyy-MM-dd HH');
                 handleFieldChange('orderDate', formattedDate);
 
-                const availableEngineers = await getAvailableEngineers(
-                  formattedDate,
-                  formValues.orderProduct
-                );
-                handleFieldChange('availableEngineers', availableEngineers);
-
-                if (formValues.selectedEngineerId) {
-                  const isStillAvailable = availableEngineers.some(
-                    (eng) => eng.value === formValues.selectedEngineerId?.toString()
+                // 품목이 선택되어 있을 때만 엔지니어 조회
+                if (formValues.orderProduct) {
+                  const availableEngineers = await getAvailableEngineers(
+                    formattedDate,
+                    formValues.orderProduct
                   );
-                  if (!isStillAvailable) {
-                    handleFieldChange('selectedEngineerId', null);
-                    handleFieldChange('engineerInfo', '');
-                    handleFieldChange('orderEngineerName', '');
+                  handleFieldChange('availableEngineers', availableEngineers);
+
+                  if (formValues.selectedEngineerId) {
+                    const isStillAvailable = availableEngineers.some(
+                      (eng) => eng.value === formValues.selectedEngineerId?.toString()
+                    );
+                    if (!isStillAvailable) {
+                      handleFieldChange('selectedEngineerId', null);
+                      handleFieldChange('engineerInfo', '');
+                      handleFieldChange('orderEngineerName', '');
+                    }
                   }
                 }
               } else {
@@ -121,12 +116,22 @@ export const ShaOrderFormData = (
                 },
               },
               value: formValues.orderProduct?.split(':')[0],
-              onChange: (value: string) => {
+              onChange: async (value: string) => {
+                // async 추가
                 handleFieldChange('orderCategory', value);
                 handleFieldChange('orderProduct', value);
+
+                // 날짜가 있을 경우 엔지니어 목록 업데이트
+                if (formValues.orderDate) {
+                  const availableEngineers = await getAvailableEngineers(
+                    formValues.orderDate,
+                    value // 새로 선택된 카테고리만 전달
+                  );
+                  handleFieldChange('availableEngineers', availableEngineers);
+                }
+
                 handleFieldChange('selectedEngineerId', null);
                 handleFieldChange('engineerInfo', '');
-                handleFieldChange('availableEngineers', []);
                 handleFieldChange('orderEngineerName', '');
               },
             },
@@ -141,23 +146,19 @@ export const ShaOrderFormData = (
               value: formValues.orderProduct?.split(':')[1],
               onChange: async (value: string) => {
                 const product = formValues.orderProduct?.split(':')[0];
-                handleFieldChange('orderProduct', `${product}:${value}`);
+                const newOrderProduct = value;
+                handleFieldChange('orderProduct', newOrderProduct);
 
                 if (formValues.orderDate) {
-                  const allEngineers = await fetchEngineers();
-                  const availableEngineers = await getAvailableEngineers(formValues.orderDate);
-
-                  const filteredEngineers = availableEngineers.filter((eng) => {
-                    const engineer = allEngineers.find(
-                      (e) => e.engineerId.toString() === eng.value
-                    );
-                    return engineer?.engineerValidSkill?.includes(value);
-                  });
-
-                  handleFieldChange('availableEngineers', filteredEngineers);
+                  // orderProduct를 포함하여 호출
+                  const availableEngineers = await getAvailableEngineers(
+                    formValues.orderDate,
+                    newOrderProduct
+                  );
+                  handleFieldChange('availableEngineers', availableEngineers);
 
                   if (formValues.selectedEngineerId) {
-                    const isStillAvailable = filteredEngineers.some(
+                    const isStillAvailable = availableEngineers.some(
                       (eng) => eng.value === formValues.selectedEngineerId?.toString()
                     );
                     if (!isStillAvailable) {
