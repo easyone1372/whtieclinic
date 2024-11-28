@@ -17,10 +17,15 @@ const ShaSideMenuBox = ({ isCollapsed, className }: ShaSideMenuBoxProps) => {
   const router = useRouter();
   const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
 
-  // 토큰 확인
-  useEffect(() => {
+  // 토큰 확인 및 상태 업데이트
+  const checkLoginStatus = () => {
     const token = localStorage.getItem('accessToken');
     setIsLoggedIn(!!token); // 토큰이 존재하면 true, 없으면 false
+  };
+
+  // 컴포넌트가 로드될 때 로그인 상태 확인
+  useEffect(() => {
+    checkLoginStatus();
   }, []);
 
   const handleLoginClick = () => {
@@ -60,6 +65,13 @@ const ShaSideMenuBox = ({ isCollapsed, className }: ShaSideMenuBoxProps) => {
       setIsLoggedIn(false);
       router.push('/');
     }
+  };
+
+  const handleLoginSuccess = (accessToken: string, refreshToken: string) => {
+    // 로그인 성공 시 토큰 저장 및 상태 업데이트
+    localStorage.setItem('accessToken', accessToken);
+    localStorage.setItem('refreshToken', refreshToken);
+    setIsLoggedIn(true); // 로그인 상태 즉시 업데이트
   };
 
   return (

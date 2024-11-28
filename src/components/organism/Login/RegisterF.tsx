@@ -92,7 +92,7 @@ const RegisterF = () => {
           {/* 성공 메시지 */}
           {successMessage && <div className="text-green-500 text-sm">{successMessage}</div>}
 
-          <ShaButton type="submit" text="로그아웃" className="mt-4" />
+          <ShaButton type="submit" text="회원가입" className="mt-4" />
         </form>
       </div>
     </Form>

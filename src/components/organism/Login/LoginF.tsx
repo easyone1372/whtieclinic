@@ -99,10 +99,12 @@ const LoginF = () => {
           />
 
           {/* 에러 메시지 */}
-          {errorMessage && <div className="text-red-500 text-sm">{errorMessage}</div>}
+          {errorMessage && (
+            <div className="text-red-500 text-sm">{'아이디나 비밀번호가 일치하지 않습니다'}</div>
+          )}
 
           {/* 성공 메시지 */}
-          {successMessage && <div className="text-green-500 text-sm">{successMessage}</div>}
+          {/* {successMessage && <div className="text-green-500 text-sm">{successMessage}</div>} */}
 
           <ShaButton type="submit" text="로그인" className="mt-4" />
         </form>
