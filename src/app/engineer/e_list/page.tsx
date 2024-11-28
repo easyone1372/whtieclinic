@@ -33,6 +33,7 @@ const Page = () => {
     isPaid: false,
   });
 
+  //엔지니어리스트 API불러오는 함수
   useEffect(() => {
     const loadEngineers = async () => {
       try {
@@ -45,6 +46,7 @@ const Page = () => {
     loadEngineers();
   }, []);
 
+  // 날짜별 일급 불러오는 함수
   useEffect(() => {
     if (selectedData) {
       const loadEngineerEvents = async () => {
@@ -75,6 +77,7 @@ const Page = () => {
     }
   }, [selectedData]);
 
+  // 주차 계산함수
   const getWeekOfMonth = (date?: Date): string => {
     if (!date) return '날짜 없음';
     const targetDate = moment(date);
@@ -104,6 +107,7 @@ const Page = () => {
     [events, selectedData]
   );
 
+  // 주급 불러오는 함수
   const loadWeeklyData = useCallback(
     async (week: string, selectedDate: Date) => {
       if (!selectedData) return;
@@ -147,12 +151,14 @@ const Page = () => {
     [selectedData, calculateTotalAndCommission]
   );
 
+  // 달력 클릭하는 함수
   const handleSelectSlot = (slotInfo: { start: Date }) => {
     if (!slotInfo.start) return;
     const week = getWeekOfMonth(slotInfo.start);
     loadWeeklyData(week, slotInfo.start);
   };
 
+  // 필터링
   const handleFilterChange = (value: string) => setFilter(value);
 
   const handleItemClick = (item: Engineer) => {

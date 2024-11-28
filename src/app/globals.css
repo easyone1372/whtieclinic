@@ -99,11 +99,3 @@
     --sidebar-ring: 240 4.9% 83.9%;
   }
 }
-
-/* Pretendard 폰트 적용 */
-@font-face {
-  font-family: 'Pretendard';
-  src: url('/fonts/Pretendard-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-}

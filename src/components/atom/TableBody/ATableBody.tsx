@@ -27,6 +27,7 @@ const ATableBody = <T extends { [key: string]: any }>({
                 <ShaCheckbox
                   isChecked={row[column] === true}
                   textprops={{ text: '' }} // 체크박스 텍스트는 빈 값으로 설정
+                  isCentered={true}
                 />
               ) : (
                 row[column]

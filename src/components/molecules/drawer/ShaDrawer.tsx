@@ -42,7 +42,7 @@ const ShaDrawer = <T extends { [key: string]: any }>({
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger asChild>
-        <ShaButton variant="outline" text="">
+        <ShaButton variant="outline" text="" className="m-4">
           <AlignJustify />
         </ShaButton>
       </DrawerTrigger>

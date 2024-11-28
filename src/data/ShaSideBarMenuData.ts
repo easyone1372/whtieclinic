@@ -38,7 +38,7 @@ export const sideBarMenuData = {
       },
     ],
   },
-  member: {
+  customer: {
     title: '회원 관리',
     icon: Users,
     links: [
@@ -73,32 +73,32 @@ export const sideBarMenuData = {
       //   href: '/schedule/s_register',
       //   icon: CalendarPlus,
       // },
-      {
-        name: '수정하기',
-        href: '/schedule/s_modify',
-        icon: Pencil,
-      },
+      // {
+      //   name: '수정하기',
+      //   href: '/schedule/s_modify',
+      //   icon: Pencil,
+      // },
     ],
   },
-  // sales: {
-  //   title: '매출 관리',
-  //   icon: BarChart3,
-  //   links: [
-  //     {
-  //       name: '일자별 매출',
-  //       href: '/sales/daily',
-  //       icon: FileSpreadsheet,
-  //     },
-  //     {
-  //       name: '주간 매출',
-  //       href: '/sales/weekly',
-  //       icon: LineChart,
-  //     },
-  //     {
-  //       name: '월별 매출',
-  //       href: '/sales/monthly',
-  //       icon: PieChart,
-  //     },
-  //   ],
-  // },
+  sales: {
+    title: '매출 관리',
+    icon: BarChart3,
+    links: [
+      {
+        name: '매출 요약',
+        href: '/dashboard',
+        icon: FileSpreadsheet,
+      },
+      //     {
+      //       name: '주간 매출',
+      //       href: '/sales/weekly',
+      //       icon: LineChart,
+      //     },
+      //     {
+      //       name: '월별 매출',
+      //       href: '/sales/monthly',
+      //       icon: PieChart,
+      //     },
+    ],
+  },
 };

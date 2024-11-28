@@ -46,11 +46,9 @@ const api = axios.create({
 // Request 인터셉터
 api.interceptors.request.use(
   (config) => {
-    console.log('Before toSnakeCase:', config.data); // 변환 전 데이터 확인
     if (config.data && typeof config.data === 'object') {
       config.data = toSnakeCase(config.data); // 스네이크 케이스로 변환
     }
-    console.log('After toSnakeCase:', config.data); // 변환 후 데이터 확인
     return config;
   },
   (error) => {
@@ -62,9 +60,7 @@ api.interceptors.request.use(
 // Response 인터셉터
 api.interceptors.response.use(
   (response) => {
-    console.log('Before toCamelCase Transformation:', response.data);
     response.data = toCamelCase(response.data);
-    console.log('After toCamelCase Transformation:', response.data);
     return response;
   },
   (error) => {

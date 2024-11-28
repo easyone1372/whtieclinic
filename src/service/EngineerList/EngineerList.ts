@@ -90,8 +90,6 @@ export const fetchEngineerWeeklyDetail = async (
       { engineer_id: engineerId, weekly }
     );
 
-    console.log('API Response (Raw):', response.data);
-
     // response.data에서 직접 camelCase로 된 키를 사용
     const { weeklyEarning, isPaid } = response.data;
 

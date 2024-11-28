@@ -68,6 +68,7 @@ const ShaSideMenuBox = ({ isCollapsed, className }: ShaSideMenuBoxProps) => {
           </div>
         );
       })}
+      <button>sdf</button>
     </div>
   );
 };

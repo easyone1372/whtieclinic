@@ -14,11 +14,17 @@ export type CheckboxProps = {
   isChecked?: boolean;
   onChange?: (checked: boolean) => void;
   textprops?: TextProps;
+  isCentered?: boolean;
 };
 
-const ShaCheckbox = ({ isChecked = false, onChange, textprops }: CheckboxProps) => {
+const ShaCheckbox = ({
+  isChecked = false,
+  onChange,
+  textprops,
+  isCentered = false,
+}: CheckboxProps) => {
   return (
-    <div className="flex gap-3 h-full w-full">
+    <div className={cn('flex gap-3 h-full w-full', isCentered && 'items-center justify-center')}>
       <Checkbox checked={isChecked} onCheckedChange={onChange} />
       {textprops?.text && (
         <Label
