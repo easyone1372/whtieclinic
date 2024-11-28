@@ -27,13 +27,13 @@ export function parseDateAndTimeSlot(dateTimeString: string): { date: Date; time
 export const getEngineersByDate = async (date: Date): Promise<Engineer[]> => {
   try {
     const selectedDayOfWeek = date.toLocaleString('ko-KR', { weekday: 'long' });
-    console.log('selectedDayOfWeek:', selectedDayOfWeek);
+    // console.log('selectedDayOfWeek:', selectedDayOfWeek);
 
     // API 호출
     const response = await api.get('/engineer-management/engineers'); ///api/ 안붙여서 안된거였음
-    console.log('response:', response);
+    // console.log('response:', response);
     const data = await response.data;
-    console.log('API response:', data);
+    // console.log('API response:', data);
 
     // 서버 응답 데이터를 Engineer 타입으로 매핑
     const engineers: Engineer[] = data.map((item: any) => ({
@@ -51,7 +51,7 @@ export const getEngineersByDate = async (date: Date): Promise<Engineer[]> => {
 
     // 데이터가 배열 형태인지 확인하고 필터링
     // const engineers: Engineer[] = Array.isArray(data) ? data : data.engineers || [];///
-    console.log('Engineers data:', engineers);
+    // console.log('Engineers data:', engineers);
 
     // 해당 날짜에 휴무일이 아닌 기사만 반환
     return engineers.filter((engineer) => {
@@ -72,7 +72,7 @@ export const getEngineersByDate = async (date: Date): Promise<Engineer[]> => {
       return !isHoliday && !isRegularHoliday;
     });
   } catch (error) {
-    console.error('Error fetching engineers:', error);
+    // console.error('Error fetching engineers:', error);
     return [];
   }
 };
@@ -91,7 +91,7 @@ export const getOrdersByEngineerAndDate = async (
     const data = Array.isArray(response) ? response : response.data;
 
     if (!Array.isArray(data) || data.length === 0) {
-      console.warn('No data returned or invalid response format:', response);
+      // console.warn('No data returned or invalid response format:', response);
       return [];
     }
 
@@ -104,7 +104,7 @@ export const getOrdersByEngineerAndDate = async (
       .filter((item) => item.engineerId === engineerId && isSameDate(item.orderDate, selectedDate)) // 필터링 추가
       .map((item: any) => {
         if (!item.orderDate) {
-          console.warn('Missing orderDate in item:', item);
+          // console.warn('Missing orderDate in item:', item);
           return null;
         }
 
@@ -133,10 +133,10 @@ export const getOrdersByEngineerAndDate = async (
       })
       .filter((item) => item !== null);
 
-    console.log('Filtered Mapped Data by engineerId:', mappedData); // 디버깅용
+    // console.log('Filtered Mapped Data by engineerId:', mappedData); // 디버깅용
     return mappedData;
   } catch (error) {
-    console.error('Error fetching orders:', error);
+    // console.error('Error fetching orders:', error);
     return [];
   }
 };

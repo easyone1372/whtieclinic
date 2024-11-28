@@ -25,7 +25,7 @@ const ShaSalesDashboard = () => {
   // 이벤트 클릭 핸들러
   const handleSelectEvent = (event: CalendarEventType) => {
     // 이벤트 클릭 시 처리 로직
-    console.log('Selected event:', event.resource?.details);
+    // console.log('Selected event:', event.resource?.details);
   };
 
   // 달력 네비게이션 핸들러

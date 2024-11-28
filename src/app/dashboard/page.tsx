@@ -1,11 +1,10 @@
 'use client';
 
+import ShaSalesDashboard from '@/components/organism/MainCalendar/ShaSalesDashBoard';
 import * as React from 'react';
 
-import SalesDashboard from '@/components/atom/Calendar/MainCalendar';
-
 const Page = () => {
-  return <SalesDashboard></SalesDashboard>;
+  return <ShaSalesDashboard></ShaSalesDashboard>;
 };
 
 export default Page;

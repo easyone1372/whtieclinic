@@ -33,7 +33,7 @@ const EngineerModify = () => {
       const data = await fetchEngineers();
       setEngineers(data);
     } catch (error) {
-      console.error('Error loading engineers:', error);
+      // console.error('Error loading engineers:', error);
     }
   };
 
@@ -54,7 +54,7 @@ const EngineerModify = () => {
       });
       setFormKey((prev) => prev + 1); // 새로운 엔지니어 선택시 폼 리렌더링
     } catch (error) {
-      console.error('Error fetching engineer details:', error);
+      // console.error('Error fetching engineer details:', error);
     }
   };
 
@@ -73,7 +73,7 @@ const EngineerModify = () => {
   const handleSubmit = async (values: EngineerFormValues) => {
     try {
       if (!selectedEngineer?.engineerId) {
-        console.error('No engineer selected or missing ID');
+        // console.error('No engineer selected or missing ID');
         return;
       }
 
@@ -95,7 +95,7 @@ const EngineerModify = () => {
         alert('수정이 완료되었습니다!');
       }
     } catch (error) {
-      console.error('Error updating engineer:', error);
+      // console.error('Error updating engineer:', error);
       alert('수정에 실패했습니다.');
     }
   };

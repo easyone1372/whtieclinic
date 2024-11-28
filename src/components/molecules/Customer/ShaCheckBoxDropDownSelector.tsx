@@ -40,24 +40,27 @@ const ShaCheckboxDropdownSelector = ({
     <div className="flex items-center gap-4">
       <ShaOneCheckbox {...onecheckboxprops} />
 
-      <div className="flex flex-col gap-2">
-        <ShaDropdown
-          key={onecheckboxprops.value}
-          width="medium"
-          options={options}
-          {...dropdownprops}
-        />
-
-        <ShaTextarea
-          key={dropdownprops?.value}
-          placeholder="세부 사항 입력"
-          value={customInputValue}
-          onChange={onProductChange}
-          size="medium"
-          rows={2}
-          className="min-h-[60px]"
-        />
-      </div>
+      {onecheckboxprops.value && (
+        <div className="flex flex-col gap-2">
+          <ShaDropdown
+            key={onecheckboxprops.value}
+            width="medium"
+            options={options}
+            {...dropdownprops}
+          />
+          {dropdownprops?.value && (
+            <ShaTextarea
+              key={dropdownprops.value}
+              placeholder="세부 사항 입력"
+              value={customInputValue}
+              onChange={onProductChange}
+              size="medium"
+              rows={2}
+              className="min-h-[60px]"
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 };
