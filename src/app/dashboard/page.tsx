@@ -4,7 +4,7 @@ import ShaSalesDashboard from '@/components/organism/MainCalendar/ShaSalesDashBo
 import * as React from 'react';
 
 const Page = () => {
-  return <ShaSalesDashboard />;
+  return <ShaSalesDashboard></ShaSalesDashboard>;
 };
 
 export default Page;

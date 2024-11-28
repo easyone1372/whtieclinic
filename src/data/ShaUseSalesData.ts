@@ -145,7 +145,7 @@ export const useSalesData = (currentDate: Date) => {
         const weekSummaries = calculateWeeklySummaries(calendarEvents, currentDate);
         setWeeklySummaries(weekSummaries);
       } catch (error) {
-        console.error('Error fetching schedule data:', error);
+        // console.error('Error fetching schedule data:', error);
       }
     };
 

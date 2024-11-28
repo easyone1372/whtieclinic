@@ -40,7 +40,7 @@ const Page = () => {
         const data = await fetchEngineers();
         setEngineers(data);
       } catch (error) {
-        console.error('Error loading engineers:', error);
+        // console.error('Error loading engineers:', error);
       }
     };
     loadEngineers();
@@ -70,7 +70,7 @@ const Page = () => {
           );
           setWeeklyTotals(weeklyData);
         } catch (error) {
-          console.error('Error loading engineer events:', error);
+          // console.error('Error loading engineer events:', error);
         }
       };
       loadEngineerEvents();
@@ -136,7 +136,7 @@ const Page = () => {
           });
         }
       } catch (error) {
-        console.error('Error loading weekly data:', error);
+        // console.error('Error loading weekly data:', error);
 
         // 에러 발생 시 계산된 값 사용
         const calculatedData = calculateTotalAndCommission(selectedDate);
@@ -190,7 +190,7 @@ const Page = () => {
 
       alert('저장이 완료되었습니다.');
     } catch (error) {
-      console.error('Error saving edit:', error);
+      // console.error('Error saving edit:', error);
       alert('저장에 실패했습니다.');
     }
   };

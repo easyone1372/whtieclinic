@@ -44,7 +44,7 @@ export const getAvailableEngineers = async (
   try {
     // selectedDate가 "YYYY-MM-DD HH" 형식으로 들어옴
     if (!selectedDate || !selectedDate.match(/^\d{4}-\d{2}-\d{2} \d{2}$/)) {
-      console.error('Invalid date format. Expected: YYYY-MM-DD HH');
+      // console.error('Invalid date format. Expected: YYYY-MM-DD HH');
       return [];
     }
 
@@ -106,12 +106,12 @@ export const getAvailableEngineers = async (
       text: engineer.engineerName,
     }));
   } catch (error) {
-    console.error('Error fetching available engineers:', error);
+    // console.error('Error fetching available engineers:', error);
     if (axios.isAxiosError(error)) {
-      console.error('API Error details:', {
-        status: error.response?.status,
-        data: error.response?.data,
-      });
+      // console.error('API Error details:', {
+      //   status: error.response?.status,
+      //   data: error.response?.data,
+      // });
     }
     return [];
   }
@@ -128,13 +128,13 @@ export const getEngineerInfo = async (engineerId: number) => {
     if (!engineer) return null;
 
     return `이름: ${engineer.engineerName}
-           전화번호: ${engineer.engineerPhone}
-           주소: ${engineer.engineerAddr}
-           특이사항: ${engineer.engineerRemark || '없음'}
-           보유 기술: ${engineer.engineerSkills.join(', ') || '없음'}
-           휴무일: ${engineer.engineerDayoff || '없음'}`;
+전화번호: ${engineer.engineerPhone}
+주소: ${engineer.engineerAddr}
+특이사항: ${engineer.engineerRemark || '없음'}
+보유 기술: ${engineer.engineerSkills.join(', ') || '없음'}
+휴무일: ${engineer.engineerDayoff || '없음'}`;
   } catch (error) {
-    console.error('Error fetching engineer info:', error);
+    // console.error('Error fetching engineer info:', error);
     return null;
   }
 };

@@ -67,9 +67,9 @@ const Page = () => {
       const response = await api.get<CustomerListInfo[]>('/order-management/orders'); // API 호출
       const transformedData = transformCustomerData(response.data); // 데이터 변환 및 정렬
       setCustomerData(transformedData); // 상태 업데이트
-      console.log('Transformed and Sorted Data:', transformedData); // 변환된 데이터 확인
+      // console.log('Transformed and Sorted Data:', transformedData); // 변환된 데이터 확인
     } catch (error) {
-      console.error('고객 데이터 로드 에러:', error);
+      // console.error('고객 데이터 로드 에러:', error);
     }
   };
 
@@ -99,7 +99,7 @@ const Page = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('엑셀 다운로드 실패:', error);
+      // console.error('엑셀 다운로드 실패:', error);
     }
   };
 
