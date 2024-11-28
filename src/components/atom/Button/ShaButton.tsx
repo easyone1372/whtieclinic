@@ -22,6 +22,8 @@ export type ShaButtonProps = {
     | '전달'
     | '기사님 등록'
     | '로그인'
+    | '로그아웃'
+    | '회원가입'
     | '';
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   size?: 'default' | 'sm' | 'lg' | 'icon';

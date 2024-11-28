@@ -86,7 +86,7 @@ export const sideBarMenuData = {
     links: [
       {
         name: '매출 요약',
-        href: '/dashboard',
+        href: '/dashboard/',
         icon: FileSpreadsheet,
       },
       //     {
