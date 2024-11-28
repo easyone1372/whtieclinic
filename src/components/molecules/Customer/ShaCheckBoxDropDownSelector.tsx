@@ -1,15 +1,23 @@
 'use client';
 
 import React from 'react';
-
-import ShaOneCheckbox, { ShaOneCheckboxProps } from '../checkbox/ShaOneCheckBox';
-import ShaDropdown, { ShaDropdownProps } from '@/components/atom/DropdownBox/ShaDropDown';
+import ShaOneCheckbox from '../checkbox/ShaOneCheckBox';
+import ShaDropdown from '@/components/atom/DropdownBox/ShaDropDown';
 import ShaTextarea from '@/components/atom/Input/ShaTextArea';
-import { productCategories } from '@/data/ProductCategory';
+import { ProductCategory, productCategories } from '@/data/ProductCategory';
 
+// Props 타입 정의
 export type ShaCheckboxDropdownSelectorProps = {
-  onecheckboxprops: ShaOneCheckboxProps;
-  dropdownprops?: Omit<ShaDropdownProps, 'options'>;
+  onecheckboxprops: {
+    checkboxes: Record<string, { textprops: { text: string } }>;
+    value: string;
+    onChange: (value: string) => void;
+  };
+  dropdownprops?: {
+    label: string;
+    value: string;
+    onChange: (value: string) => void;
+  };
   customInputValue?: string;
   onProductChange?: (value: string) => void;
 };
@@ -20,46 +28,28 @@ const ShaCheckboxDropdownSelector = ({
   customInputValue,
   onProductChange,
 }: ShaCheckboxDropdownSelectorProps) => {
-  const { value: selectedCategory, onChange: handleCheckboxChange, checkboxes } = onecheckboxprops;
-
-  const {
-    value: selectedDropdownValue,
-    onChange: handleDropdownChange,
-    label,
-  } = dropdownprops || {};
-
-  // 카테고리에 따른 드롭다운 옵션 생성
-  const categoryData = selectedCategory
-    ? productCategories[selectedCategory as keyof typeof productCategories]
-    : null;
-
-  const dropdownOptions = categoryData
-    ? categoryData.categories.map((product) => ({
-        value: product.category,
-        text: product.category,
+  // 선택된 카테고리에 따른 드롭다운 옵션 생성
+  const options = onecheckboxprops.value
+    ? productCategories[onecheckboxprops.value as ProductCategory]?.categories.map((item) => ({
+        value: item.category,
+        text: item.category,
       }))
     : [];
 
   return (
     <div className="flex items-center gap-4">
-      <ShaOneCheckbox
-        checkboxes={checkboxes}
-        value={selectedCategory}
-        onChange={handleCheckboxChange}
-      />
+      <ShaOneCheckbox {...onecheckboxprops} />
 
       <div className="flex flex-col gap-2">
         <ShaDropdown
-          key={selectedCategory}
-          label={label}
-          value={selectedDropdownValue}
-          options={dropdownOptions}
+          key={onecheckboxprops.value}
           width="medium"
-          onChange={handleDropdownChange}
+          options={options}
+          {...dropdownprops}
         />
 
         <ShaTextarea
-          key={selectedDropdownValue}
+          key={dropdownprops?.value}
           placeholder="세부 사항 입력"
           value={customInputValue}
           onChange={onProductChange}

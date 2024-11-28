@@ -2,13 +2,8 @@
 
 import LoginF from '@/components/organism/Login/LoginF';
 
-
-const Home = () => {
-  return (
-    <>
-      <LoginF />
-    </>
-  );
+const Page = () => {
+  return <LoginF />;
 };
 
-export default Home;
+export default Page;
