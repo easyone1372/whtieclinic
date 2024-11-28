@@ -15,15 +15,14 @@ import {
 import { Input } from '@/components/ui/input';
 import ShaButton from '@/components/atom/Button/ShaButton';
 import api from '@/utils/axios';
-import { useRouter } from 'next/navigation';
 
 // 1. Form validation schema
 const formSchema = z.object({
   adminId: z.string().min(2, { message: '아이디는 최소 2자 이상이어야 합니다.' }),
-  adminPw: z.string().min(2, { message: '비밀번호는 최소 8자 이상이어야 합니다.' }),
+  adminPw: z.string().min(8, { message: '비밀번호는 최소 8자 이상이어야 합니다.' }),
 });
 
-const LoginF = () => {
+const RegisterF = () => {
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null);
   const [successMessage, setSuccessMessage] = React.useState<string | null>(null);
 
@@ -34,32 +33,21 @@ const LoginF = () => {
       adminPw: '',
     },
   });
-  const router = useRouter();
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log('전송 데이터 (회원가입):', values);
     setErrorMessage(null);
     setSuccessMessage(null);
 
     try {
-      // Axios의 Request 인터셉터에서 `toSnakeCase`가 적용됨
-      console.log('전송 데이터:', values);
-
-      const response = await api.post('/auth/login', values);
-
+      const response = await api.post('/auth/register', values);
       console.log('응답 데이터:', response.data);
 
       if (response.status === 201) {
-        const { accessToken, refreshToken } = response.data;
-        console.log('로그인 성공:', { accessToken, refreshToken });
-
-        // 토큰 저장 예제 (localStorage 또는 다른 저장소 사용)
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', refreshToken);
-        router.push('/dashboard');
-        setSuccessMessage('로그인 성공!');
+        setSuccessMessage('회원가입이 성공적으로 완료되었습니다!');
       }
     } catch (error: any) {
-      setErrorMessage(error?.response?.data?.message || '로그인 요청 중 문제가 발생했습니다.');
+      setErrorMessage(error?.response?.data?.message || '회원가입 요청 중 문제가 발생했습니다.');
       console.error('에러:', error.response?.data || error.message);
     }
   };
@@ -111,4 +99,4 @@ const LoginF = () => {
   );
 };
 
-export default LoginF;
+export default RegisterF;
