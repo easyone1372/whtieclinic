@@ -27,6 +27,8 @@ const SchEdit = ({ queryParams }: { queryParams: QueryParams }) => {
   const router = useRouter();
 
   console.log('editSchedule Engineer:', queryParams.engineerId);
+  console.log('editSelectDate:', queryParams.selectDate);
+  console.log('editSelectTime:', queryParams.selectTime);
   console.log('editOrderData:', editOrderData);
   useEffect(() => {
     const fetchData = async () => {
@@ -37,12 +39,20 @@ const SchEdit = ({ queryParams }: { queryParams: QueryParams }) => {
           // OrderId가 있을 경우 상세 데이터를 요청
           const response = await api.get(`/order-management/orders/${queryParams.orderId}`); //api주소
           const orderData = response.data;
+          // formValues = {
+          //   ...schInfoToFormValues(orderData),
+          //   selectedEngineerId: queryParams.engineerId || 0,
+          // };
           formValues = schInfoToFormValues(orderData);
         } else {
+          const orderDateInfo = queryParams.selectDate ?? '' + queryParams.selectTime;
+          console.log('orderDateInfo', orderDateInfo);
           formValues = {
             ...editScheduleValues, // 기본값
-            orderDate: queryParams.selectDate ?? '',
-            orderTime: queryParams.selectTime ?? '',
+            orderDate: orderDateInfo,
+
+            // orderDate: queryParams.selectDate ,
+            // orderTime: queryParams.selectTime ?? '',
           };
           if (queryParams.engineerId) {
             const engineerInfo = await getEngineerInfo(queryParams.engineerId);

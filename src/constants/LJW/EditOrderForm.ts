@@ -59,7 +59,7 @@ export const EditOrderForm = (
                 }
               } else {
                 handleFieldChange('orderDate', '');
-                handleFieldChange('orderTime', '');
+                // handleFieldChange('orderTime', '');
                 handleFieldChange('availableEngineers', []);
                 handleFieldChange('selectedEngineerId', null);
                 handleFieldChange('engineerInfo', '');

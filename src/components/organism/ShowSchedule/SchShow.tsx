@@ -82,17 +82,17 @@ const SchShow = () => {
     (timeSlot: string) => {
       const order = scheduleData?.find((order) => order.orderTimeslot === timeSlot);
       let queryParams: Record<string, string> = {
-        selectDate: selectedDate.toISOString(),
+        selectDate: selectedDate.toISOString().split('T')[0],
         selectTime: extractStartTime(timeSlot),
         engineerId: selectEng?.toString() ?? '',
       };
 
       if (order) {
         queryParams = {
-          selectDate: order.orderDate.toString(),
+          selectDate: order.orderDate.toString().split('T')[0],
           selectTime: extractStartTime(order.orderTimeslot),
           orderId: order.orderId.toString(),
-          // engineerId: order.engineerId.toString(),
+          engineerId: order.engineerId.toString(),
         };
       }
 

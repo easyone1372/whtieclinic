@@ -3,7 +3,7 @@ export type EditScheduleTypes = {
   customerId: number;
   engineerId: number;
   orderDate: string;
-  orderTimeSlot: string;
+  // orderTimeSlot: string;
   customerName: string;
   customerPhone: string;
   customerAddr: string;
@@ -19,7 +19,7 @@ export type EditOrderFormValues = {
   // 예약 정보
   orderId: number;
   orderDate: string;
-  orderTime: string;
+  // orderTime: string; //받아오는 정보에는 없음
   orderEngineerName: string;
 
   // 고객 정보
@@ -56,7 +56,7 @@ export type EditOrderFormValues = {
 export const editScheduleValues: EditOrderFormValues = {
   orderId: 0,
   orderDate: '',
-  orderTime: '',
+  // orderTime: '',
   orderEngineerName: '',
   selectedEngineerId: 0,
   orderCustomerName: '',
@@ -84,9 +84,9 @@ export const schInfoToFormValues = (orderData: any): EditOrderFormValues => ({
   ...editScheduleValues,
   orderId: orderData.orderId || 0,
   orderDate: orderData.orderDate || '',
-  orderTime: orderData.orderTime || '',
-  orderEngineerName: orderData.orderEngineerName || '',
-  selectedEngineerId: orderData.selectedEngineerId || 0,
+  // orderTime: orderData.orderTime || '',
+  orderEngineerName: orderData.orderEngineerName || '', // 엔지니어 이름을 처리
+  selectedEngineerId: orderData.selectedEngineerId || null, // 엔지니어 ID 처리
   orderCustomerName: orderData.orderCustomerName || '',
   orderCustomerPhone: orderData.orderCustomerPhone || '',
   orderCustomerAddr: orderData.orderCustomerAddr || '',
@@ -95,11 +95,19 @@ export const schInfoToFormValues = (orderData: any): EditOrderFormValues => ({
   orderCount: orderData.orderCount || 0,
   orderTotalAmount: orderData.orderTotalAmount || 0,
   orderRemark: orderData.orderRemark || '',
+  orderCategory: orderData.orderCategory || '', // 카테고리 처리
+  orderPayment: orderData.orderPayment || '', // 결제 방식 처리
+  orderReceiptDocs: orderData.orderReceiptDocs || '', // 영수증 여부 처리
+  receiptDocsIssued: orderData.receiptDocsIssued || false, // 영수증 발급 여부 처리
+  orderDeposit: orderData.orderDeposit || 0, // 계약금 처리
+  depositPaid: orderData.depositPaid || false, // 계약금 지불 여부 처리
+  orderDiscountRatio: orderData.orderDiscountRatio || 0, // 할인율 처리
+  orderIsDiscount: orderData.orderIsDiscount || false, // 할인 여부 처리
 });
 
 export const schValidationRules = [
   (formValues: EditOrderFormValues) => !!formValues.orderDate,
-  (formValues: EditOrderFormValues) => !!formValues.orderTime,
+  // (formValues: EditOrderFormValues) => !!formValues.orderTime,
   (formValues: EditOrderFormValues) => !!formValues.orderEngineerName,
   (formValues: EditOrderFormValues) => !!formValues.orderCustomerName,
   (formValues: EditOrderFormValues) => !!formValues.orderCustomerPhone,

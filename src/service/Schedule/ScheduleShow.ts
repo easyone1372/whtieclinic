@@ -11,7 +11,6 @@ export interface ScheduleShowResponse {
 
 export const ScheduleShowApi = {
   schshow: async (params: { engineerId: number; selectedDate: string }): Promise<any> => {
-    // 임시로 any 타입 사용
     const response = await api.get('/engineer-management/engineers/schedules', {
       params,
     });
