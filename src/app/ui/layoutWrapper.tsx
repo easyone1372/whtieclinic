@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import ShaSideNav from './ShaSideNav';
 import { cn } from '@/lib/utils';
-import LoginBtn from '@/components/organism/Login/LoginBtn';
 
 type LayoutWrapperProps = {
   children: React.ReactNode;
@@ -21,7 +20,6 @@ const LayoutWrapper = ({ children }: LayoutWrapperProps) => {
           'transition-all duration-300' // 부드러운 전환 효과
         )}
       >
-       
         <div className="w-full h-full max-w-[2400px] mx-auto"> {children}</div>
       </main>
     </div>
