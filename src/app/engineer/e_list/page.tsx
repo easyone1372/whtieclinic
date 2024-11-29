@@ -9,8 +9,9 @@ import { Engineer } from '@/constants/types/type';
 import {
   fetchEngineerEvents,
   fetchEngineers,
-  LABEL_MAP,
   updateEngineerPayment,
+  LABEL_MAP,
+  fetchEngineerWeeklyDetail,
 } from '@/service/EngineerList/EngineerList';
 import ShaText from '@/components/atom/Text/ShaText';
 import moment from 'moment';
@@ -18,41 +19,34 @@ import moment from 'moment';
 export type LabelMapType = typeof LABEL_MAP;
 
 const Page = () => {
-  const [filter, setFilter] = useState(''); // 검색 필터 상태
-  const [engineers, setEngineers] = useState<Engineer[]>([]); // 엔지니어 목록 상태
-  const [events, setEvents] = useState<CalendarEventType[]>([]); // 일정 이벤트 상태
-  const [selectedData, setSelectedData] = useState<Engineer | null>(null); // 선택된 엔지니어 데이터 상태
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false); // Drawer 열림 상태
-  const [weeklyTotals, setWeeklyTotals] = useState<Record<string, number>>({}); // 주차별 합계 금액 상태
-  const [totalAmount, setTotalAmount] = useState(0); // 주차별 합계 금액 상태
-  const [isEditing, setIsEditing] = useState(false); // 수정 모드 상태
-
+  const [filter, setFilter] = useState('');
+  const [engineers, setEngineers] = useState<Engineer[]>([]);
+  const [events, setEvents] = useState<CalendarEventType[]>([]);
+  const [selectedData, setSelectedData] = useState<Engineer | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [weeklyTotals, setWeeklyTotals] = useState<Record<string, number>>({});
+  const [totalAmount, setTotalAmount] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
   const [editData, setEditData] = useState({
-    week: '', // 주차 데이터
-    amount: 0, // 수당 금액
-    isPaid: false, // 지급 여부
-  });
-
-  const [initialEditData, setInitialEditData] = useState({
     week: '',
     amount: 0,
     isPaid: false,
   });
 
-  // 엔지니어 목록 가져오기
+  //엔지니어리스트 API불러오는 함수
   useEffect(() => {
     const loadEngineers = async () => {
       try {
         const data = await fetchEngineers();
-        setEngineers(data); // 엔지니어 목록 상태 업데이트
+        setEngineers(data);
       } catch (error) {
-        console.error('Error loading engineers:', error);
+        // console.error('Error loading engineers:', error);
       }
     };
     loadEngineers();
   }, []);
 
-  // 특정 엔지니어 일정 이벤트 가져오기
+  // 날짜별 일급 불러오는 함수
   useEffect(() => {
     if (selectedData) {
       const loadEngineerEvents = async () => {
@@ -66,26 +60,29 @@ const Page = () => {
           }));
           setEvents(events);
 
-          // 주차별 합계 계산
-          const weeklyData = events.reduce((acc, event) => {
-            const week = getWeekOfMonth(event.start);
-            acc[week] = (acc[week] || 0) + (event.amount || 0);
-            return acc;
-          }, {} as Record<string, number>);
+          const weeklyData = events.reduce(
+            (acc, event) => {
+              const week = getWeekOfMonth(event.start);
+              acc[week] = (acc[week] || 0) + (event.amount || 0);
+              return acc;
+            },
+            {} as Record<string, number>
+          );
           setWeeklyTotals(weeklyData);
         } catch (error) {
-          console.error('Error loading engineer events:', error);
+          // console.error('Error loading engineer events:', error);
         }
       };
       loadEngineerEvents();
     }
   }, [selectedData]);
 
-  // ISO 주차 계산 함수
-  const getWeekOfMonth = (date: Date): string => {
+  // 주차 계산함수
+  const getWeekOfMonth = (date?: Date): string => {
+    if (!date) return '날짜 없음';
     const targetDate = moment(date);
-    const firstDayOfMonth = targetDate.clone().startOf('month'); // 해당 월의 첫날
-    const firstWeekStart = firstDayOfMonth.clone().startOf('isoWeek'); // 첫 ISO 주의 시작
+    const firstDayOfMonth = targetDate.clone().startOf('month');
+    const firstWeekStart = firstDayOfMonth.clone().startOf('isoWeek');
     const diffWeeks = targetDate.diff(firstWeekStart, 'weeks');
     return `${targetDate.format('YYYY년 M월')} ${diffWeeks + 1}주차`;
   };
@@ -101,25 +98,67 @@ const Page = () => {
         ? selectedData.engineerCommissionRate / 100
         : 0;
       const commissionAmount = Math.floor(weeklyTotal * commissionRate);
-      setTotalAmount(weeklyTotal);
-      setEditData((prev) => ({
-        ...prev,
-        amount: commissionAmount,
-      }));
+
+      return {
+        total: weeklyTotal,
+        commission: commissionAmount,
+      };
     },
     [events, selectedData]
   );
 
-  // 달력 셀 선택 핸들러
+  // 주급 불러오는 함수
+  const loadWeeklyData = useCallback(
+    async (week: string, selectedDate: Date) => {
+      if (!selectedData) return;
+
+      try {
+        const weeklyData = await fetchEngineerWeeklyDetail(selectedData.engineerId, week);
+
+        // 계산된 값 가져오기
+        const calculatedData = calculateTotalAndCommission(selectedDate);
+
+        if (!weeklyData || (weeklyData.weeklyEarning === 0 && !weeklyData.isPaid)) {
+          // DB에 데이터가 없는 경우 계산된 값 사용
+          setTotalAmount(calculatedData.total);
+          setEditData({
+            week,
+            amount: calculatedData.commission,
+            isPaid: false,
+          });
+        } else {
+          // DB에 데이터가 있는 경우 DB 값 사용
+          setTotalAmount(calculatedData.total); // 총액은 항상 계산된 값 사용
+          setEditData({
+            week,
+            amount: weeklyData.weeklyEarning,
+            isPaid: weeklyData.isPaid,
+          });
+        }
+      } catch (error) {
+        // console.error('Error loading weekly data:', error);
+
+        // 에러 발생 시 계산된 값 사용
+        const calculatedData = calculateTotalAndCommission(selectedDate);
+        setTotalAmount(calculatedData.total);
+        setEditData({
+          week,
+          amount: calculatedData.commission,
+          isPaid: false,
+        });
+      }
+    },
+    [selectedData, calculateTotalAndCommission]
+  );
+
+  // 달력 클릭하는 함수
   const handleSelectSlot = (slotInfo: { start: Date }) => {
     if (!slotInfo.start) return;
-    calculateTotalAndCommission(slotInfo.start);
-    setEditData((prev) => ({
-      ...prev,
-      week: getWeekOfMonth(slotInfo.start),
-    }));
+    const week = getWeekOfMonth(slotInfo.start);
+    loadWeeklyData(week, slotInfo.start);
   };
 
+  // 필터링
   const handleFilterChange = (value: string) => setFilter(value);
 
   const handleItemClick = (item: Engineer) => {
@@ -128,42 +167,31 @@ const Page = () => {
   };
 
   const handleEditToggle = () => {
-    setInitialEditData({ ...editData });
     setIsEditing(!isEditing);
-  };
-
-  const handleEditCancel = () => {
-    setEditData({ ...initialEditData });
-    setIsEditing(false);
   };
 
   const handleSaveEdit = async () => {
     if (!selectedData) return;
 
     try {
-      // 서버로 편집 데이터 전송
       await updateEngineerPayment(
         selectedData.engineerId,
-        editData.week, // 주차 정보
-        editData.amount, // 수당 금액
-        editData.isPaid // 지급 여부
+        editData.week,
+        editData.amount,
+        editData.isPaid
       );
       setIsEditing(false);
 
-      // 업데이트된 이벤트 다시 로드
-      const updatedEvents = await fetchEngineerEvents(selectedData.engineerId);
-      const eventsWithDateConversion = updatedEvents.map((event) => ({
-        title: `${event.dailyIncome.toLocaleString()}원`,
-        start: new Date(event.date.split(' ')[0]),
-        end: new Date(event.date.split(' ')[0]),
-        amount: event.dailyIncome,
-      }));
-      setEvents(eventsWithDateConversion);
+      // 저장 후 데이터 다시 불러오기
+      const date = events.find((event) => getWeekOfMonth(event.start) === editData.week)?.start;
+      if (date) {
+        loadWeeklyData(editData.week, date);
+      }
 
-      alert('수정이 완료되었습니다!');
+      alert('저장이 완료되었습니다.');
     } catch (error) {
-      console.error('Error saving edit:', error);
-      alert('수정에 실패했습니다.');
+      // console.error('Error saving edit:', error);
+      alert('저장에 실패했습니다.');
     }
   };
 
@@ -190,19 +218,21 @@ const Page = () => {
           </div>
           <AFooter
             data={selectedData}
-            totalAmount={totalAmount}
+            totalAmount={totalAmount || 0}
             finalPayment={editData.amount}
             isEditing={isEditing}
             isChecked={editData.isPaid}
-            onFinalPaymentChange={(value) => setEditData({ ...editData, amount: value })}
-            onCheckboxChange={(checked) => setEditData({ ...editData, isPaid: checked })}
+            onFinalPaymentChange={(value) => setEditData((prev) => ({ ...prev, amount: value }))}
+            onCheckboxChange={(checked) =>
+              isEditing ? setEditData((prev) => ({ ...prev, isPaid: checked })) : undefined
+            }
             labelMap={{ ...LABEL_MAP }}
           />
           <div className="flex justify-center gap-2 mt-4">
             {isEditing ? (
               <>
                 <ShaButton text="저장" onClick={handleSaveEdit} />
-                <ShaButton text="취소" onClick={handleEditCancel} />
+                <ShaButton text="취소" onClick={() => setIsEditing(false)} />
               </>
             ) : (
               <ShaButton text="수정" onClick={handleEditToggle} />

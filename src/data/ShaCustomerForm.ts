@@ -5,7 +5,6 @@ import { ShaDateTimePickerProps } from '@/components/molecules/ADateTimePicker/S
 import { ShaTextareaProps } from '@/components/atom/Input/ShaTextArea';
 import { ShaDropdownProps } from '@/components/atom/DropdownBox/ShaDropDown';
 import { ShaDiscountCheckboxProps } from '@/components/molecules/Customer/ShaDiscountCheckBox';
-import { ShaCheckboxDropdownSelectorProps } from '@/components/molecules/Customer/ShaCheckBoxDropDownSelector';
 import { ShaNumericInputProps } from '@/components/molecules/input/ShaNumericInput';
 import { CheckboxProps } from '@/components/atom/CheckBox/ShaCheckBox';
 import { format } from 'date-fns';
@@ -15,38 +14,31 @@ import { productCategories } from './ProductCategory';
 import { getAvailableEngineers, getEngineerInfo } from '@/service/Order/EngSchedul';
 import { fetchEngineers } from '@/service/EngineerList/EngineerList';
 import { isNumberOnly } from '@/constants/validation';
+import { ShaCheckboxDropdownSelectorProps } from '@/components/molecules/Customer/ShaCheckBoxDropDownSelector';
 
 export type OrderFormValues = {
   // 예약 정보
   orderDate: string;
-  orderEngineerName: string;
-
-  // 고객 정보
   orderCustomerName: string;
   orderCustomerPhone: string;
   orderCustomerAddr: string;
   orderCustomerRemark: string;
-
-  // 주문 정보
-  orderCategory: string;
-  orderProduct: string;
-  orderRemark?: string;
-
-  // 금액 정보
-  orderTotalAmount: number; // 세척금액
-  totalAmount: number; // 총금액 (세척금액 - 계약금 - 할인금액)
-  orderCount: number;
-  orderIsDiscount: boolean;
-  orderDiscountRatio: number;
+  depositPaid: boolean;
   orderDeposit: number;
-  depositPayed: boolean;
-
-  // 결제 정보
   orderPayment: string;
   orderReceiptDocs: string;
   receiptDocsIssued: boolean;
+  orderCategory: string;
+  orderProduct: string;
+  orderRemark?: string;
+  orderCount: number;
+  orderTotalAmount: number; // 세척금액
+  orderIsDiscount: boolean;
+  orderDiscountRatio: number;
+  orderEngineerName: string;
 
-  // 기사 정보 표시용 (내부용)
+  totalAmount: number;
+
   selectedEngineerId: number | null;
   engineerInfo?: string;
   availableEngineers?: { value: string; text: string }[];
@@ -75,20 +67,23 @@ export const ShaOrderFormData = (
                 const formattedDate = format(newValue, 'yyyy-MM-dd HH');
                 handleFieldChange('orderDate', formattedDate);
 
-                const availableEngineers = await getAvailableEngineers(
-                  formattedDate,
-                  formValues.orderProduct
-                );
-                handleFieldChange('availableEngineers', availableEngineers);
-
-                if (formValues.selectedEngineerId) {
-                  const isStillAvailable = availableEngineers.some(
-                    (eng) => eng.value === formValues.selectedEngineerId?.toString()
+                // 품목이 선택되어 있을 때만 엔지니어 조회
+                if (formValues.orderProduct) {
+                  const availableEngineers = await getAvailableEngineers(
+                    formattedDate,
+                    formValues.orderProduct
                   );
-                  if (!isStillAvailable) {
-                    handleFieldChange('selectedEngineerId', null);
-                    handleFieldChange('engineerInfo', '');
-                    handleFieldChange('orderEngineerName', '');
+                  handleFieldChange('availableEngineers', availableEngineers);
+
+                  if (formValues.selectedEngineerId) {
+                    const isStillAvailable = availableEngineers.some(
+                      (eng) => eng.value === formValues.selectedEngineerId?.toString()
+                    );
+                    if (!isStillAvailable) {
+                      handleFieldChange('selectedEngineerId', null);
+                      handleFieldChange('engineerInfo', '');
+                      handleFieldChange('orderEngineerName', '');
+                    }
                   }
                 }
               } else {
@@ -113,62 +108,36 @@ export const ShaOrderFormData = (
           prevprops: {
             onecheckboxprops: {
               checkboxes: {
-                에어컨: {
-                  textprops: { text: productCategories['에어컨'].product },
-                },
-                세탁기: {
-                  textprops: { text: productCategories['세탁기'].product },
-                },
+                에어컨: { textprops: { text: '에어컨' } },
+                세탁기: { textprops: { text: '세탁기' } },
               },
-              value: formValues.orderProduct?.split(':')[0],
-              onChange: (value: string) => {
-                handleFieldChange('orderCategory', value);
-                handleFieldChange('orderProduct', value);
-                handleFieldChange('selectedEngineerId', null);
-                handleFieldChange('engineerInfo', '');
-                handleFieldChange('availableEngineers', []);
-                handleFieldChange('orderEngineerName', '');
-              },
-            },
-            dropdownprops: {
-              label: '카테고리 선택',
-              width: 'small',
-              options: formValues.orderProduct
-                ? productCategories[
-                    formValues.orderProduct.split(':')[0] as keyof typeof productCategories
-                  ].categories.map((item) => ({ value: item.category, text: item.category }))
-                : [],
-              value: formValues.orderProduct?.split(':')[1],
+              value: formValues.orderCategory,
               onChange: async (value: string) => {
-                const product = formValues.orderProduct?.split(':')[0];
-                handleFieldChange('orderProduct', `${product}:${value}`);
+                handleFieldChange('orderCategory', value);
+                handleFieldChange('orderProduct', '');
 
                 if (formValues.orderDate) {
-                  const allEngineers = await fetchEngineers();
-                  const availableEngineers = await getAvailableEngineers(formValues.orderDate);
-
-                  const filteredEngineers = availableEngineers.filter((eng) => {
-                    const engineer = allEngineers.find(
-                      (e) => e.engineerId.toString() === eng.value
-                    );
-                    return engineer?.engineerValidSkill?.includes(value);
-                  });
-
-                  handleFieldChange('availableEngineers', filteredEngineers);
-
-                  if (formValues.selectedEngineerId) {
-                    const isStillAvailable = filteredEngineers.some(
-                      (eng) => eng.value === formValues.selectedEngineerId?.toString()
-                    );
-                    if (!isStillAvailable) {
-                      handleFieldChange('selectedEngineerId', null);
-                      handleFieldChange('engineerInfo', '');
-                      handleFieldChange('orderEngineerName', '');
-                    }
-                  }
+                  const engineers = await getAvailableEngineers(formValues.orderDate, value);
+                  handleFieldChange('availableEngineers', engineers);
+                  handleFieldChange('selectedEngineerId', null);
+                  handleFieldChange('orderEngineerName', '');
                 }
               },
             },
+            dropdownprops: {
+              label: '세부품목 선택',
+              value: formValues.orderProduct,
+              onChange: async (value: string) => {
+                handleFieldChange('orderProduct', value);
+
+                if (formValues.orderDate) {
+                  const engineers = await getAvailableEngineers(formValues.orderDate, value);
+                  handleFieldChange('availableEngineers', engineers);
+                }
+              },
+            },
+            customInputValue: formValues.orderRemark,
+            onProductChange: (value: string) => handleFieldChange('orderRemark', value),
           } as ShaCheckboxDropdownSelectorProps,
         },
       ],
@@ -206,9 +175,9 @@ export const ShaOrderFormData = (
           prevprops: {
             value: formValues.engineerInfo || '',
             size: 'large',
-            rows: 5,
+            rows: 7,
             readOnly: true,
-            className: 'mt-2 bg-gray-50 h-fit',
+            className: 'mt-2 bg-gray-50',
           } as ShaTextareaProps,
         },
       ],
@@ -355,7 +324,7 @@ export const ShaOrderFormData = (
               handleFieldChange('orderTotalAmount', newOrderTotal);
               const totalAmount =
                 newOrderTotal -
-                (formValues.depositPayed ? formValues.orderDeposit : 0) -
+                (formValues.depositPaid ? formValues.orderDeposit : 0) -
                 (formValues.orderIsDiscount ? formValues.orderDiscountRatio : 0);
               handleFieldChange('totalAmount', totalAmount);
             },
@@ -398,9 +367,9 @@ export const ShaOrderFormData = (
           formfieldtype: 'ShaDiscountCheckbox' as ShaFormFieldType,
           prevprops: {
             checkboxProps: {
-              checked: formValues.depositPayed,
+              checked: formValues.depositPaid,
               onCheckedChange: (checked: boolean) => {
-                handleFieldChange('depositPayed', checked);
+                handleFieldChange('depositPaid', checked);
                 const totalAmount =
                   formValues.orderTotalAmount -
                   (checked ? formValues.orderDeposit : 0) -
@@ -416,7 +385,7 @@ export const ShaOrderFormData = (
                 handleFieldChange('orderDeposit', newDeposit);
                 const totalAmount =
                   formValues.orderTotalAmount -
-                  (formValues.depositPayed ? newDeposit : 0) -
+                  (formValues.depositPaid ? newDeposit : 0) -
                   (formValues.orderIsDiscount ? formValues.orderDiscountRatio : 0);
                 handleFieldChange('totalAmount', totalAmount);
               },
@@ -443,7 +412,7 @@ export const ShaOrderFormData = (
                 handleFieldChange('orderIsDiscount', checked);
                 const totalAmount =
                   formValues.orderTotalAmount -
-                  (formValues.depositPayed ? formValues.orderDeposit : 0) -
+                  (formValues.depositPaid ? formValues.orderDeposit : 0) -
                   (checked ? formValues.orderDiscountRatio : 0);
                 handleFieldChange('totalAmount', totalAmount);
               },
@@ -456,7 +425,7 @@ export const ShaOrderFormData = (
                 handleFieldChange('orderDiscountRatio', newDiscount);
                 const totalAmount =
                   formValues.orderTotalAmount -
-                  (formValues.depositPayed ? formValues.orderDeposit : 0) -
+                  (formValues.depositPaid ? formValues.orderDeposit : 0) -
                   (formValues.orderIsDiscount ? newDiscount : 0);
                 handleFieldChange('totalAmount', totalAmount);
               },

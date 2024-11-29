@@ -24,9 +24,9 @@ const ShaLabelCheckBox: React.FC<ShaLabelCheckBoxProps> = ({
     onItemsChange(newItems);
 
     if (newItems.length > 0) {
-      console.log(`선택된 항목: ${newItems.join(', ')}`);
+      // console.log(`선택된 항목: ${newItems.join(', ')}`);
     } else {
-      console.log('선택된 항목이 없습니다.');
+      // console.log('선택된 항목이 없습니다.');
     }
   };
 

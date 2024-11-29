@@ -27,7 +27,7 @@ const OrderForm = () => {
     orderIsDiscount: false,
     orderDiscountRatio: 0,
     orderDeposit: 0,
-    depositPayed: false,
+    depositPaid: false,
 
     orderPayment: '',
     orderReceiptDocs: '',

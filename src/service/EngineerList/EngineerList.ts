@@ -7,7 +7,7 @@ export const fetchEngineers = async (): Promise<Engineer[]> => {
     const response = await api.get('/engineer-management/engineers'); // api 수정해야됨
     return response.data;
   } catch (error) {
-    console.error('Error fetching engineers:', error);
+    // console.error('Error fetching engineers:', error);
     throw error;
   }
 };
@@ -35,7 +35,7 @@ export const fetchEngineerEvents = async (engineerId: number): Promise<EngineerD
     );
     return response.data as EngineerDailyEarning[]; // 반환 데이터를 명확히 지정
   } catch (error) {
-    console.error('Error fetching events for engineer ${engineerId}:', error);
+    // console.error('Error fetching events for engineer ${engineerId}:', error);
     throw error;
   }
 };
@@ -61,16 +61,16 @@ export const updateEngineerPayment = async (
       isPaid, // Boolean 값
     };
 
-    console.log('Payload before request:', payload);
+    // console.log('Payload before request:', payload);
 
     // Axios 요청 보내기
     await api.post(`/engineer-management/engineers/weekly-salaries`, payload);
   } catch (error: any) {
-    console.error('Error updating engineer payment:', error.response?.data || error.message);
+    // console.error('Error updating engineer payment:', error.response?.data || error.message);
 
     // 서버 응답에서 검증 실패 이유 확인
     if (error.response?.data) {
-      console.error('Server Validation Errors:', error.response.data);
+      // console.error('Server Validation Errors:', error.response.data);
     }
 
     throw error;
@@ -83,20 +83,31 @@ export const fetchEngineerWeeklyDetail = async (
   weekly: string
 ): Promise<{ weeklyEarning: number; isPaid: boolean }> => {
   try {
+    // console.log('Request Data:', { engineer_id: engineerId, weekly });
+
     const response = await api.post(
       `/engineer-management/engineers/${engineerId}/weekly-salary-details`,
-      {
-        engineer_id: engineerId,
-        weekly,
-      }
+      { engineer_id: engineerId, weekly }
     );
-    return {
-      weeklyEarning: response.data.weekly_earning,
-      isPaid: response.data.is_paid,
+
+    // response.data에서 직접 camelCase로 된 키를 사용
+    const { weeklyEarning, isPaid } = response.data;
+
+    // null 체크와 타입 변환을 확실하게 처리
+    const processedData = {
+      weeklyEarning: typeof weeklyEarning === 'number' ? weeklyEarning : 0,
+      isPaid: Boolean(isPaid),
     };
+
+    // console.log('Processed Response:', processedData);
+
+    return processedData;
   } catch (error) {
-    console.error('Error fetching weekly details:', error);
-    throw error;
+    // console.error('Error in fetchEngineerWeeklyDetail:', error);
+    return {
+      weeklyEarning: 0,
+      isPaid: false,
+    };
   }
 };
 

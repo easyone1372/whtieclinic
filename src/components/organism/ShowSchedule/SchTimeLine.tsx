@@ -38,7 +38,7 @@ const SchTimeLine = ({ scheduleData, onEditRow, isEditing, selectedDate }: SchTi
     });
   
 
-    console.log('Generated tableData:', result);
+    // console.log('Generated tableData:', result);
     return result;
   }, [scheduleData]);
 

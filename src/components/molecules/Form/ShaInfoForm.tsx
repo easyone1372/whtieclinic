@@ -11,7 +11,7 @@ const ShaInfoForm: React.FC<ShaInfoFormProps> = ({
   twoColumns = false, // 기본값은 한 줄
 }) => {
   return (
-    <div className={twoColumns ? 'grid grid-cols-2 gap-7' : 'flex flex-col gap-7'}>
+    <div className={twoColumns ? 'grid grid-cols-3 gap-7' : 'flex flex-col gap-7'}>
       {ShaTitledFormControlProps.map((props, index) => (
         <div
           key={index}

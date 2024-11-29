@@ -3,10 +3,11 @@
 import { useEffect, useState } from 'react';
 import api from '@/utils/axios';
 import FilterTable from '@/components/organism/FilterTable/FiterTable';
+import ShaButton from '@/components/atom/Button/ShaButton';
+import { FileDown } from 'lucide-react';
 
 // 회원관리 리스트보기
 type CustomerListInfo = {
-  orderId: number;
   orderDate: string;
   customerName: string;
   customerPhone: string;
@@ -31,7 +32,6 @@ const headers = {
   orderPayment: '결제방식',
   orderRecieptDocs: '증빙서류',
   receiptDocsIssued: '영수증 발행여부',
-  modify: '정보 수정',
 };
 
 // 고객 데이터의 열 키 설정
@@ -67,9 +67,9 @@ const Page = () => {
       const response = await api.get<CustomerListInfo[]>('/order-management/orders'); // API 호출
       const transformedData = transformCustomerData(response.data); // 데이터 변환 및 정렬
       setCustomerData(transformedData); // 상태 업데이트
-      console.log('Transformed and Sorted Data:', transformedData); // 변환된 데이터 확인
+      // console.log('Transformed and Sorted Data:', transformedData); // 변환된 데이터 확인
     } catch (error) {
-      console.error('고객 데이터 로드 에러:', error);
+      // console.error('고객 데이터 로드 에러:', error);
     }
   };
 
@@ -99,7 +99,7 @@ const Page = () => {
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
     } catch (error) {
-      console.error('엑셀 다운로드 실패:', error);
+      // console.error('엑셀 다운로드 실패:', error);
     }
   };
 
@@ -110,7 +110,9 @@ const Page = () => {
 
   return (
     <>
-      <button onClick={handleExcelDownload}>엑셀 다운로드</button>
+      <ShaButton text="" onClick={handleExcelDownload}>
+        <FileDown />
+      </ShaButton>
       {/* 버튼 다시 수정할것!!! */}
       <div>
         <FilterTable
