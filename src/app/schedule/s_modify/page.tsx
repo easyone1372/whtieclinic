@@ -2,6 +2,7 @@
 
 import SchEdit from '@/components/organism/EditSchedule/SchEdit';
 import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 
 const Page = () => {
   const searchParams = useSearchParams();
@@ -16,4 +17,10 @@ const Page = () => {
   return <SchEdit queryParams={params} />;
 };
 
-export default Page;
+export default function Wrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Page />
+    </Suspense>
+  );
+}
