@@ -322,7 +322,7 @@ export const EditOrderForm = (
               handleFieldChange('orderTotalAmount', newOrderTotal);
               const totalAmount =
                 newOrderTotal -
-                (formValues.depositPayed ? formValues.orderDeposit : 0) -
+                (formValues.depositPaid ? formValues.orderDeposit : 0) -
                 (formValues.orderIsDiscount ? formValues.orderDiscountRatio : 0);
               handleFieldChange('totalAmount', totalAmount);
             },
@@ -365,9 +365,9 @@ export const EditOrderForm = (
           formfieldtype: 'ShaDiscountCheckbox' as ShaFormFieldType,
           prevprops: {
             checkboxProps: {
-              checked: formValues.depositPayed,
+              checked: formValues.depositPaid,
               onCheckedChange: (checked: boolean) => {
-                handleFieldChange('depositPayed', checked);
+                handleFieldChange('depositPaid', checked);
                 const totalAmount =
                   formValues.orderTotalAmount -
                   (checked ? formValues.orderDeposit : 0) -
@@ -383,7 +383,7 @@ export const EditOrderForm = (
                 handleFieldChange('orderDeposit', newDeposit);
                 const totalAmount =
                   formValues.orderTotalAmount -
-                  (formValues.depositPayed ? newDeposit : 0) -
+                  (formValues.depositPaid ? newDeposit : 0) -
                   (formValues.orderIsDiscount ? formValues.orderDiscountRatio : 0);
                 handleFieldChange('totalAmount', totalAmount);
               },
@@ -410,7 +410,7 @@ export const EditOrderForm = (
                 handleFieldChange('orderIsDiscount', checked);
                 const totalAmount =
                   formValues.orderTotalAmount -
-                  (formValues.depositPayed ? formValues.orderDeposit : 0) -
+                  (formValues.depositPaid ? formValues.orderDeposit : 0) -
                   (checked ? formValues.orderDiscountRatio : 0);
                 handleFieldChange('totalAmount', totalAmount);
               },
@@ -423,7 +423,7 @@ export const EditOrderForm = (
                 handleFieldChange('orderDiscountRatio', newDiscount);
                 const totalAmount =
                   formValues.orderTotalAmount -
-                  (formValues.depositPayed ? formValues.orderDeposit : 0) -
+                  (formValues.depositPaid ? formValues.orderDeposit : 0) -
                   (formValues.orderIsDiscount ? newDiscount : 0);
                 handleFieldChange('totalAmount', totalAmount);
               },
