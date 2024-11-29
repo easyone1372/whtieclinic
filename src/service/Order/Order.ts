@@ -14,7 +14,7 @@ interface OrderApiRequest {
   order_customer_phone: string;
   order_customer_addr: string;
   order_customer_remark: string;
-  deposit_payed: boolean;
+  deposit_paid: boolean;
   order_deposit: number;
   order_payment: string;
   order_receipt_docs: string;
@@ -47,7 +47,7 @@ const transformToApiRequest = (data: OrderFormValues): OrderApiRequest => {
     order_customer_phone: orderCustomerPhone.replace(/-/g, ''),
     order_customer_addr: rest.orderCustomerAddr,
     order_customer_remark: rest.orderCustomerRemark,
-    deposit_payed: rest.depositPayed,
+    deposit_paid: rest.depositPaid,
     order_deposit: rest.orderDeposit,
     order_payment: rest.orderPayment,
     order_receipt_docs: rest.orderReceiptDocs,
