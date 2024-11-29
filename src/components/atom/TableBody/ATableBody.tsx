@@ -35,14 +35,20 @@ const ATableBody = <T extends { [key: string]: any }>({
             </TableCell>
           ))}
 
-          <TableCell className="text-center">
-            <ShaButton
-              variant="outline"
-              size="sm"
-              text="수정"
-              onClick={() => router.push(`/customer/c_modify/${row.orderId}`)}
-            />
-          </TableCell>
+          {isEditing && (
+            <TableCell className="text-center">
+              <ShaButton
+                variant="outline"
+                size="sm"
+                text="수정"
+                // onClick={() => router.push(`/schedule/s_modify/${row.orderId}`)}
+                // />
+                onClick={() => onEditRow && onEditRow(row)}
+                // size="sm"
+                // text="수정"
+              />
+            </TableCell>
+          )}
         </TableRow>
       ))}
     </TableBody>

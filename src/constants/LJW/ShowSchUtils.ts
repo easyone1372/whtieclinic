@@ -140,3 +140,9 @@ export const getOrdersByEngineerAndDate = async (
     return [];
   }
 };
+
+// 시간대 문자열에서 시작 시간 추출 함수
+export const extractStartTime = (timeSlot: string): string => {
+  const match = timeSlot.match(/^(\d{2}:\d{2})/);
+  return match ? match[1].split(':')[0] : '';
+};

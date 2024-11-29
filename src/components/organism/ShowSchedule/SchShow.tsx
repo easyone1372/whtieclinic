@@ -6,7 +6,11 @@ import SchTimeLine from './SchTimeLine';
 import { SchShowDisplay } from '@/constants/LJW/ShowSchTypes';
 import { Engineer } from '@/constants/types/type';
 import { useRouter } from 'next/navigation';
-import { getEngineersByDate, getOrdersByEngineerAndDate } from '@/constants/LJW/ShowSchUtils';
+import {
+  extractStartTime,
+  getEngineersByDate,
+  getOrdersByEngineerAndDate,
+} from '@/constants/LJW/ShowSchUtils';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 // SchShow.tsx
@@ -79,22 +83,22 @@ const SchShow = () => {
       const order = scheduleData?.find((order) => order.orderTimeslot === timeSlot);
       let queryParams: Record<string, string> = {
         selectDate: selectedDate.toISOString(),
-        selectTime: timeSlot,
+        selectTime: extractStartTime(timeSlot),
         engineerId: selectEng?.toString() ?? '',
       };
 
       if (order) {
         queryParams = {
           selectDate: order.orderDate.toString(),
-          selectTime: order.orderTimeslot.toString(),
-          selectCustomerId: order.customerId.toString(),
-          selectOrderid: order.orderId.toString(),
-          engineerId: order.engineerId.toString(),
+          selectTime: extractStartTime(order.orderTimeslot),
+          orderId: order.orderId.toString(),
+          // engineerId: order.engineerId.toString(),
         };
       }
 
       const queryString = new URLSearchParams(queryParams);
-      router.push(`/customer/c_modify?${queryString}`);
+      router.push(`/schedule/s_modify?${queryString}`);
+      console.log('handleRowEdit', queryParams);
     },
     [scheduleData, selectedDate, selectEng, router]
   );
