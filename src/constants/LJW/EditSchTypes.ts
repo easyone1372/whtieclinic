@@ -2,7 +2,7 @@ export type EditScheduleTypes = {
   orderId: number;
   customerId: number;
   engineerId: number;
-  orderDate: Date;
+  orderDate: string;
   orderTimeSlot: string;
   customerName: string;
   customerPhone: string;
@@ -18,7 +18,7 @@ export type EditScheduleTypes = {
 export type EditOrderFormValues = {
   // 예약 정보
   orderId: number;
-  orderDate: Date;
+  orderDate: string;
   orderTime: string;
   orderEngineerName: string;
 
@@ -40,7 +40,7 @@ export type EditOrderFormValues = {
   orderIsDiscount: boolean;
   orderDiscountRatio: number;
   orderDeposit: number;
-  depositPayed: boolean;
+  depositPaid: boolean;
 
   // 결제 정보
   orderPayment: string;
@@ -55,10 +55,10 @@ export type EditOrderFormValues = {
 
 export const editScheduleValues: EditOrderFormValues = {
   orderId: 0,
-  orderDate: new Date() || null,
+  orderDate: '',
   orderTime: '',
   orderEngineerName: '',
-  selectedEngineerId: null,
+  selectedEngineerId: 0,
   orderCustomerName: '',
   orderCustomerPhone: '',
   orderCustomerAddr: '',
@@ -72,7 +72,7 @@ export const editScheduleValues: EditOrderFormValues = {
   orderIsDiscount: false,
   orderDiscountRatio: 0,
   orderDeposit: 0,
-  depositPayed: false,
+  depositPaid: false,
   orderPayment: '',
   orderReceiptDocs: '',
   receiptDocsIssued: false,
@@ -86,7 +86,7 @@ export const schInfoToFormValues = (orderData: any): EditOrderFormValues => ({
   orderDate: orderData.orderDate || '',
   orderTime: orderData.orderTime || '',
   orderEngineerName: orderData.orderEngineerName || '',
-  selectedEngineerId: orderData.selectedEngineerId || null,
+  selectedEngineerId: orderData.selectedEngineerId || 0,
   orderCustomerName: orderData.orderCustomerName || '',
   orderCustomerPhone: orderData.orderCustomerPhone || '',
   orderCustomerAddr: orderData.orderCustomerAddr || '',

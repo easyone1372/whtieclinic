@@ -26,6 +26,7 @@ const SchEdit = ({ queryParams }: { queryParams: QueryParams }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
+  console.log('editSchedule Engineer:', queryParams.engineerId);
   console.log('editOrderData:', editOrderData);
   useEffect(() => {
     const fetchData = async () => {
@@ -40,13 +41,13 @@ const SchEdit = ({ queryParams }: { queryParams: QueryParams }) => {
         } else {
           formValues = {
             ...editScheduleValues, // 기본값
-            orderDate: queryParams.selectDate ? new Date(queryParams.selectDate) : new Date(),
+            orderDate: queryParams.selectDate ?? '',
             orderTime: queryParams.selectTime ?? '',
           };
           if (queryParams.engineerId) {
             const engineerInfo = await getEngineerInfo(queryParams.engineerId);
             formValues.selectedEngineerId = queryParams.engineerId;
-            formValues.orderEngineerName = engineerInfo?.split('\n')[0].replace('이름: ', '') || '';
+            formValues.orderEngineerName = editOrderData?.orderEngineerName || '';
           }
         }
         setEditOrderData(formValues);
@@ -63,6 +64,7 @@ const SchEdit = ({ queryParams }: { queryParams: QueryParams }) => {
   const handleSubmit = async (values: EditOrderFormValues) => {
     try {
       if (queryParams.orderId) {
+        // await orderApi.modify(`/order-management/orders/${queryParams.orderId}`, values);
         await api.put(`/order-management/orders/${queryParams.orderId}`, values);
       } else {
         await api.post('/order-management/orders', values);
