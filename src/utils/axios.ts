@@ -47,9 +47,9 @@ const api = axios.create({
 api.interceptors.request.use(
   (config) => {
     if (config.data && typeof config.data === 'object') {
-      console.log('원본 데이터:', config.data); // 변환 전
+      // console.log('원본 데이터:', config.data); // 변환 전
       config.data = toSnakeCase(config.data); // 스네이크 케이스로 변환
-      console.log('변환된 데이터 (snake_case):', config.data); // 변환 후
+      // console.log('변환된 데이터 (snake_case):', config.data); // 변환 후
     }
     return config;
   },
@@ -62,9 +62,9 @@ api.interceptors.request.use(
 // Response 인터셉터
 api.interceptors.response.use(
   (response) => {
-    console.log('원본 응답 데이터:', response.data); // 변환 전
+    // console.log('원본 응답 데이터:', response.data); // 변환 전
     response.data = toCamelCase(response.data); // 변환
-    console.log('변환된 데이터 (camelCase):', response.data); // 변환 후
+    // console.log('변환된 데이터 (camelCase):', response.data); // 변환 후
     return response;
   },
   (error) => {

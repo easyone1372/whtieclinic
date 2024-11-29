@@ -1,63 +1,68 @@
+// LoginBtn.tsx
 'use client';
-
-import ShaButton from '@/components/atom/Button/ShaButton';
-import { cn } from '@/lib/utils';
-import api from '@/utils/axios';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import api from '@/utils/axios';
+import ShaButton from '@/components/atom/Button/ShaButton';
 
+// Props 타입 정의
+interface LoginBtnProps {
+  isLoggedIn: boolean;
+  setIsLoggedIn: (value: boolean) => void;
+}
 
-const LoginBtn = () => {
+const LoginBtn = ({ isLoggedIn, setIsLoggedIn }: LoginBtnProps) => {
   const router = useRouter();
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 상태 관리
 
-  // 토큰 확인
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    setIsLoggedIn(!!token); // 토큰이 존재하면 true, 없으면 false
-  }, []);
-
-  const handleLoginClick = () => {
+  const handleLoginClick = async () => {
     if (isLoggedIn) {
-      handleLogout(); // 로그아웃 실행
+      handleLogout();
     } else {
-      router.push('/'); // 로그인 페이지로 이동
-    }
-  };
+      try {
+        const response = await api.post('/auth/login', { username: 'user', password: 'password' });
+        const { accessToken, refreshToken } = response.data;
 
-  const handleRegisterClick = () => {
-    router.push('/regi'); // 회원가입 페이지로 이동
+        // 토큰 저장
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', refreshToken);
+
+        // 상태 업데이트
+        setIsLoggedIn(true);
+
+        // dashboard로 이동
+        router.push('/dashboard');
+      } catch (error) {
+        console.error('로그인 실패:', error);
+      }
+    }
   };
 
   const handleLogout = async () => {
     try {
       const refreshToken = localStorage.getItem('refreshToken');
       if (refreshToken) {
-        // 로그아웃 API 호출
-        await api.post('/auth/logout', {
-          refresh_token: refreshToken,
-        });
+        await api.post('/auth/logout', { refresh_token: refreshToken });
       }
 
-      // localStorage에서 모든 토큰 제거
+      // 토큰 삭제
       localStorage.removeItem('accessToken');
       localStorage.removeItem('refreshToken');
 
-      // 상태 업데이트 및 메인 페이지로 리다이렉트
+      // 상태 업데이트
       setIsLoggedIn(false);
-      router.push('/');
+
+      // 페이지 새로고침 및 메인 페이지 이동
+      window.location.href = '/';
     } catch (error) {
       console.error('로그아웃 실패:', error);
-      // 로그아웃 실패 시에도 토큰 삭제 및 리다이렉트 실행
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      setIsLoggedIn(false);
-      router.push('/');
     }
   };
 
+  const handleRegisterClick = () => {
+    router.push('/regi');
+  };
+
   return (
-    <div className="flex flex-row space-x-2 absolute top-4 right-4">
+    <div className="flex flex-row space-x-2 fixed top-4 right-4 z-50">
       <ShaButton
         text={isLoggedIn ? '로그아웃' : '로그인'}
         variant={isLoggedIn ? 'secondary' : 'default'}
