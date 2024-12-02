@@ -13,7 +13,7 @@ const Page = () => {
     engineerId: searchParams.get('engineerId') ? Number(searchParams.get('engineerId')) : undefined,
   };
 
-  console.log('c_modify: ', params);
+  console.log('s_modify: ', params);
   return <SchEdit queryParams={params} />;
 };
 

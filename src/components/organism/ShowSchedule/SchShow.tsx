@@ -97,7 +97,7 @@ const SchShow = () => {
       }
 
       const queryString = new URLSearchParams(queryParams);
-      router.push(`/customer/c_modify?${queryString}`);
+      router.push(`/schedule/s_modify?${queryString}`);
       console.log('handleRowEdit', queryParams);
     },
     [scheduleData, selectedDate, selectEng, router]

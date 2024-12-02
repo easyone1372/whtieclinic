@@ -9,6 +9,7 @@ import {
   schValidationRules,
 } from '@/constants/LJW/EditSchTypes';
 import { getAvailableEngineers, getEngineerInfo } from '@/service/Order/EngSchedul';
+import orderApi from '@/service/Order/Order';
 import api from '@/utils/axios';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
@@ -102,8 +103,8 @@ const SchEdit = ({ queryParams }: { queryParams: QueryParams }) => {
   const handleSubmit = async (values: EditOrderFormValues) => {
     try {
       if (queryParams.orderId) {
-        // await orderApi.modify(`/order-management/orders/${queryParams.orderId}`, values);
-        await api.put(`/order-management/orders/${queryParams.orderId}`, values);
+        await orderApi.modify(queryParams.orderId, values);
+        // await api.put(`/order-management/orders/${queryParams.orderId}`, values);
       } else {
         await api.post('/order-management/orders', values);
       }
