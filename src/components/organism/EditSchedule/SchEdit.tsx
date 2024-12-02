@@ -1,21 +1,22 @@
+'use client';
+
 import ShaFormTemplate from '@/components/organism/Template/ShaFormTemplate';
 import EditOrderForm from '@/constants/LJW/EditOrderForm';
 import {
   EditOrderFormValues,
-  EditScheduleTypes,
   editScheduleValues,
   schInfoToFormValues,
   schValidationRules,
 } from '@/constants/LJW/EditSchTypes';
-import { getEngineerInfo } from '@/service/Order/EngSchedul';
+import { getAvailableEngineers, getEngineerInfo } from '@/service/Order/EngSchedul';
 import api from '@/utils/axios';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 type QueryParams = {
   orderId?: number;
-  selectDate?: string;
-  selectTime?: string;
+  selectDate: string;
+  selectTime: string;
   engineerId?: number;
 };
 
@@ -28,36 +29,65 @@ const SchEdit = ({ queryParams }: { queryParams: QueryParams }) => {
   console.log('editSelectDate:', queryParams.selectDate);
   console.log('editSelectTime:', queryParams.selectTime);
   console.log('editOrderData:', editOrderData);
+  console.log('주문날짜 정보 타입:', typeof editOrderData?.orderDate);
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
         let formValues: EditOrderFormValues;
+        const combinedDateTime = `${queryParams.selectDate} ${queryParams.selectTime}`;
+
+        // 먼저 가용 엔지니어 목록을 가져옴
+        const availableEngineers = await getAvailableEngineers(combinedDateTime);
+
         if (queryParams.orderId) {
           // OrderId가 있을 경우 상세 데이터를 요청
-          const response = await api.get(`/order-management/orders/${queryParams.orderId}`); //api주소
+          const response = await api.get(`/order-management/orders/${queryParams.orderId}`);
           const orderData = response.data;
-          // formValues = {
-          //   ...schInfoToFormValues(orderData),
-          //   selectedEngineerId: queryParams.engineerId || 0,
-          // };
-          formValues = schInfoToFormValues(orderData);
-        } else {
-          const orderDateInfo = queryParams.selectDate ?? '' + queryParams.selectTime;
-          console.log('orderDateInfo', orderDateInfo);
-          formValues = {
-            ...editScheduleValues, // 기본값
-            orderDate: orderDateInfo,
 
-            // orderDate: queryParams.selectDate ,
-            // orderTime: queryParams.selectTime ?? '',
+          formValues = {
+            ...schInfoToFormValues(orderData),
+            orderDate: combinedDateTime,
+            availableEngineers: availableEngineers,
           };
+
           if (queryParams.engineerId) {
             const engineerInfo = await getEngineerInfo(queryParams.engineerId);
-            formValues.selectedEngineerId = queryParams.engineerId;
-            formValues.orderEngineerName = editOrderData?.orderEngineerName || '';
+            const selectedEngineer = availableEngineers.find(
+              (eng) => eng.value === queryParams.engineerId?.toString()
+            );
+
+            formValues = {
+              ...formValues,
+              selectedEngineerId: queryParams.engineerId,
+              engineerInfo: engineerInfo || '',
+              orderEngineerName: selectedEngineer?.text || '',
+            };
+          }
+        } else {
+          formValues = {
+            ...editScheduleValues,
+            orderDate: combinedDateTime,
+            availableEngineers: availableEngineers,
+          };
+
+          if (queryParams.engineerId) {
+            const engineerInfo = await getEngineerInfo(queryParams.engineerId);
+            const selectedEngineer = availableEngineers.find(
+              (eng) => eng.value === queryParams.engineerId?.toString()
+            );
+
+            formValues = {
+              ...formValues,
+              selectedEngineerId: queryParams.engineerId,
+              engineerInfo: engineerInfo || '',
+              orderEngineerName: selectedEngineer?.text || '',
+            };
           }
         }
+
+        console.log('Setting editOrderData:', formValues); // 디버깅용
         setEditOrderData(formValues);
       } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -82,9 +112,12 @@ const SchEdit = ({ queryParams }: { queryParams: QueryParams }) => {
       console.error('스케쥴 수정 기능 오류:', error);
     }
   };
+  if (loading) {
+    return <div>Loading...</div>;
+  }
   return (
     <ShaFormTemplate<EditOrderFormValues>
-      title=""
+      title="스케쥴 수정"
       initialValues={editOrderData || editScheduleValues}
       onSubmit={handleSubmit}
       formDataGenerator={EditOrderForm}

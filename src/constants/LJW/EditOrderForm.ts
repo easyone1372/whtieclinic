@@ -8,7 +8,7 @@ import { ShaDiscountCheckboxProps } from '@/components/molecules/Customer/ShaDis
 import { ShaCheckboxDropdownSelectorProps } from '@/components/molecules/Customer/ShaCheckBoxDropDownSelector';
 import { ShaNumericInputProps } from '@/components/molecules/input/ShaNumericInput';
 import { CheckboxProps } from '@/components/atom/CheckBox/ShaCheckBox';
-import { format } from 'date-fns';
+import { format, parse } from 'date-fns';
 import { Payment } from '@/constants/Payment';
 import { Document } from '@/constants/Document';
 
@@ -33,18 +33,23 @@ export const EditOrderForm = (
           formfieldtype: 'ShaDateTimePicker' as ShaFormFieldType,
           prevprops: {
             dateLabel: '예약 날짜',
-            value: formValues.orderDate
-              ? new Date(formValues.orderDate.replace(' ', 'T') + ':00:00')
-              : null,
+            value: (() => {
+              if (!formValues.orderDate) return null;
+
+              // YYYY-MM-DD HH 형식 파싱
+              const [datePart, timePart] = formValues.orderDate.split(' ');
+              const [year, month, day] = datePart.split('-');
+              const hour = parseInt(timePart);
+
+              return new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hour, 0);
+            })(),
             onChange: async (newValue: Date | null) => {
+              console.log('console newValue: ', newValue);
               if (newValue) {
                 const formattedDate = format(newValue, 'yyyy-MM-dd HH');
                 handleFieldChange('orderDate', formattedDate);
 
-                const availableEngineers = await getAvailableEngineers(
-                  formattedDate,
-                  formValues.orderProduct
-                );
+                const availableEngineers = await getAvailableEngineers(formattedDate);
                 handleFieldChange('availableEngineers', availableEngineers);
 
                 if (formValues.selectedEngineerId) {
@@ -80,62 +85,36 @@ export const EditOrderForm = (
           prevprops: {
             onecheckboxprops: {
               checkboxes: {
-                에어컨: {
-                  textprops: { text: productCategories['에어컨'].product },
-                },
-                세탁기: {
-                  textprops: { text: productCategories['세탁기'].product },
-                },
+                에어컨: { textprops: { text: '에어컨' } },
+                세탁기: { textprops: { text: '세탁기' } },
               },
-              value: formValues.orderProduct?.split(':')[0],
-              onChange: (value: string) => {
-                handleFieldChange('orderCategory', value);
-                handleFieldChange('orderProduct', value);
-                handleFieldChange('selectedEngineerId', null);
-                handleFieldChange('engineerInfo', '');
-                handleFieldChange('availableEngineers', []);
-                handleFieldChange('orderEngineerName', '');
-              },
-            },
-            dropdownprops: {
-              label: '카테고리 선택',
-              width: 'small',
-              options: formValues.orderProduct
-                ? productCategories[
-                    formValues.orderProduct.split(':')[0] as keyof typeof productCategories
-                  ].categories.map((item) => ({ value: item.category, text: item.category }))
-                : [],
-              value: formValues.orderProduct?.split(':')[1],
+              value: formValues.orderCategory,
               onChange: async (value: string) => {
-                const product = formValues.orderProduct?.split(':')[0];
-                handleFieldChange('orderProduct', `${product}:${value}`);
+                handleFieldChange('orderCategory', value);
+                handleFieldChange('orderProduct', '');
 
                 if (formValues.orderDate) {
-                  const allEngineers = await fetchEngineers();
-                  const availableEngineers = await getAvailableEngineers(formValues.orderDate);
-
-                  const filteredEngineers = availableEngineers.filter((eng) => {
-                    const engineer = allEngineers.find(
-                      (e) => e.engineerId.toString() === eng.value
-                    );
-                    return engineer?.engineerValidSkill?.includes(value);
-                  });
-
-                  handleFieldChange('availableEngineers', filteredEngineers);
-
-                  if (formValues.selectedEngineerId) {
-                    const isStillAvailable = filteredEngineers.some(
-                      (eng) => eng.value === formValues.selectedEngineerId?.toString()
-                    );
-                    if (!isStillAvailable) {
-                      handleFieldChange('selectedEngineerId', null);
-                      handleFieldChange('engineerInfo', '');
-                      handleFieldChange('orderEngineerName', '');
-                    }
-                  }
+                  const engineers = await getAvailableEngineers(formValues.orderDate, value);
+                  handleFieldChange('availableEngineers', engineers);
+                  handleFieldChange('selectedEngineerId', null);
+                  handleFieldChange('orderEngineerName', '');
                 }
               },
             },
+            dropdownprops: {
+              label: '세부품목 선택',
+              value: formValues.orderProduct,
+              onChange: async (value: string) => {
+                handleFieldChange('orderProduct', value);
+
+                if (formValues.orderDate) {
+                  const engineers = await getAvailableEngineers(formValues.orderDate, value);
+                  handleFieldChange('availableEngineers', engineers);
+                }
+              },
+            },
+            customInputValue: formValues.orderRemark,
+            onProductChange: (value: string) => handleFieldChange('orderRemark', value),
           } as ShaCheckboxDropdownSelectorProps,
         },
       ],
@@ -157,13 +136,12 @@ export const EditOrderForm = (
               handleFieldChange('selectedEngineerId', engineerId);
 
               const engineerInfo = await getEngineerInfo(engineerId);
-              if (engineerInfo) {
-                handleFieldChange('engineerInfo', engineerInfo);
-                // 기사 이름 설정
-                const engineer = formValues.availableEngineers?.find((eng) => eng.value === value);
-                if (engineer) {
-                  handleFieldChange('orderEngineerName', engineer.text);
-                }
+              handleFieldChange('engineerInfo', engineerInfo || '');
+              const selectedEngineer = formValues.availableEngineers?.find(
+                (eng) => eng.value === value
+              );
+              if (selectedEngineer) {
+                handleFieldChange('orderEngineerName', selectedEngineer.text);
               }
             },
           } as ShaDropdownProps,
@@ -173,7 +151,7 @@ export const EditOrderForm = (
           prevprops: {
             value: formValues.engineerInfo || '',
             size: 'large',
-            rows: 5,
+            rows: 7,
             readOnly: true,
             className: 'mt-2 bg-gray-50 h-fit',
           } as ShaTextareaProps,

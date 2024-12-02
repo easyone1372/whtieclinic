@@ -1,9 +1,10 @@
+import { OrderFormValues } from '@/data/ShaCustomerForm';
+
 export type EditScheduleTypes = {
   orderId: number;
   customerId: number;
   engineerId: number;
   orderDate: string;
-  // orderTimeSlot: string;
   customerName: string;
   customerPhone: string;
   customerAddr: string;
@@ -15,57 +16,26 @@ export type EditScheduleTypes = {
   receiptDocsIssued: boolean;
 };
 
-export type EditOrderFormValues = {
-  // 예약 정보
+export type EditOrderFormValues = OrderFormValues & {
   orderId: number;
-  orderDate: string;
-  // orderTime: string; //받아오는 정보에는 없음
-  orderEngineerName: string;
-
-  // 고객 정보
-  orderCustomerName: string;
-  orderCustomerPhone: string;
-  orderCustomerAddr: string;
-  orderCustomerRemark: string;
-
-  // 주문 정보
-  orderCategory: string;
-  orderProduct: string;
-  orderRemark?: string;
-
-  // 금액 정보
-  orderTotalAmount: number; // 세척금액
-  totalAmount: number; // 총금액 (세척금액 - 계약금 - 할인금액)
-  orderCount: number;
-  orderIsDiscount: boolean;
-  orderDiscountRatio: number;
-  orderDeposit: number;
-  depositPaid: boolean;
-
-  // 결제 정보
-  orderPayment: string;
-  orderReceiptDocs: string;
-  receiptDocsIssued: boolean;
-
-  // 기사 정보 표시용 (내부용)
-  selectedEngineerId: number | null;
-  engineerInfo?: string;
-  availableEngineers?: { value: string; text: string }[];
 };
 
 export const editScheduleValues: EditOrderFormValues = {
   orderId: 0,
   orderDate: '',
   // orderTime: '',
-  orderEngineerName: '',
-  selectedEngineerId: 0,
+  orderEngineerName: '', //
+  selectedEngineerId: null,
+
   orderCustomerName: '',
   orderCustomerPhone: '',
   orderCustomerAddr: '',
   orderCustomerRemark: '',
+
   orderCategory: '',
   orderProduct: '',
   orderRemark: '',
+
   orderTotalAmount: 0,
   totalAmount: 0,
   orderCount: 1,
@@ -73,9 +43,11 @@ export const editScheduleValues: EditOrderFormValues = {
   orderDiscountRatio: 0,
   orderDeposit: 0,
   depositPaid: false,
+
   orderPayment: '',
   orderReceiptDocs: '',
   receiptDocsIssued: false,
+
   engineerInfo: '',
   availableEngineers: [],
 };

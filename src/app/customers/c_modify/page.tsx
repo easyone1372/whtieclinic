@@ -1,7 +1,26 @@
 'use client';
 
+import SchEdit from '@/components/organism/EditSchedule/SchEdit';
+import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+
 const Page = () => {
-  return;
+  const searchParams = useSearchParams();
+  const params = {
+    orderId: searchParams.get('orderId') ? Number(searchParams.get('orderId')) : undefined,
+    selectDate: searchParams.get('selectDate') || '',
+    selectTime: searchParams.get('selectTime') || '',
+    engineerId: searchParams.get('engineerId') ? Number(searchParams.get('engineerId')) : undefined,
+  };
+
+  console.log('c_modify: ', params);
+  return <SchEdit queryParams={params} />;
 };
 
-export default Page;
+export default function Wrapper() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Page />
+    </Suspense>
+  );
+}
