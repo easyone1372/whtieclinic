@@ -47,6 +47,7 @@ const SchEdit = ({ queryParams }: { queryParams: QueryParams }) => {
           const response = await api.get(`/order-management/orders/${queryParams.orderId}`);
           const orderData = response.data;
 
+          console.log('orderData:', orderData);
           formValues = {
             ...schInfoToFormValues(orderData),
             orderDate: combinedDateTime,

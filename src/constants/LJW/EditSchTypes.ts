@@ -18,6 +18,8 @@ export type EditScheduleTypes = {
 
 export type EditOrderFormValues = OrderFormValues & {
   orderId: number;
+  customerId: number;
+  engineerId: number;
 };
 
 export const editScheduleValues: EditOrderFormValues = {
@@ -26,7 +28,9 @@ export const editScheduleValues: EditOrderFormValues = {
   // orderTime: '',
   orderEngineerName: '', //
   selectedEngineerId: null,
+  engineerId: 0,
 
+  customerId: 0,
   orderCustomerName: '',
   orderCustomerPhone: '',
   orderCustomerAddr: '',
@@ -56,13 +60,15 @@ export const schInfoToFormValues = (orderData: any): EditOrderFormValues => ({
   ...editScheduleValues,
   orderId: orderData.orderId || 0,
   orderDate: orderData.orderDate || '',
+  customerId: orderData.customerId || 0,
+  engineerId: orderData.engineerId || 0,
   // orderTime: orderData.orderTime || '',
-  orderEngineerName: orderData.orderEngineerName || '', // 엔지니어 이름을 처리
+  orderEngineerName: orderData.engineerName || '', // 엔지니어 이름을 처리
   selectedEngineerId: orderData.selectedEngineerId || null, // 엔지니어 ID 처리
-  orderCustomerName: orderData.orderCustomerName || '',
-  orderCustomerPhone: orderData.orderCustomerPhone || '',
-  orderCustomerAddr: orderData.orderCustomerAddr || '',
-  orderCustomerRemark: orderData.orderCustomerRemark || '',
+  orderCustomerName: orderData.customerName || '',
+  orderCustomerPhone: orderData.customerPhone || '',
+  orderCustomerAddr: orderData.customerAddr || '',
+  orderCustomerRemark: orderData.customerRemark || '',
   orderProduct: orderData.orderProduct || '',
   orderCount: orderData.orderCount || 0,
   orderTotalAmount: orderData.orderTotalAmount || 0,
