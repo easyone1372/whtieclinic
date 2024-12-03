@@ -52,19 +52,29 @@ const SchEdit = ({ queryParams }: { queryParams: QueryParams }) => {
             ...schInfoToFormValues(orderData),
             orderDate: combinedDateTime,
             availableEngineers: availableEngineers,
+            orderEngineerName: orderData.engineerName,
+            selectedEngineerId: orderData.engineerId,
+            orderIsDiscount: orderData.orderIsDiscount,
           };
 
-          if (queryParams.engineerId) {
-            const engineerInfo = await getEngineerInfo(queryParams.engineerId);
-            const selectedEngineer = availableEngineers.find(
-              (eng) => eng.value === queryParams.engineerId?.toString()
-            );
+          // 기사 정보 가져오기
+          if (orderData.engineerId) {
+            const engineerInfo = await getEngineerInfo(orderData.engineerId);
+
+            // availableEngineers에 기존 기사가 없다면 추가
+            if (!availableEngineers.some((eng) => eng.value === orderData.engineerId.toString())) {
+              formValues.availableEngineers = [
+                {
+                  value: orderData.engineerId.toString(),
+                  text: orderData.engineerName,
+                },
+                ...availableEngineers,
+              ];
+            }
 
             formValues = {
               ...formValues,
-              selectedEngineerId: queryParams.engineerId,
               engineerInfo: engineerInfo || '',
-              orderEngineerName: selectedEngineer?.text || '',
             };
           }
         } else {

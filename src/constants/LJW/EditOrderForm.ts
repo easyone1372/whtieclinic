@@ -120,6 +120,7 @@ export const EditOrderForm = (
       ],
     },
   },
+
   {
     titleprops: { text: '담당 기사' },
     formfieldprops: {
@@ -136,12 +137,13 @@ export const EditOrderForm = (
               handleFieldChange('selectedEngineerId', engineerId);
 
               const engineerInfo = await getEngineerInfo(engineerId);
-              handleFieldChange('engineerInfo', engineerInfo || '');
-              const selectedEngineer = formValues.availableEngineers?.find(
-                (eng) => eng.value === value
-              );
-              if (selectedEngineer) {
-                handleFieldChange('orderEngineerName', selectedEngineer.text);
+              if (engineerInfo) {
+                handleFieldChange('engineerInfo', engineerInfo);
+                // 기사 이름 설정
+                const engineer = formValues.availableEngineers?.find((eng) => eng.value === value);
+                if (engineer) {
+                  handleFieldChange('orderEngineerName', engineer.text);
+                }
               }
             },
           } as ShaDropdownProps,
