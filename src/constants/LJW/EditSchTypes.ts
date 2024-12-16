@@ -25,8 +25,7 @@ export type EditOrderFormValues = OrderFormValues & {
 export const editScheduleValues: EditOrderFormValues = {
   orderId: 0,
   orderDate: '',
-  // orderTime: '',
-  orderEngineerName: '', //
+  orderEngineerName: '',
   selectedEngineerId: null,
   engineerId: 0,
 
@@ -62,7 +61,6 @@ export const schInfoToFormValues = (orderData: any): EditOrderFormValues => ({
   orderDate: orderData.orderDate || '',
   customerId: orderData.customerId || 0,
   engineerId: orderData.engineerId || 0,
-  // orderTime: orderData.orderTime || '',
   orderEngineerName: orderData.engineerName || '', // 엔지니어 이름을 처리
   selectedEngineerId: orderData.selectedEngineerId || null, // 엔지니어 ID 처리
   orderCustomerName: orderData.customerName || '',
@@ -85,7 +83,6 @@ export const schInfoToFormValues = (orderData: any): EditOrderFormValues => ({
 
 export const schValidationRules = [
   (formValues: EditOrderFormValues) => !!formValues.orderDate,
-  // (formValues: EditOrderFormValues) => !!formValues.orderTime,
   (formValues: EditOrderFormValues) => !!formValues.orderEngineerName,
   (formValues: EditOrderFormValues) => !!formValues.orderCustomerName,
   (formValues: EditOrderFormValues) => !!formValues.orderCustomerPhone,
